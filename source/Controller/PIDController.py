@@ -4,7 +4,7 @@ import datetime
 from Controller.Controller import Controller
 
 class PIDController(Controller):
-    def __init__(self):
+    def __init__(self, heatingInterface):
         self.setpoint = 15.0
         self.P = 1.0
         self.I = 0.01
@@ -13,14 +13,15 @@ class PIDController(Controller):
         self.errorSum = 0
         self.errorSumLimit = 10
         self.lastRuntime = datetime.datetime.now()
+        self.heatingInterface = heatingInterface
 
-    def setSetpoint(self, setpoint, currentTemperature):
+    def setSetpoint(self, setpoint):
         self.setpoint = setpoint
-        return self.run(currentTemperature)
+        return self.run()
 
-    def run(self, currentTemperature):
+    def run(self):
         dt = (datetime.datetime.now() - self.lastRuntime).total_seconds()
-        temp = currentTemperature
+        temp = self.heatingInterface.getTemperature()
         error = self.setpoint - temp
         errorDif = 0
         if dt > 0:

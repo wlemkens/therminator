@@ -1,0 +1,15 @@
+{
+  "zones": {
+    "living": [
+      "central",
+      "radiator"
+    ],
+    "bathroom": [
+      "radiator"
+    ],
+    "bedroom": [
+      "radiator"
+    ]
+  },
+  "priority": "performance"
+}

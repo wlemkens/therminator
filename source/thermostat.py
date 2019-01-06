@@ -10,8 +10,7 @@ from Controller.ControllerFactory import ControllerFactory
 
 if __name__ == "__main__":
     schedulerFactory = SchedulerFactory()
-    controllerFactory = ControllerFactory()
 
-    scheduler = schedulerFactory.createScheduler(SchedulerType.BASICSCHEDULER, ControllerType.PIDCONTROLLER, "/home/wim/projects/therminator/examples/basic schedule.json")
+    scheduler = schedulerFactory.createScheduler(SchedulerType.BASICSCHEDULER, ControllerType.PIDCONTROLLER, "/home/wim/projects/therminator/examples/setup.json", "/home/wim/projects/therminator/examples/basic schedule.json")
 
     scheduler.start()

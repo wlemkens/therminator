@@ -31,7 +31,6 @@ class Schedule():
 
     def getZoneNames(self):
         modes = list(self.schedule["modes"].keys())
-        print(modes)
         return self.schedule["modes"][modes[0]]["zones"].keys()
 
 class BasicScheduler(Scheduler):
@@ -51,8 +50,9 @@ class BasicScheduler(Scheduler):
             self.nextCallTime += self.interval
             rooms = ["living", "bathroom", "bedroom"]
             for room in rooms:
-                output = self.controller[room].setSetpoint(self.schedule.getCurrentSetpointTemperature(room), 20.0  )
-                print (room, output)
+                for controller in self.controller[room]:
+                    output = controller.setSetpoint(self.schedule.getCurrentSetpointTemperature(room) )
+                    print (room, output)
             time.sleep(self.nextCallTime - time.time())
 
     def zoneCount(self):
@@ -62,4 +62,7 @@ class BasicScheduler(Scheduler):
         return self.schedule.getZoneNames()
 
     def addController(self, zoneName, controller):
-        self.controller[zoneName] = controller
+        if (zoneName in self.controller):
+            self.controller[zoneName] += [controller]
+        else:
+            self.controller[zoneName] = [controller]
