@@ -1,0 +1,91 @@
+{
+  "name": "standard",
+  "modes": {
+    "night": {
+      "zones": {
+        "living": 15,
+        "bathroom": 15,
+        "bedroom": 17
+      }
+    },
+    "away": {
+      "zones": {
+        "living": 15,
+        "bathroom": 15,
+        "bedroom": 15
+      }
+    },
+    "morning": {
+      "zones": {
+        "living": 21,
+        "bathroom": 22,
+        "bedroom": 15
+      }
+    },
+    "evening": {
+      "zones": {
+        "living": 21,
+        "bathroom": 15,
+        "bedroom": 18
+      }
+    },
+    "present": {
+      "zones": {
+        "living": 21,
+        "bathroom": 15,
+        "bedroom": 15
+      }
+    }
+  },
+  "daytypes": {
+    "workday": [
+      {
+        "start": 390,
+        "mode": "morning"
+      },
+      {
+        "start": 540,
+        "mode": "away"
+      },
+      {
+        "start": 1050,
+        "mode": "present"
+      },
+      {
+        "start": 1200,
+        "mode": "evening"
+      },
+      {
+        "start": 1320,
+        "mode": "night"
+      }
+    ],
+    "weekend": [
+      {
+        "start": 390,
+        "mode": "morning"
+      },
+      {
+        "start": 540,
+        "mode": "present"
+      },
+      {
+        "start": 1200,
+        "mode": "evening"
+      },
+      {
+        "start": 1320,
+        "mode": "night"
+      }
+    ]
+  },
+  "weekschedule": [
+    "workday",
+    "workday",
+    "workday",
+    "workday",
+    "workday",
+    "weekend",
+    "weekend"
+  ]
+}
