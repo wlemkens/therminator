@@ -1,0 +1,15 @@
+{
+  "scheduler":{
+    "type":"basic",
+    "configFile":"/home/wim/projects/therminator/examples/basic schedule.json"
+  },
+  "setup":{
+    "configFile":"/home/wim/projects/therminator/examples/setup.json"
+  },
+  "controllers":{
+    "default":{
+      "type": "pid",
+      "configFile":"/home/wim/projects/therminator/examples/pid config.json"
+    }
+  }
+}

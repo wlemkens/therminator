@@ -4,7 +4,7 @@ import time
 class Scheduler(threading.Thread) :
     def __init__(self):
         threading.Thread.__init__(self)
-        self.interval = 15
+        self.interval = 5
         self.nextCallTime = time.time()
 
     def run(self):

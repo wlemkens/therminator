@@ -4,14 +4,15 @@ import datetime
 from Controller.Controller import Controller
 
 class PIDController(Controller):
-    def __init__(self, heatingInterface):
+    def __init__(self, heatingInterface, config, zone):
+        localConfig = config["zone_parameters"][zone]
         self.setpoint = 15.0
-        self.P = 1.0
-        self.I = 0.01
-        self.D = 0.001
+        self.P = localConfig["p"]
+        self.I = localConfig["i"]
+        self.D = localConfig["d"]
         self.lastError = 0
         self.errorSum = 0
-        self.errorSumLimit = 10
+        self.errorSumLimit = localConfig["errorSumLimit"]
         self.lastRuntime = datetime.datetime.now()
         self.heatingInterface = heatingInterface
 

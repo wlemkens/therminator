@@ -1,20 +1,23 @@
 {
-  "living": {
-    "p": 1.0,
-    "i": 0.1,
-    "d": 0.01,
-    "errorSumLimit": 10
-  },
-  "bathroom": {
-    "p": 1.0,
-    "i": 0.1,
-    "d": 0.01,
-    "errorSumLimit": 10
-  },
-  "bedroom": {
-    "p": 1.0,
-    "i": 0.1,
-    "d": 0.01,
-    "errorSumLimit": 10
+  "interval": 5,
+  "zone_parameters": {
+    "living": {
+      "p": 1.0,
+      "i": 0.1,
+      "d": 0.01,
+      "errorSumLimit": 10
+    },
+    "bathroom": {
+      "p": 1.0,
+      "i": 0.1,
+      "d": 0.01,
+      "errorSumLimit": 10
+    },
+    "bedroom": {
+      "p": 1.0,
+      "i": 0.1,
+      "d": 0.01,
+      "errorSumLimit": 10
+    }
   }
 }

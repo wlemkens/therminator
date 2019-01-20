@@ -7,10 +7,18 @@ from Controller.ControllerFactory import ControllerType
 from Controller.ControllerFactory import ControllerFactory
 
 # General imports
+import sys
+import json
 
 if __name__ == "__main__":
-    schedulerFactory = SchedulerFactory()
+    if len(sys.argv) == 2:
+        filename = sys.argv[1]
+        schedulerFactory = SchedulerFactory()
+        config = {}
+        with open(filename) as f:
+            config = json.load(f)
+        scheduler = schedulerFactory.createScheduler(config)
 
-    scheduler = schedulerFactory.createScheduler(SchedulerType.BASICSCHEDULER, ControllerType.PIDCONTROLLER, "/home/wim/projects/therminator/examples/setup.json", "/home/wim/projects/therminator/examples/basic schedule.json")
-
-    scheduler.start()
+        scheduler.start()
+    else:
+        print("Usage {s:0} </path/to/config.json>".format(sys.argv[0]))
