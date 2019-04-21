@@ -38,6 +38,7 @@ class BasicScheduler(Scheduler):
         super(BasicScheduler,self).__init__()
         self.schedule = None
         self.controller = {}
+        self.boilerInterface = None
         self.loadConfig(filename)
 
     def loadConfig(self, filename):
@@ -49,10 +50,13 @@ class BasicScheduler(Scheduler):
         while True:
             self.nextCallTime += self.interval
             rooms = ["living", "bathroom", "bedroom"]
+            total = 0
             for room in rooms:
                 for controller in self.controller[room]:
                     output = controller.setSetpoint(self.schedule.getCurrentSetpointTemperature(room) )
+                    total += max(0,output)
                     print (room, output)
+            self.boilerInterface.setOutput(total)
             time.sleep(self.nextCallTime - time.time())
 
     def zoneCount(self):
@@ -66,3 +70,6 @@ class BasicScheduler(Scheduler):
             self.controller[zoneName] += [controller]
         else:
             self.controller[zoneName] = [controller]
+
+    def addBoilerController(self, controller):
+        self.boilerInterface = controller

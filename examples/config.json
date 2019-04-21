@@ -11,5 +11,9 @@
       "type": "pid",
       "configFile":"/home/wim/projects/therminator/examples/pid config.json"
     }
+  },
+  "boiler_controller":{
+      "type": "mqtt",
+      "configFile":"/home/wim/projects/therminator/examples/boiler_config.json"
   }
 }

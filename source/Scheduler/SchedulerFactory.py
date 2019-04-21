@@ -1,5 +1,6 @@
 from Scheduler.BasicScheduler import BasicScheduler
 from Controller.ControllerFactory import ControllerFactory
+from BoilerInterface.BoilerInterfaceFactory import BoilerInterfaceFactory
 from Setup import Setup
 
 from enum import Enum
@@ -18,10 +19,13 @@ class SchedulerFactory(object):
         controllerTypes = config["controllers"]
         setupFile = config["setup"]["configFile"]
         schedulerConfig = config["scheduler"]["configFile"]
-        return self.setupScheduler(schedulerType, controllerTypes, setupFile, schedulerConfig)
+        boilerType = config["boiler_controller"]["type"]
+        boilerConfig = config["boiler_controller"]["configFile"]
+        return self.setupScheduler(schedulerType, controllerTypes, setupFile, schedulerConfig, boilerType, boilerConfig)
 
-    def setupScheduler(self, schedulerType, controllerTypes, setupFile, parameters):
+    def setupScheduler(self, schedulerType, controllerTypes, setupFile, parameters, boilerType, boilerConfig):
         controllerFactory = ControllerFactory()
+        boilerFactory = BoilerInterfaceFactory()
         setup = self.loadSetup(setupFile)
         if schedulerType == SchedulerType.BASICSCHEDULER:
             scheduler = BasicScheduler(parameters)
@@ -32,6 +36,7 @@ class SchedulerFactory(object):
 
                 for zoneType in setup.getZoneTypes(zone):
                     scheduler.addController(zone, controllerFactory.createController(controllerMeta, zone, zoneType))
+            scheduler.addBoilerController(boilerFactory.createBoilerInterface(boilerType, boilerConfig))
             return scheduler
         else:
             raise ValueError("No scheduler of specified type")
