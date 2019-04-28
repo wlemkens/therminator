@@ -22,12 +22,15 @@ class PID(object):
     def run(self):
         dt = (datetime.datetime.now() - self.lastRuntime).total_seconds()
         temp = self.temperature
-        error = self.setpoint - temp
-        errorDif = 0
-        if dt > 0:
-            errorDif = (error - self.lastError) / dt
-            self.errorSum += error * dt
-            self.errorSum = max(min(self.errorSum, self.errorSumLimit), -self.errorSumLimit)
-        self.lastError = error
-        result = self.P * error + self.I * self.errorSum + self.D * errorDif
+        if temp != None:
+            error = self.setpoint - temp
+            errorDif = 0
+            if dt > 0:
+                errorDif = (error - self.lastError) / dt
+                self.errorSum += error * dt
+                self.errorSum = max(min(self.errorSum, self.errorSumLimit), -self.errorSumLimit)
+            self.lastError = error
+            result = self.P * error + self.I * self.errorSum + self.D * errorDif
+        else:
+            result = 0
         return result
