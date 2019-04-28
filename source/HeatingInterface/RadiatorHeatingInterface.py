@@ -44,7 +44,7 @@ class RadiatorHeatingInterface(HeatingInterface):
         topic = "therminator/{:}_temperature".format(self.name)
         print("Subscribing to topic '{:}'".format(topic))
         self.client.on_message = self.on_message
-        self.client.connect(address, port, 0)
+        self.client.connect(address, port, 60)
         self.client.loop_start()
         r = self.client.subscribe(topic)
         #self.client.loop_forever()
