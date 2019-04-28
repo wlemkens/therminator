@@ -49,7 +49,7 @@ class BasicScheduler(Scheduler):
         print("Run start")
         while True:
             self.nextCallTime += self.interval
-            rooms = ["living", "bathroom", "bedroom"]
+            rooms = self.schedule.getZoneNames()
             total = 0
             for room in rooms:
                 for controller in self.controller[room]:
