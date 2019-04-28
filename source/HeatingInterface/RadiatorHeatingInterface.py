@@ -45,6 +45,13 @@ class RadiatorHeatingInterface(HeatingInterface):
     def on_connect(self, client, userdata, flags, rc):
         print ("Connected")
 
+    def requestValues(self):
+        topic = "therminator/request"
+        requestMessageTemp = "\"{:}_temperature\"".format(self.name)
+        requestMessageSP = "\"{:}_setpoint\"".format(self.name)
+        self.client.publish(topic, requestMessageTemp)
+        self.client.publish(topic, requestMessageSP)
+
     def connect(self, address, port, username, password):
         #self.client.connect(address, port, 60)
         # Blocking call that processes network traffic, dispatches callbacks and
@@ -59,4 +66,5 @@ class RadiatorHeatingInterface(HeatingInterface):
         self.client.connect(address, port, 60)
         self.client.loop_start()
         r = self.client.subscribe(topics)
+        self.requestValues()
         #self.client.loop_forever()
