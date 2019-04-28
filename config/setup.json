@@ -1,0 +1,17 @@
+{
+  "zones": {
+    "living": [
+      "radiator"
+    ],
+    "badkamer": [
+      "radiator"
+    ],
+    "bureau": [
+      "radiator"
+    ],
+    "kamer_nathan": [
+      "radiator"
+    ]
+  },
+  "priority": "performance"
+}

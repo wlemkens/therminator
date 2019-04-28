@@ -1,0 +1,19 @@
+{
+  "scheduler":{
+    "type":"basic",
+    "configFile":"/home/wim/projects/therminator/config/basic schedule.json"
+  },
+  "setup":{
+    "configFile":"/home/wim/projects/therminator/config/setup.json"
+  },
+  "controllers":{
+    "default":{
+      "type": "pid",
+      "configFile":"/home/wim/projects/therminator/config/pid config.json"
+    }
+  },
+  "boiler_controller":{
+      "type": "mqtt",
+      "configFile":"/home/wim/projects/therminator/config/boiler_config.json"
+  }
+}
