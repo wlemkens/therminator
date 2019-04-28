@@ -16,17 +16,27 @@ class RadiatorHeatingInterface(HeatingInterface):
             self.username = None
             self.password = None
         self.temperature = None
+        self.setpoint = None
         self.client = mqtt.Client()
         self.connect(self.address, self.port, self.username, self.password)
 
     def getTemperature(self):
         return self.temperature
 
+    def getSetpoint(self):
+        return self.setpoint
+
+    def setSetpoint(self, setpoint):
+        self.setpoint = setpoint
+
     def setOutput(self, outputValue):
         pass
 
     def on_message(self, client, userdata, message):
-        self.temperature = float(message.payload)
+        if message.topic == self.topic_temp:
+            self.temperature = float(message.payload)
+        elif message.topic == self.topic_sp:
+            self.setpoint = float(message.payload)
         #print("Received {:} : {:}".format(message.topic, self.temperature))
 
     def on_subscribe(self, client, userdata, mid, granted_qos):
@@ -41,10 +51,12 @@ class RadiatorHeatingInterface(HeatingInterface):
         # handles reconnecting.
         # Other loop*() functions are available that give a threaded interface and a
         # manual interface.
-        topic = "therminator/{:}_temperature".format(self.name)
-        print("Subscribing to topic '{:}'".format(topic))
+        self.topic_temp = "therminator/in/{:}_temperature".format(self.name)
+        self.topic_sp = "therminator/in/{:}_setpoint".format(self.name)
+        topics = [(self.topic_temp, 1), (self.topic_sp, 1)]
+        print("Subscribing to topics '{:}'".format(topics))
         self.client.on_message = self.on_message
         self.client.connect(address, port, 60)
         self.client.loop_start()
-        r = self.client.subscribe(topic)
+        r = self.client.subscribe(topics)
         #self.client.loop_forever()

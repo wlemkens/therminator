@@ -42,7 +42,7 @@ class MQTTBoilerInterface(BoilerInterface):
     def setOutput(self, outputValue):
         outputValue *= self.gain
         outputValue = min(100,max(0, outputValue))
-        self.client.publish("therminator/boiler_output", outputValue)
+        self.client.publish("therminator/out/boiler_output", outputValue)
 
     # The callback for when the client receives a CONNACK response from the server.
     def on_connect(client, userdata, flags, rc):
