@@ -6,6 +6,7 @@ class Scheduler(threading.Thread) :
         threading.Thread.__init__(self)
         self.interval = 5
         self.nextCallTime = time.time()
+        self.sensorNames = []
 
     def run(self):
         print("ERROR : Not implemeted")

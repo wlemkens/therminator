@@ -35,7 +35,7 @@ class SchedulerFactory(object):
                     controllerMeta = controllerTypes[zone]
 
                 for zoneType in setup.getZoneTypes(zone):
-                    scheduler.addController(zone, controllerFactory.createController(controllerMeta, zone, zoneType))
+                    scheduler.addController(zone, controllerFactory.createController(scheduler.sensorNames, controllerMeta, zone, zoneType))
             scheduler.addBoilerController(boilerFactory.createBoilerInterface(boilerType, boilerConfig))
             return scheduler
         else:

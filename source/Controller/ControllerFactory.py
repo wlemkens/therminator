@@ -7,12 +7,13 @@ class ControllerType(object):
     PIDCONTROLLER = "pid"
 
 class ControllerFactory(object):
-    def createController(self, controllerMeta, zone, interfaceType, parameters = None):
+
+    def createController(self, names, controllerMeta, zone, interfaceType, parameters = None):
         interfaceFactory = HeatingInterfaceFactory()
         config = {}
         with open(controllerMeta["configFile"]) as f:
             config = json.load(f)
-        interface = interfaceFactory.createHeatingInterface(interfaceType)
+        interface = interfaceFactory.createHeatingInterface(names, interfaceType, zone, config)
         if controllerMeta["type"] == ControllerType.PIDCONTROLLER:
             return PIDController(interface, config, zone)
         else:

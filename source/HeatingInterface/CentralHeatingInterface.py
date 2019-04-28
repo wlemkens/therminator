@@ -1,11 +1,11 @@
 from HeatingInterface.HeatingInterface import HeatingInterface
 
 class CentralHeatingInterface(HeatingInterface):
-    def __init__(self):
-        pass
+    def __init__(self, name, config):
+        self.name = name
 
     def getTemperature(self):
-        return 15
+        return None
 
     def setOutput(self, outputValue):
         pass

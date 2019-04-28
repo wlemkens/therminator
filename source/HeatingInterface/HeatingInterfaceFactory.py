@@ -8,10 +8,23 @@ class HeatingInterfaceType():
     RADIATORHEATINGINTERFACE = "radiator"
 
 class HeatingInterfaceFactory(object):
-    def createHeatingInterface(self, type, parameters = None):
+
+    def __init__(self):
+        pass
+
+    def createHeatingInterface(self, names, type, zone, parameters = None):
+        name = zone
+        if name in names:
+            baseName = name
+            index = 1
+            name = baseName + str(index)
+            while name in names:
+                index += 1
+                name = baseName + str(index)
+        names += [name]
         if type == HeatingInterfaceType.CENTRALHEATINGINTERFACE:
-            return CentralHeatingInterface()
+            return CentralHeatingInterface(name, parameters)
         elif type == HeatingInterfaceType.RADIATORHEATINGINTERFACE:
-            return RadiatorHeatingInterface()
+            return RadiatorHeatingInterface(name, parameters)
         else:
             raise ValueError("No heating interface of specified type", type, HeatingInterfaceType.RADIATORHEATINGINTERFACE)

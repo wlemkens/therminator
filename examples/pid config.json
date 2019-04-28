@@ -1,4 +1,6 @@
 {
+  "address": "192.168.0.183",
+  "port": 1883,
   "interval": 5,
   "zone_parameters": {
     "living": {
