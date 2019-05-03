@@ -17,12 +17,15 @@ class Schedule():
         dayOfWeek = datetime.datetime.today().weekday()
         now = datetime.datetime.now()
         minutes = now.hour * 60 + now.minute
+        print("Minute of the day {:}".format(minutes))
         dayType = self.schedule["weekschedule"][dayOfWeek]
         timeTable = self.schedule["daytypes"][dayType]
         mode = "none"
         for i in range(len(timeTable)):
             if (timeTable[i]["start"] > minutes):
                 mode = timeTable[i-1]["mode"]
+                break
+        print ("Mode: '{:}'".format(mode))
         temperatures = self.schedule["modes"][mode]["zones"]
         return temperatures[room]
 
@@ -57,7 +60,9 @@ class BasicScheduler(Scheduler):
                     total += max(0,output)
                     print (room, output)
             self.boilerInterface.setOutput(total)
-            time.sleep(self.nextCallTime - time.time())
+            sleepTime = self.nextCallTime - time.time()
+            if (sleepTime > 0):
+                time.sleep(sleepTime)
 
     def zoneCount(self):
         return self.schedule.zoneCount()
