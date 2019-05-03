@@ -17,7 +17,6 @@ class Schedule():
         dayOfWeek = datetime.datetime.today().weekday()
         now = datetime.datetime.now()
         minutes = now.hour * 60 + now.minute
-        print("Minute of the day {:}".format(minutes))
         dayType = self.schedule["weekschedule"][dayOfWeek]
         timeTable = self.schedule["daytypes"][dayType]
         mode = "none"
@@ -25,7 +24,6 @@ class Schedule():
             if (timeTable[i]["start"] > minutes):
                 mode = timeTable[i-1]["mode"]
                 break
-        print ("Mode: '{:}'".format(mode))
         temperatures = self.schedule["modes"][mode]["zones"]
         return temperatures[room]
 
