@@ -80,7 +80,7 @@ class BasicScheduler(Scheduler):
                         controller.setSetpoint(self.schedule.getCurrentSetpointTemperature(room) )
                     output = controller.getOutput()
                     total += max(0,output)
-                    #print ("Room '{:}' {:}/{:}°C output = {:}".format(room, controller.getTemperature(), controller.getSetpoint(), output))
+                    print ("Room '{:}' {:}/{:}°C output = {:}".format(room, controller.getTemperature(), controller.getSetpoint(), output))
             self.boilerInterface.setOutput(total)
             sleepTime = self.nextCallTime - time.time()
             if (sleepTime > 0):
