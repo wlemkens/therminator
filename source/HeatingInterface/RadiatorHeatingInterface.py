@@ -27,6 +27,7 @@ class RadiatorHeatingInterface(HeatingInterface):
         return self.setpoint
 
     def setSetpoint(self, setpoint):
+        self.client.publish("therminator/out/{:}_setpoint".format(self.name), setpoint)
         self.setpoint = setpoint
 
     def setOutput(self, outputValue):
@@ -37,7 +38,7 @@ class RadiatorHeatingInterface(HeatingInterface):
             self.temperature = float(message.payload)
         elif message.topic == self.topic_sp:
             self.setpoint = float(message.payload)
-        #print("Received {:} : {:}".format(message.topic, self.temperature))
+        #print("Received {:} : {:}".format(message.topic, message.payload))
 
     def on_subscribe(self, client, userdata, mid, granted_qos):
         print ("subd")

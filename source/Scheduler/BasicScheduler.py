@@ -9,11 +9,28 @@ from Scheduler.Scheduler import Scheduler
 class Schedule():
     def __init__(self, schedule):
         self.schedule = schedule
+        self.setpoints = {}
+
+    def hasSetpointChanged(self, room):
+        if not room in self.setpoints.keys():
+            return True
+        return self.setpoints[room] != self._currentSetpointTemperature_(room)
 
     def getNextChange(self):
-        pass
+        dayOfWeek = datetime.datetime.today().weekday()
+        now = datetime.datetime.now()
+        minutes = now.hour * 60 + now.minute
+        dayType = self.schedule["weekschedule"][dayOfWeek]
+        timeTable = self.schedule["daytypes"][dayType]
+        for i in range(len(timeTable)):
+            if (timeTable[i]["start"] > minutes):
+                return timeTable[i]["start"]
+        dayType = self.schedule["weekschedule"][(dayOfWeek+1)%7]
+        timeTable = self.schedule["daytypes"][dayType]
+        return timeTable[0]
 
-    def getCurrentSetpointTemperature(self, room):
+
+    def _currentSetpointTemperature_(self, room):
         dayOfWeek = datetime.datetime.today().weekday()
         now = datetime.datetime.now()
         minutes = now.hour * 60 + now.minute
@@ -26,6 +43,11 @@ class Schedule():
                 break
         temperatures = self.schedule["modes"][mode]["zones"]
         return temperatures[room]
+
+    def getCurrentSetpointTemperature(self, room):
+        self.setpoints[room] = self._currentSetpointTemperature_(room)
+        return self.setpoints[room]
+
 
     def zoneCount(self):
         return len(self.schedule["modes"][0]["zones"])
@@ -54,9 +76,11 @@ class BasicScheduler(Scheduler):
             total = 0
             for room in rooms:
                 for controller in self.controller[room]:
-                    output = controller.setSetpoint(self.schedule.getCurrentSetpointTemperature(room) )
+                    if (self.schedule.hasSetpointChanged(room)):
+                        controller.setSetpoint(self.schedule.getCurrentSetpointTemperature(room) )
+                    output = controller.getOutput()
                     total += max(0,output)
-                    print (room, output)
+                    #print ("Room '{:}' {:}/{:}°C output = {:}".format(room, controller.getTemperature(), controller.getSetpoint(), output))
             self.boilerInterface.setOutput(total)
             sleepTime = self.nextCallTime - time.time()
             if (sleepTime > 0):

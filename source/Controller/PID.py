@@ -15,6 +15,9 @@ class PID(object):
     def setSetpoint(self, setpoint):
         self.setpoint = setpoint
 
+    def getSetpoint(self):
+        return self.setpoint
+
     def getOutput(self, temperature):
         self.temperature = temperature
         return self.run()
