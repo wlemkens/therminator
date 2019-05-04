@@ -41,7 +41,7 @@ class Schedule():
             if (timeTable[i]["start"] > minutes):
                 mode = timeTable[i-1]["mode"]
                 break
-        if mode == None:
+        if mode == "none":
             dayType = self.schedule["weekschedule"][(dayOfWeek+1)%7]
             timeTable = self.schedule["daytypes"][dayType]
             mode = timeTable[0]["mode"]
