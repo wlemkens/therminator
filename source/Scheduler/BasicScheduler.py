@@ -41,6 +41,11 @@ class Schedule():
             if (timeTable[i]["start"] > minutes):
                 mode = timeTable[i-1]["mode"]
                 break
+        if mode == None:
+            dayType = self.schedule["weekschedule"][(dayOfWeek+1)%7]
+            timeTable = self.schedule["daytypes"][dayType]
+            mode = timeTable[0]["mode"]
+
         temperatures = self.schedule["modes"][mode]["zones"]
         return temperatures[room]
 
