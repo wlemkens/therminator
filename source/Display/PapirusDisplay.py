@@ -8,6 +8,7 @@ import os
 import time
 
 import json
+import paho.mqtt.client as mqtt
 
 from Entity.Zone import Zone
 
@@ -17,11 +18,15 @@ BLACK = 0
 
 class PapirusDisplay(object):
     def __init__(self, config):
+        self.zones = []
         self.fontPath = "/usr/local/share/fonts/Righteous-Regular.ttf"
         self.my_papirus = Papirus()
         self.setup, self.mqtt = self.loadConfig(config)
         self.createLayout(self.setup, self.mqtt)
-        self.zones = []
+        self.client = mqtt.Client()
+        self.client.connect(self.mqtt["address"], self.mqtt["port"], 60)
+        self.client.loop_forever()
+
 
     def getFontSize(self, area, printstring):
         # returns (ideal fontsize, (length of text, height of text)) that maximally
@@ -51,31 +56,34 @@ class PapirusDisplay(object):
         text = "{:}: {:}/{:}".format(zone.getName(), zone.getTemperature(), zone.getSetpoint())
         fontSize = self.getFontSize([lineWidth, lineHeight], text)
         font = ImageFont.truetype(self.fontPath, 12)
-        draw.text((lineWidth * 2, lineHeight * (index + 1)), text, font=font, fill=BLACK)
+        draw.text((lineWidth  , lineHeight * (index )), text, font=font, fill=BLACK)
 
     def update(self):
+        print("Updating")
         i = 0
         image = Image.new('1', self.my_papirus.size, WHITE)
         draw = ImageDraw.Draw(image)
         for zone in self.zones:
             self.updateZone(zone, i, draw)
             i += 1
-        self.my_papirus.partial_update()
+        self.my_papirus.display(image)
+        #self.my_papirus.partial_update()
+        self.my_papirus.update()
 
     def createLayout(self, setup, mqtt):
         for zone in setup["zones"].keys():
-            self.zones += Zone(zone, setup["zones"][zone], mqtt, self.update)
+            self.zones += [Zone(zone, setup["zones"][zone], mqtt, self.update)]
 
-    def loadConfig(self, config):
+    def loadConfig(self, configFilename):
         setup = None
         mqtt = None
-        with open(filename) as f:
+        with open(configFilename) as f:
             config = json.load(f)
         mqttConfig = config["mqtt"]["configFile"]
         setupConfig = config["setup"]["configFile"]
         with open(setupConfig) as f2:
             setup = json.load(f2)
-        with open(setupConfig) as f2:
+        with open(mqttConfig) as f2:
             mqtt = json.load(f2)
         return setup, mqtt
 

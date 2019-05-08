@@ -16,6 +16,7 @@ class Zone(object):
 			self.temperature = float(message.payload)
 		elif message.topic == self.topicSp:
 			self.setpoint = float(message.payload)
+		self.update()
 
 	def requestValues(self):
 		topic = "therminator/request"
@@ -23,6 +24,7 @@ class Zone(object):
 		requestMessageSP = "\"{:}_setpoint\"".format(self.name)
 		self.client.publish(topic, requestMessageTemp)
 		self.client.publish(topic, requestMessageSP)
+		print("Requesting")
 
 	def connect(self, mqttConfig):
 		self.client = mqtt.Client()
@@ -30,20 +32,23 @@ class Zone(object):
 		self.client.connect(mqttConfig["address"], mqttConfig["port"], 60)
 		self.client.loop_start()
 		topics = [(self.topicTemp,1),(self.topicSP,1)]
+		self.client.loop_start()
 		r = self.client.subscribe(topics)
 		self.requestValues()
+                
 
-	def getTemperature():
+	def getTemperature(self):
 		return self.temperature
 
-	def getSetpoint():
+	def getSetpoint(self):
 		return self.setpoint
 
-	def getName()
+	def getName(self):
 		return self.name
 
-	def isEnabled():
+	def isEnabled(self):
 		return True
 
 	def update(self):
+		print("Updating1")
 		self.on_update()
