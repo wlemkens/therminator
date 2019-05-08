@@ -1,0 +1,8 @@
+{
+  "setup":{
+    "configFile":"/home/wim/projects/therminator/config/setup.json"
+  },
+  "mqtt":{
+      "configFile":"/home/wim/projects/therminator/config/mqtt.json"
+  }
+}
