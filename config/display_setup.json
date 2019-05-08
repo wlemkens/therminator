@@ -1,0 +1,16 @@
+{
+  "zones": {
+    "living": {
+      "icon": "../icons/living.png"
+    },
+    "badkamer": {
+      "icon": "../icons/bathroom.png"
+    },
+    "bureau": {
+      "icon": "../icons/office.png"
+    },
+    "kamer_nathan": {
+      "icon": "../icons/bedroom.png"
+    }
+  }
+}

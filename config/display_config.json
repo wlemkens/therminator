@@ -1,6 +1,6 @@
 {
   "setup":{
-    "configFile":"/home/wim/projects/therminator/config/setup.json"
+    "configFile":"/home/wim/projects/therminator/config/display_setup.json"
   },
   "mqtt":{
       "configFile":"/home/wim/projects/therminator/config/mqtt.json"
