@@ -14,7 +14,7 @@ class Zone(object):
 	def on_message(self, client, userdata, message):
 		if message.topic == self.topicTemp:
 			self.temperature = float(message.payload)
-		elif message.topic == self.topicSp:
+		elif message.topic == self.topicSP:
 			self.setpoint = float(message.payload)
 		self.update()
 
@@ -24,7 +24,6 @@ class Zone(object):
 		requestMessageSP = "\"{:}_setpoint\"".format(self.name)
 		self.client.publish(topic, requestMessageTemp)
 		self.client.publish(topic, requestMessageSP)
-		print("Requesting")
 
 	def connect(self, mqttConfig):
 		self.client = mqtt.Client()
@@ -50,5 +49,4 @@ class Zone(object):
 		return True
 
 	def update(self):
-		print("Updating1")
 		self.on_update()
