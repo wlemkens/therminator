@@ -23,6 +23,7 @@ class PapirusDisplay(object):
     def __init__(self, config):
         self.zones = []
         self.lock = False
+        self.fullUpdate = True
         self.fontPath = "/usr/local/share/fonts/Righteous-Regular.ttf"
         self.my_papirus = Papirus()
         self.setup, self.mqtt = self.loadConfig(config)
@@ -30,7 +31,8 @@ class PapirusDisplay(object):
         self.client = mqtt.Client()
         self.client.connect(self.mqtt["address"], self.mqtt["port"], 60)
         while True:
-        	time.sleep(1)
+            time.sleep(5*60)
+            self.fullUpdate = True
 
 
     def getFontSize(self, area, printstring):
@@ -79,8 +81,11 @@ class PapirusDisplay(object):
                 self.updateZone(zone, i, draw)
                 i += 1
             self.my_papirus.display(image)
-            self.my_papirus.partial_update()
-            #self.my_papirus.update()
+            if self.fullUpdate:
+                self.my_papirus.update()
+                self.fullUpdate = False
+            else:
+                self.my_papirus.partial_update()
             self.lock = False
         else:
             print("Not updating")
