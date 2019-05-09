@@ -58,14 +58,12 @@ class PapirusDisplay(object):
         return fontsize-1, font.getsize(printstring)
 
     def updateZone(self, zone, index, draw):
-        lineHeight = 18 #1.0 * self.my_papirus.height / len(self.zones)
+        lineHeight = self.fontSize + 1
         lineWidth = self.my_papirus.width / 3
-#        text = "{:}: {:}/{:}".format(zone.getName()[:3], zone.getTemperature(), zone.getSetpoint())
-        text = "{:}/{:}".format(zone.getTemperature(), zone.getSetpoint())
-        print(text)
-#        fontSize, dims = self.getFontSize([lineWidth, lineHeight], "44.4/44.4")
-        print("{:} : lineWidth = {:}, lineHeight = {:}, fontSize = {:}".format(index, lineWidth, lineHeight, self.fontSize))
+        name = "{:}".format(zone.getName()[:3])
+        text = "{:}/{:} ".format(zone.getTemperature(), zone.getSetpoint())
         font = ImageFont.truetype(self.fontPath, self.fontSize)
+        draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3, lineHeight * (index )), name, font=font, fill=BLACK)
         draw.text((self.my_papirus.width - lineWidth , lineHeight * (index )), text, font=font, fill=BLACK)
 
     def update(self):
