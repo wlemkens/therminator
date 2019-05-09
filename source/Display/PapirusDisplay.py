@@ -60,7 +60,7 @@ class PapirusDisplay(object):
     def updateZone(self, zone, index, draw):
         lineHeight = self.fontSize + 1
         lineWidth = self.my_papirus.width / 3
-        name = "{:}".format(zone.getName()[:3])
+        name = "{:}".format(zone.getLabel())
         text = "{:}/{:} ".format(zone.getTemperature(), zone.getSetpoint())
         font = ImageFont.truetype(self.fontPath, self.fontSize)
         draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3, lineHeight * (index )), name, font=font, fill=BLACK)
@@ -89,8 +89,8 @@ class PapirusDisplay(object):
             print("Not updating")
 
     def createLayout(self, setup, mqtt):
-        for zone in setup["zones"].keys():
-            self.zones += [Zone(zone, setup["zones"][zone], mqtt, self.update)]
+        for zone in setup["zones"]:
+            self.zones += [Zone(zone, mqtt, self.update)]
         lineHeight = 1.0 * self.my_papirus.height / len(self.zones)
         lineWidth = self.my_papirus.width / 3
         self.fontSize, dims = self.getFontSize([lineWidth, lineHeight], "44.4/44.4")

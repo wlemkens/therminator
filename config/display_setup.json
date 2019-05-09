@@ -1,16 +1,24 @@
 {
-  "zones": {
-    "living": {
-      "icon": "../icons/living.png"
+  "zones": [
+    {
+      "id": "living",
+      "icon": "../icons/living.png",
+      "label": "liv"
     },
-    "badkamer": {
-      "icon": "../icons/bathroom.png"
+    {
+      "id": "badkamer",
+      "icon": "../icons/bathroom.png",
+      "label": "bad"
     },
-    "bureau": {
-      "icon": "../icons/office.png"
+    {
+      "id": "bureau",
+      "icon": "../icons/office.png",
+      "label": "bur"
     },
-    "kamer_nathan": {
-      "icon": "../icons/bedroom.png"
+    {
+      "id": "kamer_nathan",
+      "icon": "../icons/bedroom.png",
+      "label": "nat"
     }
-  }
+  ]
 }

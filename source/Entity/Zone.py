@@ -1,12 +1,14 @@
 import paho.mqtt.client as mqtt
 
 class Zone(object):
-	def __init__(self, name, config, mqttConfig, on_update):
+	def __init__(self, config, mqttConfig, on_update):
 		self.temperature = None
 		self.setpoint = None
-		self.name = name
-		self.topicTemp = "therminator/in/{:}_temperature".format(name)
-		self.topicSP = "therminator/in/{:}_setpoint".format(name)
+		print(config)
+		self.name = config["id"]
+		self.label = config["label"]
+		self.topicTemp = "therminator/in/{:}_temperature".format(self.name)
+		self.topicSP = "therminator/in/{:}_setpoint".format(self.name)
 		self.icon = config["icon"]
 		self.connect(mqttConfig)
 		self.on_update = on_update
@@ -44,6 +46,9 @@ class Zone(object):
 
 	def getName(self):
 		return self.name
+
+	def getLabel(self):
+		return self.label
 
 	def isEnabled(self):
 		return True
