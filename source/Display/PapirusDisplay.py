@@ -57,6 +57,29 @@ class PapirusDisplay(object):
         font = ImageFont.truetype(self.fontPath, fontsize-1)
         return fontsize-1, font.getsize(printstring)
 
+    def updateRequestedPower(self, power, draw):
+        heightOffset = 35
+        fullSize = self.my_papirus.height-heightOffset*2
+        percent = 0.01 * power
+        pp = percent * percent
+        offset = int(0.5 * fullSize * (1 - percent))
+        x1 = 10 + offset
+        y1 = heightOffset + offset
+        x2 = fullSize + 10 - offset
+        print(offset)
+        y2 = heightOffset + fullSize - offset
+        print(x1,y1,x2,y2)
+        draw.pieslice([x1, y1, x2, y2], 90, 270, fill=BLACK)
+
+    def updateDeliveredPower(self, power, draw):
+        heightOffset = 35
+        fullSize = self.my_papirus.height-heightOffset*2
+        percent = 0.01 * power
+        pp = percent * percent
+        offset = int(0.5 * fullSize * (1 - percent))
+        draw.pieslice([10 + offset + 2, heightOffset + offset, fullSize+10-offset+2, heightOffset + fullSize - offset], -90, 90, fill=BLACK)
+
+
     def updateZone(self, zone, index, draw):
         lineHeight = self.fontSize + 1
         lineWidth = self.my_papirus.width / 3
@@ -67,17 +90,16 @@ class PapirusDisplay(object):
         draw.text((self.my_papirus.width - lineWidth , lineHeight * (index )), text, font=font, fill=BLACK)
 
     def update(self):
-        print(self.lock)
         if not self.lock:
-            print("Updating")
             self.lock = True
             i = 0
             image = Image.new('1', self.my_papirus.size, WHITE)
             draw = ImageDraw.Draw(image)
             for zone in self.zones:
-                print("Updating zone {:}/{:}".format(i,len(self.zones)))
                 self.updateZone(zone, i, draw)
                 i += 1
+            self.updateRequestedPower(100,draw)
+            self.updateDeliveredPower(50,draw)
             self.my_papirus.display(image)
             if self.fullUpdate:
                 self.my_papirus.update()
@@ -85,8 +107,6 @@ class PapirusDisplay(object):
             else:
                 self.my_papirus.partial_update()
             self.lock = False
-        else:
-            print("Not updating")
 
     def createLayout(self, setup, mqtt):
         for zone in setup["zones"]:
