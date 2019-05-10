@@ -14,6 +14,7 @@ from collections import OrderedDict
 import paho.mqtt.client as mqtt
 
 from Entity.Zone import Zone
+from Entity.Boiler import Boiler
 
 WHITE = 1
 BLACK = 0
@@ -22,6 +23,7 @@ BLACK = 0
 class PapirusDisplay(object):
     def __init__(self, config):
         self.zones = []
+        self.boiler = None
         self.lock = False
         self.fullUpdate = True
         self.fontPath = "/usr/local/share/fonts/Righteous-Regular.ttf"
@@ -67,6 +69,7 @@ class PapirusDisplay(object):
         y1 = heightOffset + offset
         x2 = fullSize + 10 - offset
         y2 = heightOffset + fullSize - offset
+        draw.pieslice([10, heightOffset, 10 + fullSize, heightOffset + fullSize], 90, 270, fill=WHITE, outline=BLACK)
         draw.pieslice([x1, y1, x2, y2], 90, 270, fill=BLACK)
 
     def updateDeliveredPower(self, power, draw):
@@ -75,6 +78,7 @@ class PapirusDisplay(object):
         percent = 0.01 * power
         pp = percent * percent
         offset = int(0.5 * fullSize * (1 - percent))
+        draw.pieslice([10 + 2, heightOffset, 10 + fullSize + 2, heightOffset + fullSize], -90, 90, fill=WHITE, outline=BLACK)
         draw.pieslice([10 + offset + 2, heightOffset + offset, fullSize+10-offset+2, heightOffset + fullSize - offset], -90, 90, fill=BLACK)
 
 
@@ -96,8 +100,8 @@ class PapirusDisplay(object):
             for zone in self.zones:
                 self.updateZone(zone, i, draw)
                 i += 1
-            self.updateRequestedPower(100,draw)
-            self.updateDeliveredPower(50,draw)
+            self.updateRequestedPower(self.boiler.getRequestedPower(),draw)
+            self.updateDeliveredPower(self.boiler.getDeliveredPower(),draw)
             self.my_papirus.display(image)
             if self.fullUpdate:
                 self.my_papirus.update()
@@ -109,6 +113,7 @@ class PapirusDisplay(object):
     def createLayout(self, setup, mqtt):
         for zone in setup["zones"]:
             self.zones += [Zone(zone, mqtt, self.update)]
+        self.boiler = Boiler(mqtt, self.update)
         lineHeight = 1.0 * self.my_papirus.height / len(self.zones)
         lineWidth = self.my_papirus.width / 3
         self.fontSize, dims = self.getFontSize([lineWidth, lineHeight], "44.4/44.4")
