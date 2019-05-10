@@ -28,12 +28,12 @@ class PapirusDisplay(object):
         self.fullUpdate = True
         self.fontPath = "/usr/local/share/fonts/Righteous-Regular.ttf"
         self.my_papirus = Papirus()
-        self.setup, self.mqtt = self.loadConfig(config)
+        self.setup, self.mqtt, self.fullUpdateInterval = self.loadConfig(config)
         self.createLayout(self.setup, self.mqtt)
         self.client = mqtt.Client()
         self.client.connect(self.mqtt["address"], self.mqtt["port"], 60)
         while True:
-            time.sleep(5*60)
+            time.sleep(self.fullUpdateInterval*60)
             self.fullUpdate = True
 
 
@@ -129,21 +129,6 @@ class PapirusDisplay(object):
             setup = json.load(f2)
         with open(mqttConfig) as f2:
             mqtt = json.load(f2)
-        return setup, mqtt
+        return setup, mqtt, float(config["fullUpdateInterval"])
 
 
-    def draw(self):
-        # initially set all white background
-        image = Image.new('1', self.my_papirus.size, WHITE)
-
-        # prepare for drawing
-        draw = ImageDraw.Draw(image)
-        printstring = "TEST2"
-        draw.text((10, 40), printstring, font=font, fill=BLACK)
-
-        self.my_papirus.display(image)
-        partial = True
-        if partial:
-            self.my_papirus.partial_update()
-        else:
-            self.my_papirus.update()

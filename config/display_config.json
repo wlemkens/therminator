@@ -4,5 +4,6 @@
   },
   "mqtt":{
       "configFile":"/home/wim/projects/therminator/config/mqtt.json"
-  }
+  },
+  "fullUpdateInterval": 60
 }
