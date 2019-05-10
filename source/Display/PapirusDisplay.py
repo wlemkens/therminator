@@ -66,9 +66,7 @@ class PapirusDisplay(object):
         x1 = 10 + offset
         y1 = heightOffset + offset
         x2 = fullSize + 10 - offset
-        print(offset)
         y2 = heightOffset + fullSize - offset
-        print(x1,y1,x2,y2)
         draw.pieslice([x1, y1, x2, y2], 90, 270, fill=BLACK)
 
     def updateDeliveredPower(self, power, draw):
