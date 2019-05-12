@@ -14,6 +14,9 @@ from Display.PapirusDisplay import PapirusDisplay
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2:
+    if len(sys.argv) >= 2:
         filename = sys.argv[1]
-        display = PapirusDisplay(filename)
+        log = None
+        if len(sys.argv) >= 3:
+            log = sys.argv[2]
+        display = PapirusDisplay(filename, log)

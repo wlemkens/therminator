@@ -21,12 +21,13 @@ BLACK = 0
 
 
 class PapirusDisplay(object):
-    def __init__(self, config):
+    def __init__(self, config, logFilename = None):
         self.zones = []
         self.boiler = None
         self.lock = False
         self.fullUpdate = True
         self.fontPath = "/usr/local/share/fonts/Righteous-Regular.ttf"
+        self.logFile = logFilename
         self.my_papirus = Papirus(rotation=180)
         self.setup, self.mqtt, self.fullUpdateInterval = self.loadConfig(config)
         self.createLayout(self.setup, self.mqtt)
@@ -123,6 +124,7 @@ class PapirusDisplay(object):
                 self.fullUpdate = False
             else:
                 self.my_papirus.partial_update()
+            self.log()
             self.lock = False
 
     def createLayout(self, setup, mqtt):
@@ -147,4 +149,9 @@ class PapirusDisplay(object):
             mqtt = json.load(f2)
         return setup, mqtt, float(config["fullUpdateInterval"])
 
-
+    def log(self):
+        if (self.logFile)
+            with (self.logFile,"a") as f:
+                for zone in self.zones:
+                    f.write("{:};{:};".format(zone.getSetpoint(), zone.getTemperature())
+                f.write("{:};{:}\n".format(self.boiler.getRequestedPower(), self.boiler.getDeliveredPower())
