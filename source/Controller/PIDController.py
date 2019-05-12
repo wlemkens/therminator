@@ -12,11 +12,11 @@ class PIDController(Controller):
         self.heatingInterface = heatingInterface
 
     def setSetpoint(self, setpoint):
-        self.PID.setSetpoint(setpoint)
+        self.PID.setSetpoint(setpoint-0.1)
         self.heatingInterface.setSetpoint(setpoint)
 
     def getOutput(self):
-        self.PID.setSetpoint(self.heatingInterface.getSetpoint())
+        self.PID.setSetpoint(self.heatingInterface.getSetpoint()-0.1)
         return self.PID.getOutput(self.heatingInterface.getTemperature())
 
     def getSetpoint(self):
