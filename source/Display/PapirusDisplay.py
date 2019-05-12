@@ -27,7 +27,7 @@ class PapirusDisplay(object):
         self.lock = False
         self.fullUpdate = True
         self.fontPath = "/usr/local/share/fonts/Righteous-Regular.ttf"
-        self.my_papirus = Papirus()
+        self.my_papirus = Papirus(rotation=180)
         self.setup, self.mqtt, self.fullUpdateInterval = self.loadConfig(config)
         self.createLayout(self.setup, self.mqtt)
         self.client = mqtt.Client()
