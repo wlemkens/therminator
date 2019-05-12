@@ -13,7 +13,7 @@ class Boiler(object):
 		if message.topic == self.topicReq:
 			self.requestedPower = float(message.payload)
 		elif message.topic == self.topicDel:
-			self.deliverdPower = float(message.payload)
+			self.deliveredPower = float(message.payload)
 		self.update()
 
 	def requestValues(self):

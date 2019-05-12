@@ -85,11 +85,26 @@ class PapirusDisplay(object):
     def updateZone(self, zone, index, draw):
         lineHeight = self.fontSize + 1
         lineWidth = self.my_papirus.width / 3
+        totalHeight = (len(self.zones)-1) * lineHeight + self.largeFontSize+1
+        freeSpace = self.my_papirus.height - totalHeight
+        padding = freeSpace/3
         name = "{:}".format(zone.getLabel())
         text = "{:}/{:} ".format(zone.getTemperature(), zone.getSetpoint())
-        font = ImageFont.truetype(self.fontPath, self.fontSize)
-        draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3, lineHeight * (index )), name, font=font, fill=BLACK)
-        draw.text((self.my_papirus.width - lineWidth , lineHeight * (index )), text, font=font, fill=BLACK)
+        tempText = "{:} ".format(zone.getTemperature(), zone.getSetpoint())
+        temp = zone.getTemperature()
+        sp = zone.getSetpoint()
+        tempTooLow = temp != None and sp != None and temp < sp
+        if index == 0:
+            font = ImageFont.truetype(self.fontPath, self.largeFontSize)
+            draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3, padding), text, font=font, fill=BLACK)
+            if tempTooLow:
+                draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3 -1, padding-1), tempText, font=font, fill=BLACK)
+        else:
+            font = ImageFont.truetype(self.fontPath, self.fontSize)
+            draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3, lineHeight * (index-1) + self.largeFontSize+1 + 2*padding), name, font=font, fill=BLACK)
+            draw.text((self.my_papirus.width - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + 2*padding), text, font=font, fill=BLACK)
+            if tempTooLow:
+                draw.text((self.my_papirus.width - lineWidth -1 , lineHeight * (index-1) + self.largeFontSize+1 + 2*padding -1), tempText, font=font, fill=BLACK)
 
     def update(self):
         if not self.lock:
@@ -117,6 +132,7 @@ class PapirusDisplay(object):
         lineHeight = 1.0 * self.my_papirus.height / len(self.zones)
         lineWidth = self.my_papirus.width / 3
         self.fontSize, dims = self.getFontSize([lineWidth, lineHeight], "44.4/44.4")
+        self.largeFontSize, dims = self.getFontSize([lineWidth + self.fontSize * 3, lineHeight], "44.4/44.4")
 
     def loadConfig(self, configFilename):
         setup = None
