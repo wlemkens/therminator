@@ -6,6 +6,7 @@ from PIL import ImageFont, ImageDraw, Image
 import sys
 import os
 import time
+from datetime import datetime
 
 import json
 from json import JSONDecoder
@@ -31,6 +32,12 @@ class PapirusDisplay(object):
         self.my_papirus = Papirus(rotation=180)
         self.setup, self.mqtt, self.fullUpdateInterval = self.loadConfig(config)
         self.createLayout(self.setup, self.mqtt)
+        if self.logFile:
+            with open(self.logFile,"w+") as f:
+                f.write("datetime;")
+                for zone in self.zones:
+                    f.write("{:}_{:};{:}_{:};{:}_{:};".format("setpoint",zone.getName(), "temperature",zone.getName(),"level",zone.getName()))
+                f.write("{:};{:}\n".format("requestePower", "deliveredPower"))
         self.client = mqtt.Client()
         self.client.connect(self.mqtt["address"], self.mqtt["port"], 60)
         while True:
@@ -150,8 +157,20 @@ class PapirusDisplay(object):
         return setup, mqtt, float(config["fullUpdateInterval"])
 
     def log(self):
-        if (self.logFile)
-            with (self.logFile,"a") as f:
-                for zone in self.zones:
-                    f.write("{:};{:};".format(zone.getSetpoint(), zone.getTemperature())
-                f.write("{:};{:}\n".format(self.boiler.getRequestedPower(), self.boiler.getDeliveredPower())
+        if (self.logFile):
+            hasNone = False
+            for zone in self.zones:
+                if zone.getSetpoint() == None or zone.getTemperature() == None or zone.getLevel() == None:
+                    hasNone = True
+            if self.boiler.getRequestedPower() == None or self.boiler.getDeliveredPower() == None:
+                hasNone = True
+            if not hasNone:
+                with open(self.logFile,"a") as f:
+                    now = datetime.now()
+                    dtime = now.strftime("%Y-%m-%d %H:%M:%S")
+                    f.write("{:};".format(dtime))
+                    for zone in self.zones:
+                        f.write("{:};{:};{:};".format(zone.getSetpoint(), zone.getTemperature(), zone.getLevel()))
+                    f.write("{:};{:}\n".format(self.boiler.getRequestedPower(), self.boiler.getDeliveredPower()))
+
+
