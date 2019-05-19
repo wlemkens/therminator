@@ -16,6 +16,10 @@ class PID(object):
         self.lastRuntime = datetime.datetime.now()
 
     def setSetpoint(self, setpoint):
+        if self.setpoint != setpoint:
+            # If the setpoint changes
+            # reset the error sum
+            self.errorSum = 0
         self.setpoint = setpoint
 
     def getSetpoint(self):
