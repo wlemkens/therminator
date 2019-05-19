@@ -3,14 +3,14 @@ import datetime
 from datetime import timedelta
 
 class PID(object):
-    def __init__(self, P, I, D, I_max):
+    def __init__(self, P, I, D, I_max, historyRange):
         self.setpoint = 15.0
         self.P = P
         self.I = I
         self.D = D
         self.lastError = 0
         self.errorSum = 0
-        self.historyRange = timedelta(minutes=5)
+        self.historyRange = timedelta(minutes=historyRange)
         self.errorHistory = [(datetime.datetime.now(),0)]
         self.errorSumLimit = I_max
         self.lastRuntime = datetime.datetime.now()

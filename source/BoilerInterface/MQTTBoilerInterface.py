@@ -24,7 +24,7 @@ class MQTTBoilerInterface(BoilerInterface):
         self.waterTemperature = 0
         self.gain = config["gain"]
         pidParmaeters = config["pid"]
-        self.PID = PID(pidParmaeters["p"], pidParmaeters["i"], pidParmaeters["d"],pidParmaeters["errorSumLimit"])
+        self.PID = PID(pidParmaeters["p"], pidParmaeters["i"], pidParmaeters["d"],pidParmaeters["errorSumLimit"],pidParmaeters["historyRange"])
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
