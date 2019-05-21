@@ -72,6 +72,12 @@ class BasicScheduler(Scheduler):
     def loadConfig(self, filename):
         with open(filename) as f:
             self.schedule = Schedule(json.load(f))
+            daytypes = self.schedule.schedule["daytypes"]
+            for typename, daytype in daytypes.items():
+                for period in daytype:
+                    if ":" in str(period["start"]):
+                        time = datetime.datetime.strptime(period["start"], "%H:%M")
+                        period["start"] = time.hour * 60 + time.minute
 
     def run(self):
         print("Run start")
