@@ -37,7 +37,7 @@ class PapirusDisplay(object):
                 f.write("datetime;")
                 for zone in self.zones:
                     f.write("{:}_{:};{:}_{:};{:}_{:};".format("setpoint",zone.getName(), "temperature",zone.getName(),"level",zone.getName()))
-                f.write("{:};{:}\n".format("requestePower", "deliveredPower"))
+                f.write("{:};{:};{:};{:}\n".format("requestePower", "deliveredPower","returnTemperature","flowTemperature"))
         self.client = mqtt.Client()
         self.client.connect(self.mqtt["address"], self.mqtt["port"], 60)
         while True:
@@ -162,7 +162,7 @@ class PapirusDisplay(object):
             for zone in self.zones:
                 if zone.getSetpoint() == None or zone.getTemperature() == None or zone.getLevel() == None:
                     hasNone = True
-            if self.boiler.getRequestedPower() == None or self.boiler.getDeliveredPower() == None:
+            if self.boiler.getRequestedPower() == None or self.boiler.getDeliveredPower() == None or self.boiler.getReturnTemperature() == None or self.boiler.getFlowTemperature() == None:
                 hasNone = True
             if not hasNone:
                 with open(self.logFile,"a") as f:
@@ -171,6 +171,6 @@ class PapirusDisplay(object):
                     f.write("{:};".format(dtime))
                     for zone in self.zones:
                         f.write("{:};{:};{:};".format(zone.getSetpoint(), zone.getTemperature(), zone.getLevel()))
-                    f.write("{:};{:}\n".format(self.boiler.getRequestedPower(), self.boiler.getDeliveredPower()))
+                    f.write("{:};{:};{:};{:}\n".format(self.boiler.getRequestedPower(), self.boiler.getDeliveredPower(), self.boiler.getReturnTemperature(), self.boiler.getFlowTemperature()))
 
 

@@ -59,7 +59,8 @@ class PID(object):
             if dt > 0:
                 errorDif = (error - self.getEarlierError()) / self.historyRange.seconds
                 self.errorSum += error * dt
-                self.errorSum = max(min(self.errorSum, self.errorSumLimit/self.I), -self.errorSumLimit/self.I)
+                if self.I > 0:
+                    self.errorSum = max(min(self.errorSum, self.errorSumLimit/self.I), -self.errorSumLimit/self.I)
             self.lastError = error
             print(self.P * error, self.I * self.errorSum, self.D * errorDif)
             result = self.P * error + self.I * self.errorSum + self.D * errorDif
