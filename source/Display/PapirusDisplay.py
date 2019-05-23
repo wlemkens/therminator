@@ -67,27 +67,27 @@ class PapirusDisplay(object):
         font = ImageFont.truetype(self.fontPath, fontsize-1)
         return fontsize-1, font.getsize(printstring)
 
-    def updateRequestedPower(self, power, draw):
-        heightOffset = 35
-        fullSize = self.my_papirus.height-heightOffset*2
+    def updateRequestedPower(self, power, draw, heighOffset = 0):
+        heightPadding = 35
+        fullSize = self.my_papirus.height-heightPadding*2
         percent = 0.01 * power
         pp = percent * percent
         offset = int(0.5 * fullSize * (1 - percent))
         x1 = 10 + offset
-        y1 = heightOffset + offset
+        y1 = heightPadding + offset - heighOffset
         x2 = fullSize + 10 - offset
-        y2 = heightOffset + fullSize - offset
-        draw.pieslice([10, heightOffset, 10 + fullSize, heightOffset + fullSize], 90, 270, fill=WHITE, outline=BLACK)
+        y2 = heightPadding + fullSize - offset - heighOffset
+        draw.pieslice([10, heightPadding - heighOffset, 10 + fullSize, heightPadding + fullSize - heighOffset], 90, 270, fill=WHITE, outline=BLACK)
         draw.pieslice([x1, y1, x2, y2], 90, 270, fill=BLACK)
 
-    def updateDeliveredPower(self, power, draw):
-        heightOffset = 35
-        fullSize = self.my_papirus.height-heightOffset*2
+    def updateDeliveredPower(self, power, draw, heighOffset = 0):
+        heightPadding = 35
+        fullSize = self.my_papirus.height-heightPadding*2
         percent = 0.01 * power
         pp = percent * percent
         offset = int(0.5 * fullSize * (1 - percent))
-        draw.pieslice([10 + 2, heightOffset, 10 + fullSize + 2, heightOffset + fullSize], -90, 90, fill=WHITE, outline=BLACK)
-        draw.pieslice([10 + offset + 2, heightOffset + offset, fullSize+10-offset+2, heightOffset + fullSize - offset], -90, 90, fill=BLACK)
+        draw.pieslice([10 + 2, heightPadding - heighOffset, 10 + fullSize + 2, heightPadding + fullSize - heighOffset], -90, 90, fill=WHITE, outline=BLACK)
+        draw.pieslice([10 + offset + 2, heightPadding + offset - heighOffset, fullSize + 10 - offset + 2, heightPadding + fullSize - offset - heighOffset], -90, 90, fill=BLACK)
 
 
     def updateZone(self, zone, index, draw):
