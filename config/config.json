@@ -1,7 +1,7 @@
 {
   "scheduler":{
     "type":"basic",
-    "configFile":"/home/wim/projects/therminator/config/holiday schedule.json"
+    "configFile":"/home/wim/projects/therminator/config/none schedule.json"
   },
   "setup":{
     "configFile":"/home/wim/projects/therminator/config/setup.json"
