@@ -24,3 +24,6 @@ class PIDController(Controller):
 
     def getTemperature(self):
         return self.heatingInterface.getTemperature()
+
+    def isEnabled(self):
+        return self.heatingInterface.isEnabled()
