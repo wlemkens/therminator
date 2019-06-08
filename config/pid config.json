@@ -5,27 +5,31 @@
   "zone_parameters": {
     "living": {
       "p": 1.0,
-      "i": 0.001,
-      "d": 0.01,
-      "errorSumLimit": 10
+      "i": 0.0,
+      "d": 1000,
+      "errorSumLimit": 2,
+      "historyRange": 10
     },
     "badkamer": {
       "p": 1.0,
-      "i": 0.001,
-      "d": 0.01,
-      "errorSumLimit": 10
+      "i": 0.0,
+      "d": 1000,
+      "errorSumLimit": 2,
+      "historyRange": 10
     },
     "bureau": {
       "p": 1.0,
-      "i": 0.001,
-      "d": 0.01,
-      "errorSumLimit": 10
+      "i": 0.0,
+      "d": 1000,
+      "errorSumLimit": 2,
+      "historyRange": 10
     },
     "kamer_nathan": {
       "p": 1.0,
-      "i": 0.001,
-      "d": 0.01,
-      "errorSumLimit": 10
+      "i": 0.0,
+      "d": 1000,
+      "errorSumLimit": 2,
+      "historyRange": 10
     }
   }
 }

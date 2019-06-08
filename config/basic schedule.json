@@ -19,8 +19,8 @@
     },
     "morning": {
       "zones": {
-        "living": 22,
-        "badkamer": 24,
+        "living": 21.5,
+        "badkamer": 23,
         "bureau": 18,
         "kamer_nathan": 16
       }
@@ -28,7 +28,7 @@
     "evening": {
       "zones": {
         "living": 21.5,
-        "badkamer": 24,
+        "badkamer": 23,
         "bureau": 18,
         "kamer_nathan": 16
       }

@@ -45,41 +45,41 @@
   "daytypes": {
     "workday": [
       {
-        "start": 360,
+        "start": "06:00",
         "mode": "morning"
       },
       {
-        "start": 510,
+        "start": "08:30",
         "mode": "away"
       },
       {
-        "start": 1020,
+        "start": "17:00",
         "mode": "day"
       },
       {
-        "start": 1200,
+        "start": "20:00",
         "mode": "evening"
       },
       {
-        "start": 1290,
+        "start": "21:30",
         "mode": "night"
       }
     ],
     "weekend": [
       {
-        "start": 360,
+        "start": "06:00",
         "mode": "morning"
       },
       {
-        "start": 510,
+        "start": "08:30",
         "mode": "day"
       },
       {
-        "start": 1200,
+        "start": "20:00",
         "mode": "evening"
       },
       {
-        "start": 1290,
+        "start": "21:30",
         "mode": "night"
       }
     ]
