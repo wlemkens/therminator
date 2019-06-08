@@ -86,7 +86,7 @@ class BasicScheduler(Scheduler):
                 for controller in self.controller[room]:
                     if (self.schedule.hasSetpointChanged(room)):
                         controller.setSetpoint(self.schedule.getCurrentSetpointTemperature(room) )
-                    if controller.getEnabled():
+                    if controller.isEnabled():
                         output = controller.getOutput()
                         total += max(0,output)
                         print ("Room '{:}' {:}/{:}°C output = {:}".format(room, controller.getTemperature(), controller.getSetpoint(), output))
