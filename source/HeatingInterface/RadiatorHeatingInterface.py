@@ -17,7 +17,7 @@ class RadiatorHeatingInterface(HeatingInterface):
             self.password = None
         self.temperature = None
         self.setpoint = None
-        self.enabled = False
+        self.enabled = True
         self.client = mqtt.Client()
         self.connect(self.address, self.port, self.username, self.password)
 
