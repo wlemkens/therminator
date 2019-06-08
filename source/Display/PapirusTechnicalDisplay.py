@@ -1,11 +1,26 @@
+import numpy as np
+import datetime
+from datetime import timedelta
+
+from PIL import ImageFont, ImageDraw, Image
+
 from Display.PapirusDisplay import PapirusDisplay
 
-class PapirusTechnicalDisplay(PapirusDisplay)
+WHITE = 1
+BLACK = 0
+
+class PapirusTechnicalDisplay(PapirusDisplay):
 
     def __init__(self, config, logFilename = None):
-        super.(PapirusTechnicalDisplay, self).__init__(config, logFilename)
+        self.WHITE = 1
+        self.historyWidth = self.my_papirus.height-35*2
+        self.historyHeight = 35*2-15*2
+        self.historyLength = 60
+        self.history = []
+        super(PapirusTechnicalDisplay, self).__init__(config, logFilename)
 
     def update(self):
+        print("Updating techical")
         if not self.lock:
             self.lock = True
             i = 0
@@ -24,3 +39,19 @@ class PapirusTechnicalDisplay(PapirusDisplay)
                 self.my_papirus.partial_update()
             self.log()
             self.lock = False
+        print("Updated technical")
+
+    def collectInfo(self):
+        bucketLength = 1.0 * self.historyLength / self.historyWidth
+        now = datetime.datetime.now()
+        start = now
+        if len(self.history[0]) > 0:
+            start = self.history[0][0]
+        else:
+             for i in range(self.historyWidth):
+	             self.history += [(start + i * bucketLength, [])]
+        bucketIndex = (now - start).total_seconds() / bucketLength
+        if bucketIndex >= len(self.history):
+            self.history[bucketIndex]
+
+

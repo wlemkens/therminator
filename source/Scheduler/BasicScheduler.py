@@ -72,11 +72,12 @@ class BasicScheduler(Scheduler):
             for typename, daytype in daytypes.items():
                 for period in daytype:
                     if ":" in str(period["start"]):
-                        time = datetime.datetime.strptime(period["start"], "%H:%M")
+                        start = period["start"]
+                        time = datetime.datetime.strptime(start, "%H:%M")
                         period["start"] = time.hour * 60 + time.minute
+#                        print("{:} -> {:}".format(start, period["start"]))
 
     def run(self):
-        print("Run start")
         while True:
             self.nextCallTime += self.interval
             rooms = self.schedule.getZoneNames()
@@ -88,6 +89,7 @@ class BasicScheduler(Scheduler):
                     output = controller.getOutput()
                     total += max(0,output)
                     print ("Room '{:}' {:}/{:}°C output = {:}".format(room, controller.getTemperature(), controller.getSetpoint(), output))
+#            print(self.schedule.schedule)
             self.boilerInterface.setOutput(total)
             sleepTime = self.nextCallTime - time.time()
             if (sleepTime > 0):

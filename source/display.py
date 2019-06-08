@@ -10,6 +10,7 @@ import os
 import time
 
 from Display.PapirusDisplay import PapirusDisplay
+#from Display.PapirusTechnicalDisplay import PapirusTechnicalDisplay
 
 
 
@@ -20,3 +21,4 @@ if __name__ == "__main__":
         if len(sys.argv) >= 3:
             log = sys.argv[2]
         display = PapirusDisplay(filename, log)
+#        display = PapirusTechnicalDisplay(filename, log)
