@@ -5,12 +5,13 @@ class Zone(object):
 		self.temperature = None
 		self.setpoint = None
 		self.level = None
-		print(config)
+		self.enabled = True
 		self.name = config["id"]
 		self.label = config["label"]
 		self.topicTemp = "therminator/in/{:}_temperature".format(self.name)
 		self.topicSP = "therminator/in/{:}_setpoint".format(self.name)
 		self.topicLvl = "therminator/in/{:}_level".format(self.name)
+		self.topicEnabled = "therminator/in/{:}_enabled".format(self.name)
 		self.icon = config["icon"]
 		self.connect(mqttConfig)
 		self.on_update = on_update
@@ -22,6 +23,8 @@ class Zone(object):
 			self.setpoint = float(message.payload)
 		elif message.topic == self.topicLvl:
 			self.level = float(message.payload)
+		elif message.topic == self.topicEnabled:
+			self.enabled = float(message.payload)
 		self.update()
 
 	def requestValues(self):
@@ -29,9 +32,11 @@ class Zone(object):
 		requestMessageTemp = "\"{:}_temperature\"".format(self.name)
 		requestMessageSP = "\"{:}_setpoint\"".format(self.name)
 		requestMessageLvl = "\"{:}_level\"".format(self.name)
+		requestMessageEnabled = "\"{:}_enabled\"".format(self.name)
 		self.client.publish(topic, requestMessageTemp)
 		self.client.publish(topic, requestMessageSP)
 		self.client.publish(topic, requestMessageLvl)
+		self.client.publish(topic, requestMessageEnabled)
 
 	def connect(self, mqttConfig):
 		self.client = mqtt.Client()
@@ -57,7 +62,7 @@ class Zone(object):
 		return self.label
 
 	def isEnabled(self):
-		return True
+		return self.enabled
 
 	def update(self):
 		self.on_update()

@@ -86,10 +86,14 @@ class BasicScheduler(Scheduler):
                 for controller in self.controller[room]:
                     if (self.schedule.hasSetpointChanged(room)):
                         controller.setSetpoint(self.schedule.getCurrentSetpointTemperature(room) )
-                    output = controller.getOutput()
-                    total += max(0,output)
-                    print ("Room '{:}' {:}/{:}°C output = {:}".format(room, controller.getTemperature(), controller.getSetpoint(), output))
-#            print(self.schedule.schedule)
+                    if controller.getEnabled():
+                        output = controller.getOutput()
+                        total += max(0,output)
+                        print ("Room '{:}' {:}/{:}°C output = {:}".format(room, controller.getTemperature(), controller.getSetpoint(), output))
+                    else:
+                        print ("Room '{:}' {:}/{:}°C disabled".format(room, controller.getTemperature(), controller.getSetpoint()))
+
+            #            print(self.schedule.schedule)
             self.boilerInterface.setOutput(total)
             sleepTime = self.nextCallTime - time.time()
             if (sleepTime > 0):
