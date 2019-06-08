@@ -17,6 +17,7 @@ class RadiatorHeatingInterface(HeatingInterface):
             self.password = None
         self.temperature = None
         self.setpoint = None
+        self.enabled = False
         self.client = mqtt.Client()
         self.connect(self.address, self.port, self.username, self.password)
 
@@ -50,8 +51,10 @@ class RadiatorHeatingInterface(HeatingInterface):
         topic = "therminator/request"
         requestMessageTemp = "\"{:}_temperature\"".format(self.name)
         requestMessageSP = "\"{:}_setpoint\"".format(self.name)
+        requestMessageEnabled = "\"{:}_enabled\"".format(self.name)
         self.client.publish(topic, requestMessageTemp)
         self.client.publish(topic, requestMessageSP)
+        self.client.publish(topic, requestMessageEnabled)
 
     def connect(self, address, port, username, password):
         #self.client.connect(address, port, 60)
@@ -61,7 +64,8 @@ class RadiatorHeatingInterface(HeatingInterface):
         # manual interface.
         self.topic_temp = "therminator/in/{:}_temperature".format(self.name)
         self.topic_sp = "therminator/in/{:}_setpoint".format(self.name)
-        topics = [(self.topic_temp, 1), (self.topic_sp, 1)]
+        self.topicEnabled = "therminator/in/{:}_enabled".format(self.name)
+        topics = [(self.topic_temp, 1), (self.topic_sp, 1),(self.topicEnabled,1)]
         print("Subscribing to topics '{:}'".format(topics))
         self.client.on_message = self.on_message
         self.client.connect(address, port, 60)
@@ -69,3 +73,6 @@ class RadiatorHeatingInterface(HeatingInterface):
         r = self.client.subscribe(topics)
         self.requestValues()
         #self.client.loop_forever()
+
+    def isEnabled(self):
+        return self.enabled
