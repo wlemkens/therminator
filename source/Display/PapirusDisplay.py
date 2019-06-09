@@ -105,14 +105,34 @@ class PapirusDisplay(object):
         if index == 0:
             font = ImageFont.truetype(self.fontPath, self.largeFontSize)
             draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3, padding), text, font=font, fill=BLACK)
+            textColor = BLACK
+            if not zone.isEnabled():
+                size = font.getsize(tempText)
+                x1 = self.my_papirus.width - lineWidth - self.fontSize * 3 - 2
+                y1 = padding+2
+                x2 = x1 + size[0]-4
+                y2 = y1 + size[1]+1
+                draw.rectangle(((x1,y1), (x2,y2)),fill=BLACK,outline=BLACK)
+                textColor = WHITE
+                draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3, padding), tempText, font=font, fill=textColor)
             if tempTooLow:
-                draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3 -1, padding-1), tempText, font=font, fill=BLACK)
+                draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3 -1, padding-1), tempText, font=font, fill=textColor)
         else:
             font = ImageFont.truetype(self.fontPath, self.fontSize)
             draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3, lineHeight * (index-1) + self.largeFontSize+1 + 2*padding), name, font=font, fill=BLACK)
             draw.text((self.my_papirus.width - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + 2*padding), text, font=font, fill=BLACK)
+            textColor = BLACK
+            if not zone.isEnabled():
+                size = font.getsize(tempText)
+                x1 = self.my_papirus.width - lineWidth -2
+                y1 = lineHeight * (index-1) + self.largeFontSize+1 + 2*padding+2
+                x2 = x1 + size[0]
+                y2 = y1 + size[1]
+                draw.rectangle(((x1,y1), (x2,y2)),fill=BLACK,outline=BLACK)
+                textColor = WHITE
+                draw.text((self.my_papirus.width - lineWidth, lineHeight * (index-1) + self.largeFontSize+1 + 2*padding), tempText, font=font, fill=textColor)
             if tempTooLow:
-                draw.text((self.my_papirus.width - lineWidth -1 , lineHeight * (index-1) + self.largeFontSize+1 + 2*padding -1), tempText, font=font, fill=BLACK)
+                draw.text((self.my_papirus.width - lineWidth -1 , lineHeight * (index-1) + self.largeFontSize+1 + 2*padding -1), tempText, font=font, fill=textColor)
 
     def update(self):
         if not self.lock:
