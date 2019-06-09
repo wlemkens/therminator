@@ -1,6 +1,6 @@
 import paho.mqtt.client as mqtt
 
-class Boiler(object):
+class Exterior(object):
 	def __init__(self, mqttConfig, on_update):
 		self.temperature = None
 		self.topic = "therminator/in/exterior_temperature"
@@ -25,6 +25,7 @@ class Boiler(object):
 		topics = [(self.topic,1)]
 		self.client.loop_start()
 		r = self.client.subscribe(topics)
+		self.requestValues()
 
 	def getTemperature(self):
 		return self.temperature
