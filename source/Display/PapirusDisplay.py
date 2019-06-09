@@ -161,7 +161,7 @@ class PapirusDisplay(object):
                 i += 1
             self.updateRequestedPower(self.boiler.getRequestedPower(),draw)
             self.updateDeliveredPower(self.boiler.getDeliveredPower(),draw)
-            self.updateExteriorTemperature(15.1,draw)
+            self.updateExteriorTemperature(self.exterior.getTemperature(),draw)
             self.my_papirus.display(image)
             if self.fullUpdate:
                 self.my_papirus.update()
