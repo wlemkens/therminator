@@ -39,7 +39,10 @@ class RadiatorHeatingInterface(HeatingInterface):
             self.temperature = float(message.payload)
         elif message.topic == self.topic_sp:
             self.setpoint = float(message.payload)
-        #print("Received {:} : {:}".format(message.topic, message.payload))
+        elif message.topic == self.topic_enabled:
+            self.enabled = int(message.payload) == 1
+        print("Received {:} : {:}".format(message.topic, message.payload))
+        print("enabled",self.enabled)
 
     def on_subscribe(self, client, userdata, mid, granted_qos):
         print ("subd")
@@ -64,8 +67,8 @@ class RadiatorHeatingInterface(HeatingInterface):
         # manual interface.
         self.topic_temp = "therminator/in/{:}_temperature".format(self.name)
         self.topic_sp = "therminator/in/{:}_setpoint".format(self.name)
-        self.topicEnabled = "therminator/in/{:}_enabled".format(self.name)
-        topics = [(self.topic_temp, 1), (self.topic_sp, 1),(self.topicEnabled,1)]
+        self.topic_enabled = "therminator/in/{:}_enabled".format(self.name)
+        topics = [(self.topic_temp, 1), (self.topic_sp, 1),(self.topic_enabled,1)]
         print("Subscribing to topics '{:}'".format(topics))
         self.client.on_message = self.on_message
         self.client.connect(address, port, 60)
