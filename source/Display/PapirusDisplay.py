@@ -67,6 +67,19 @@ class PapirusDisplay(object):
         font = ImageFont.truetype(self.fontPath, fontsize-1)
         return fontsize-1, font.getsize(printstring)
 
+    def updateExteriorTemperature(self, temperature, draw):
+        lineHeight = self.fontSize + 1
+        lineWidth = self.my_papirus.width / 3
+        totalHeight = (len(self.zones)-1) * lineHeight + self.largeFontSize+1
+        freeSpace = self.my_papirus.height - totalHeight
+        padding = freeSpace/5
+        fontSize = int((self.largeFontSize + self.fontSize) / 2)
+        font = ImageFont.truetype(self.fontPath, fontSize)
+        text = "{:}°C".format(temperature)
+        size = font.getsize(text)
+        x = self.my_papirus.width - lineWidth - self.fontSize * 3 + (lineWidth + self.fontSize * 3 - size[0]) / 2
+        draw.text((x, padding), text, font=font, fill=BLACK)
+
     def updateRequestedPower(self, power, draw, heighOffset = 0):
         heightPadding = 35
         fullSize = self.my_papirus.height-heightPadding*2
@@ -95,7 +108,7 @@ class PapirusDisplay(object):
         lineWidth = self.my_papirus.width / 3
         totalHeight = (len(self.zones)-1) * lineHeight + self.largeFontSize+1
         freeSpace = self.my_papirus.height - totalHeight
-        padding = freeSpace/3
+        padding = freeSpace/5
         name = "{:}".format(zone.getLabel())
         text = "{:}/{:} ".format(zone.getTemperature(), zone.getSetpoint())
         tempText = "{:} ".format(zone.getTemperature(), zone.getSetpoint())
@@ -103,36 +116,38 @@ class PapirusDisplay(object):
         sp = zone.getSetpoint()
         tempTooLow = temp != None and sp != None and temp < sp
         if index == 0:
+            paddingMult = 3
             font = ImageFont.truetype(self.fontPath, self.largeFontSize)
-            draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3, padding), text, font=font, fill=BLACK)
+            draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3, padding*paddingMult), text, font=font, fill=BLACK)
             textColor = BLACK
             if not zone.isEnabled():
                 size = font.getsize(tempText)
                 x1 = self.my_papirus.width - lineWidth - self.fontSize * 3 - 2
-                y1 = padding+2
+                y1 = padding*paddingMult+2
                 x2 = x1 + size[0]-4
                 y2 = y1 + size[1]+1
                 draw.rectangle(((x1,y1), (x2,y2)),fill=BLACK,outline=BLACK)
                 textColor = WHITE
-                draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3, padding), tempText, font=font, fill=textColor)
+                draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3, padding*paddingMult), tempText, font=font, fill=textColor)
             if tempTooLow:
-                draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3 -1, padding-1), tempText, font=font, fill=textColor)
+                draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3 -1, padding*paddingMult-1), tempText, font=font, fill=textColor)
         else:
+            paddingMult = 4
             font = ImageFont.truetype(self.fontPath, self.fontSize)
-            draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3, lineHeight * (index-1) + self.largeFontSize+1 + 2*padding), name, font=font, fill=BLACK)
-            draw.text((self.my_papirus.width - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + 2*padding), text, font=font, fill=BLACK)
+            draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3, lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), name, font=font, fill=BLACK)
+            draw.text((self.my_papirus.width - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), text, font=font, fill=BLACK)
             textColor = BLACK
             if not zone.isEnabled():
                 size = font.getsize(tempText)
                 x1 = self.my_papirus.width - lineWidth -2
-                y1 = lineHeight * (index-1) + self.largeFontSize+1 + 2*padding+2
+                y1 = lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding+2
                 x2 = x1 + size[0]
                 y2 = y1 + size[1]
                 draw.rectangle(((x1,y1), (x2,y2)),fill=BLACK,outline=BLACK)
                 textColor = WHITE
-                draw.text((self.my_papirus.width - lineWidth, lineHeight * (index-1) + self.largeFontSize+1 + 2*padding), tempText, font=font, fill=textColor)
+                draw.text((self.my_papirus.width - lineWidth, lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), tempText, font=font, fill=textColor)
             if tempTooLow:
-                draw.text((self.my_papirus.width - lineWidth -1 , lineHeight * (index-1) + self.largeFontSize+1 + 2*padding -1), tempText, font=font, fill=textColor)
+                draw.text((self.my_papirus.width - lineWidth -1 , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding -1), tempText, font=font, fill=textColor)
 
     def update(self):
         if not self.lock:
@@ -145,6 +160,7 @@ class PapirusDisplay(object):
                 i += 1
             self.updateRequestedPower(self.boiler.getRequestedPower(),draw)
             self.updateDeliveredPower(self.boiler.getDeliveredPower(),draw)
+            self.updateExteriorTemperature(15.1,draw)
             self.my_papirus.display(image)
             if self.fullUpdate:
                 self.my_papirus.update()
