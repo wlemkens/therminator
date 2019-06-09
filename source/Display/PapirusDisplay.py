@@ -16,6 +16,7 @@ import paho.mqtt.client as mqtt
 
 from Entity.Zone import Zone
 from Entity.Boiler import Boiler
+from Entity.Exterior import Exterior
 
 WHITE = 1
 BLACK = 0
@@ -138,6 +139,7 @@ class PapirusDisplay(object):
         for zone in setup["zones"]:
             self.zones += [Zone(zone, mqtt, self.update)]
         self.boiler = Boiler(mqtt, self.update)
+        self.exterior = Exterior(mqtt, self.update)
         lineHeight = 1.0 * self.my_papirus.height / len(self.zones)
         lineWidth = self.my_papirus.width / 3
         self.fontSize, dims = self.getFontSize([lineWidth, lineHeight], "44.4/44.4")
