@@ -6,9 +6,11 @@ from HeatingInterface.HeatingInterface import HeatingInterface
 
 class RadiatorHeatingInterface(HeatingInterface):
     def __init__(self, name, config):
+        self.setpointOFF = 15.0
         self.address  = config["address"]
         self.port = config["port"]
         self.name = name
+        self.stored_setpoint = self.setpointOFF
         if "username" in config.keys() and "password" in config.keys():
             self.username = config["username"]
             self.password = config["password"]
@@ -20,6 +22,21 @@ class RadiatorHeatingInterface(HeatingInterface):
         self.enabled = True
         self.client = mqtt.Client()
         self.connect(self.address, self.port, self.username, self.password)
+
+    def storeSetpoint(self, setpoint):
+        topic = "therminator/out/{:}_stored_setpoint".format(self.name)
+        self.stored_setpoint = self.setpoint
+        self.client.publish(topic, setpoint)
+
+    def setStatus(self, status):
+        if status:
+            self.setSetpoint(self.stored_setpoint)
+        else:
+            self.storingSetpoint = True
+            self.storeSetpoint(self.setpoint)
+            self.setSetpoint(self.setpointOFF)
+            time.sleep(5)
+            self.storingSetpoint = False
 
     def getTemperature(self):
         return self.temperature
@@ -38,7 +55,12 @@ class RadiatorHeatingInterface(HeatingInterface):
         if message.topic == self.topic_temp:
             self.temperature = float(message.payload)
         elif message.topic == self.topic_sp:
-            self.setpoint = float(message.payload)
+            if self.enabled:
+                self.setpoint = float(message.payload)
+                self.storeSetpoint(float(message.payload))
+            else:
+                if not self.storingSetpoint:
+                    self.storeSetpoint(float(message.payload))
         elif message.topic == self.topic_enabled:
             self.enabled = int(message.payload) == 1
         print("Received {:} : {:}".format(message.topic, message.payload))

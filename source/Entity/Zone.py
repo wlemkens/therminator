@@ -4,10 +4,8 @@ import time
 
 class Zone(object):
     def __init__(self, config, mqttConfig, on_update):
-        self.setpointOFF = 15.0
         self.temperature = None
         self.setpoint = None
-        self.stored_setpoint = self.setpointOFF
         self.level = None
         self.enabled = True
         self.name = config["id"]
@@ -20,39 +18,15 @@ class Zone(object):
         self.connect(mqttConfig)
         self.on_update = on_update
 
-    def setSetpoint(self, setpoint):
-        topic = "therminator/out/{:}_setpoint".format(self.name)
-        self.client.publish(topic, setpoint)
-
-    def storeSetpoint(self, setpoint):
-        topic = "therminator/out/{:}_stored_setpoint".format(self.name)
-        self.stored_setpoint = self.setpoint
-        self.client.publish(topic, setpoint)
-
-    def setStatus(self, status):
-        if status:
-            self.setSetpoint(self.stored_setpoint)
-        else:
-            self.storingSetpoint = True
-            self.storeSetpoint(self.setpoint)
-            self.setSetpoint(self.setpointOFF)
-            time.sleep(5)
-            self.storingSetpoint = False
-
     def on_message(self, client, userdata, message):
         if message.topic == self.topicTemp:
             self.temperature = float(message.payload)
         elif message.topic == self.topicSP:
-            if self.enabled:
-                self.setpoint = float(message.payload)
-            else:
-                if not self.storingSetpoint:
-                    self.storeSetpoint(float(message.payload))
+            self.setpoint = float(message.payload)
         elif message.topic == self.topicLvl:
             self.level = float(message.payload)
         elif message.topic == self.topicEnabled:
             self.enabled = float(message.payload)
-            self.setStatus(self.enabled)
         self.update()
 
     def requestValues(self):
