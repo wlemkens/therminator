@@ -11,7 +11,7 @@ class Zone(object):
         self.name = config["id"]
         self.label = config["label"]
         self.topicTemp = "therminator/in/{:}_temperature".format(self.name)
-        self.topicSP = "therminator/in/{:}_setpoint".format(self.name)
+        self.topicSP = "therminator/in/{:}_stored_setpoint".format(self.name)
         self.topicLvl = "therminator/in/{:}_level".format(self.name)
         self.topicEnabled = "therminator/in/{:}_enabled".format(self.name)
         self.icon = config["icon"]
@@ -32,7 +32,7 @@ class Zone(object):
     def requestValues(self):
         topic = "therminator/request"
         requestMessageTemp = "\"{:}_temperature\"".format(self.name)
-        requestMessageSP = "\"{:}_setpoint\"".format(self.name)
+        requestMessageSP = "\"{:}_stored_setpoint\"".format(self.name)
         requestMessageLvl = "\"{:}_level\"".format(self.name)
         requestMessageEnabled = "\"{:}_enabled\"".format(self.name)
         self.client.publish(topic, requestMessageTemp)

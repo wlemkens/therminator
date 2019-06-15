@@ -1,16 +1,21 @@
 import paho.mqtt.subscribe as subscribe
 import paho.mqtt.client as mqtt
 
+import datetime
+import time
 
 from HeatingInterface.HeatingInterface import HeatingInterface
 
 class RadiatorHeatingInterface(HeatingInterface):
     def __init__(self, name, config):
         self.setpointOFF = 15.0
+        self.setpointDelay = 30
         self.address  = config["address"]
         self.port = config["port"]
         self.name = name
         self.stored_setpoint = self.setpointOFF
+        self.storingTime = datetime.datetime.now()
+        self.storingTimeout = self.setpointDelay + 30
         if "username" in config.keys() and "password" in config.keys():
             self.username = config["username"]
             self.password = config["password"]
@@ -24,19 +29,21 @@ class RadiatorHeatingInterface(HeatingInterface):
         self.connect(self.address, self.port, self.username, self.password)
 
     def storeSetpoint(self, setpoint):
-        topic = "therminator/out/{:}_stored_setpoint".format(self.name)
-        self.stored_setpoint = self.setpoint
-        self.client.publish(topic, setpoint)
+        if self.enabled or setpoint != self.setpointOFF:
+            print("Storing setpoint {:}".format(setpoint))
+            topic = "therminator/out/{:}_stored_setpoint".format(self.name)
+            self.stored_setpoint = setpoint
+            self.client.publish(topic, setpoint)
+            if not self.enabled:
+                self.setSetpoint(self.setpointOFF)
+        else:
+            print("Skipping setpoint {:}".format(setpoint))
 
     def setStatus(self, status):
         if status:
             self.setSetpoint(self.stored_setpoint)
         else:
-            self.storingSetpoint = True
-            self.storeSetpoint(self.setpoint)
             self.setSetpoint(self.setpointOFF)
-            time.sleep(5)
-            self.storingSetpoint = False
 
     def getTemperature(self):
         return self.temperature
@@ -45,6 +52,7 @@ class RadiatorHeatingInterface(HeatingInterface):
         return self.setpoint
 
     def setSetpoint(self, setpoint):
+        print("Publishing setpoint {:}".format(setpoint))
         self.client.publish("therminator/out/{:}_setpoint".format(self.name), setpoint)
         self.setpoint = setpoint
 
@@ -52,6 +60,7 @@ class RadiatorHeatingInterface(HeatingInterface):
         pass
 
     def on_message(self, client, userdata, message):
+        print("Received {:} : {:}".format(message.topic, message.payload))
         if message.topic == self.topic_temp:
             self.temperature = float(message.payload)
         elif message.topic == self.topic_sp:
@@ -59,11 +68,13 @@ class RadiatorHeatingInterface(HeatingInterface):
                 self.setpoint = float(message.payload)
                 self.storeSetpoint(float(message.payload))
             else:
-                if not self.storingSetpoint:
-                    self.storeSetpoint(float(message.payload))
+                self.storeSetpoint(float(message.payload))
+
         elif message.topic == self.topic_enabled:
-            self.enabled = int(message.payload) == 1
-        print("Received {:} : {:}".format(message.topic, message.payload))
+            enabled = int(message.payload) == 1
+            if self.enabled != enabled:
+                self.enabled = enabled
+                self.setStatus(self.enabled)
         print("enabled",self.enabled)
 
     def on_subscribe(self, client, userdata, mid, granted_qos):
