@@ -19,7 +19,7 @@ class RadiatorHeatingInterface(HeatingInterface):
         self.storingTime = datetime.datetime.now()
         self.storingTimeout = self.setpointDelay + 30
         self.statusChangeThread = threading.Thread(target=self.statusChangeFunction)
-        self.statusChangeDelay = 60
+        self.statusChangeDelay = 30
         if "username" in config.keys() and "password" in config.keys():
             self.username = config["username"]
             self.password = config["password"]
@@ -31,19 +31,19 @@ class RadiatorHeatingInterface(HeatingInterface):
         self.enabled = True
         self.client = mqtt.Client()
         self.connect(self.address, self.port, self.username, self.password)
-        self.statusChangedTime = time.now()
+        self.statusChangedTime = datetime.datetime.now()
         self.statusChangeThread.start()
 
     def storeSetpoint(self, setpoint):
         if self.enabled or setpoint != self.setpointOFF:
-            print("Storing setpoint {:}".format(setpoint))
+            #print("Storing setpoint {:}".format(setpoint))
             topic = "therminator/out/{:}_stored_setpoint".format(self.name)
             self.stored_setpoint = setpoint
             self.client.publish(topic, setpoint)
             if not self.enabled:
                 self.setSetpoint(self.setpointOFF)
-        else:
-            print("Skipping setpoint {:}".format(setpoint))
+        #else:
+        #    print("Skipping setpoint {:}".format(setpoint))
 
     def setStatus(self, status):
         if status:
@@ -58,7 +58,7 @@ class RadiatorHeatingInterface(HeatingInterface):
         return self.setpoint
 
     def setSetpoint(self, setpoint):
-        print("Publishing setpoint {:}".format(setpoint))
+        #print("Publishing setpoint {:}".format(setpoint))
         self.client.publish("therminator/out/{:}_setpoint".format(self.name), setpoint)
         self.setpoint = setpoint
 
@@ -67,12 +67,13 @@ class RadiatorHeatingInterface(HeatingInterface):
 
     def statusChangeFunction(self):
         while True:
-            if (time.now() - self.statusChangedTime).duration_seconds() > self.statusChangeDelay and self.volotileStatus != self.enabled:
+            if (datetime.datetime.now() - self.statusChangedTime).total_seconds() > self.statusChangeDelay and self.volotileStatus != self.enabled:
                 self.enabled = self.volotileStatus
                 self.setStatus(self.enabled)
+            time.sleep(2)
 
 
-def on_message(self, client, userdata, message):
+    def on_message(self, client, userdata, message):
         print("Received {:} : {:}".format(message.topic, message.payload))
         if message.topic == self.topic_temp:
             self.temperature = float(message.payload)
@@ -84,7 +85,7 @@ def on_message(self, client, userdata, message):
                 self.storeSetpoint(float(message.payload))
 
         elif message.topic == self.topic_enabled:
-            self.statusChangedTime = time.now()
+            self.statusChangedTime = datetime.datetime.now()
             self.volotileStatus = int(message.payload) == 1
         print("enabled",self.enabled)
 
@@ -113,7 +114,7 @@ def on_message(self, client, userdata, message):
         self.topic_sp = "therminator/in/{:}_setpoint".format(self.name)
         self.topic_enabled = "therminator/in/{:}_enabled".format(self.name)
         topics = [(self.topic_temp, 1), (self.topic_sp, 1),(self.topic_enabled,1)]
-        print("Subscribing to topics '{:}'".format(topics))
+        #print("Subscribing to topics '{:}'".format(topics))
         self.client.on_message = self.on_message
         self.client.connect(address, port, 60)
         self.client.loop_start()
