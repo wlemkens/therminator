@@ -3,6 +3,7 @@ import paho.mqtt.client as mqtt
 
 import datetime
 import time
+import threading
 
 from HeatingInterface.HeatingInterface import HeatingInterface
 
@@ -13,9 +14,12 @@ class RadiatorHeatingInterface(HeatingInterface):
         self.address  = config["address"]
         self.port = config["port"]
         self.name = name
+        self.volotileStatus = False
         self.stored_setpoint = self.setpointOFF
         self.storingTime = datetime.datetime.now()
         self.storingTimeout = self.setpointDelay + 30
+        self.statusChangeThread = threading.Thread(target=self.statusChangeFunction)
+        self.statusChangeDelay = 60
         if "username" in config.keys() and "password" in config.keys():
             self.username = config["username"]
             self.password = config["password"]
@@ -27,6 +31,8 @@ class RadiatorHeatingInterface(HeatingInterface):
         self.enabled = True
         self.client = mqtt.Client()
         self.connect(self.address, self.port, self.username, self.password)
+        self.statusChangedTime = time.now()
+        self.statusChangeThread.start()
 
     def storeSetpoint(self, setpoint):
         if self.enabled or setpoint != self.setpointOFF:
@@ -59,7 +65,14 @@ class RadiatorHeatingInterface(HeatingInterface):
     def setOutput(self, outputValue):
         pass
 
-    def on_message(self, client, userdata, message):
+    def statusChangeFunction(self):
+        while True:
+            if (time.now() - self.statusChangedTime).duration_seconds() > self.statusChangeDelay and self.volotileStatus != self.enabled:
+                self.enabled = self.volotileStatus
+                self.setStatus(self.enabled)
+
+
+def on_message(self, client, userdata, message):
         print("Received {:} : {:}".format(message.topic, message.payload))
         if message.topic == self.topic_temp:
             self.temperature = float(message.payload)
@@ -71,10 +84,8 @@ class RadiatorHeatingInterface(HeatingInterface):
                 self.storeSetpoint(float(message.payload))
 
         elif message.topic == self.topic_enabled:
-            enabled = int(message.payload) == 1
-            if self.enabled != enabled:
-                self.enabled = enabled
-                self.setStatus(self.enabled)
+            self.statusChangedTime = time.now()
+            self.volotileStatus = int(message.payload) == 1
         print("enabled",self.enabled)
 
     def on_subscribe(self, client, userdata, mid, granted_qos):
