@@ -115,26 +115,26 @@ class Display(object):
                 y2 = y1 + size[1]+1
                 draw.rectangle(((x1,y1), (x2,y2)),fill=self.BLACK,outline=self.BLACK)
                 textColor = self.WHITE
-                draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3, padding*paddingMult), tempText, font=font, fill=textColor)
+                draw.text((self.getWidth() - lineWidth - self.fontSize * 3, padding*paddingMult), tempText, font=font, fill=textColor)
             if tempTooLow:
-                draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3 -1, padding*paddingMult-1), tempText, font=font, fill=textColor)
+                draw.text((self.getWidth() - lineWidth - self.fontSize * 3 -1, padding*paddingMult-1), tempText, font=font, fill=textColor)
         else:
             paddingMult = 4
             font = ImageFont.truetype(self.fontPath, self.fontSize)
-            draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3, lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), name, font=font, fill=self.BLACK)
-            draw.text((self.my_papirus.width - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), text, font=font, fill=self.BLACK)
+            draw.text((self.getWidth() - lineWidth - self.fontSize * 3, lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), name, font=font, fill=self.BLACK)
+            draw.text((self.getWidth() - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), text, font=font, fill=self.BLACK)
             textColor = self.BLACK
             if not zone.isEnabled():
                 size = font.getsize(tempText)
-                x1 = self.my_papirus.width - lineWidth -2
+                x1 = self.getWidth() - lineWidth -2
                 y1 = lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding+2
                 x2 = x1 + size[0]
                 y2 = y1 + size[1]
                 draw.rectangle(((x1,y1), (x2,y2)),fill=self.BLACK,outline=self.BLACK)
                 textColor = self.WHITE
-                draw.text((self.my_papirus.width - lineWidth, lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), tempText, font=font, fill=textColor)
+                draw.text((self.getWidth() - lineWidth, lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), tempText, font=font, fill=textColor)
             if tempTooLow:
-                draw.text((self.my_papirus.width - lineWidth -1 , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding -1), tempText, font=font, fill=textColor)
+                draw.text((self.getWidth() - lineWidth -1 , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding -1), tempText, font=font, fill=textColor)
 
     def update(self):
         if not self.lock:
@@ -142,6 +142,7 @@ class Display(object):
             i = 0
             size = (self.getWidth(), self.getHeight())
             image = Image.new('1', size, self.WHITE)
+            imageC = Image.new('1', size, self.WHITE)
             draw = ImageDraw.Draw(image)
             for zone in self.zones:
                 self.updateZone(zone, i, draw)
@@ -149,7 +150,7 @@ class Display(object):
             self.updateRequestedPower(self.boiler.getRequestedPower(),draw)
             self.updateDeliveredPower(self.boiler.getDeliveredPower(),draw)
             self.updateExteriorTemperature(self.exterior.getTemperature(),draw)
-            self.display([image])
+            self.display([image, imageC])
             self.log()
             self.lock = False
 
@@ -167,8 +168,8 @@ class Display(object):
             self.zones += [Zone(zone, mqtt, self.update)]
         self.boiler = Boiler(mqtt, self.update)
         self.exterior = Exterior(mqtt, self.update)
-        lineHeight = 1.0 * self.my_papirus.height / len(self.zones)
-        lineWidth = self.my_papirus.width / 3
+        lineHeight = 1.0 * self.getHeight() / len(self.zones)
+        lineWidth = self.getWidth() / 3
         self.fontSize, dims = self.getFontSize([lineWidth, lineHeight], "44.4/44.4")
         self.largeFontSize, dims = self.getFontSize([lineWidth + self.fontSize * 3, lineHeight], "44.4/44.4")
 
