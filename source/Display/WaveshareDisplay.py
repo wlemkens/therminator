@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+from PIL import ImageFont, ImageDraw, Image
 from waveshare_epd import epd7in5bc
 import time
 
