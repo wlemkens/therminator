@@ -9,8 +9,9 @@ class Exterior(object):
 
 	def on_message(self, client, userdata, message):
 		if message.topic == self.topic:
-			self.temperature = float(message.payload)
-		self.update()
+			if self.temperature != float(message.payload):
+				self.temperature = float(message.payload)
+				self.update()
 
 	def requestValues(self):
 		topic = "therminator/request"

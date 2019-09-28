@@ -1,4 +1,5 @@
 import paho.mqtt.client as mqtt
+import threading
 
 import time
 
@@ -17,17 +18,34 @@ class Zone(object):
         self.icon = config["icon"]
         self.connect(mqttConfig)
         self.on_update = on_update
+        self.tempEnabled = False
+        self.enabledCheckThread = None
+
+    def enabledCheck(self):
+        if self.enabled != self.tempEnabled:
+            self.enabled = self.tempEnabled
+            self.update()
 
     def on_message(self, client, userdata, message):
+        changed = False
         if message.topic == self.topicTemp:
-            self.temperature = float(message.payload)
+            if self.temperature != float(message.payload):
+                self.temperature = float(message.payload)
+                self.update()
         elif message.topic == self.topicSP:
-            self.setpoint = float(message.payload)
+            if self.setpoint != float(message.payload):
+                self.setpoint = float(message.payload)
+                self.update()
         elif message.topic == self.topicLvl:
-            self.level = float(message.payload)
+            if self.level != float(message.payload):
+                self.level = float(message.payload)
+                #self.update()
         elif message.topic == self.topicEnabled:
-            self.enabled = float(message.payload)
-        self.update()
+            self.tempEnabled = int((message.payload))
+            if self.enabledCheckThread:
+                self.enabledCheckThread.cancel()
+            self.enabledCheckThread = threading.Timer(10, self.enabledCheck)
+            self.enabledCheckThread.start()
 
     def requestValues(self):
         topic = "therminator/request"

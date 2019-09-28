@@ -15,14 +15,19 @@ class Boiler(object):
 
 	def on_message(self, client, userdata, message):
 		if message.topic == self.topicReq:
-			self.requestedPower = float(message.payload)
+			if self.requestedPower != float(message.payload):
+				self.requestedPower = float(message.payload)
+				self.update()
 		elif message.topic == self.topicDel:
-			self.deliveredPower = float(message.payload)
+			if self.deliveredPower != float(message.payload):
+				self.deliveredPower = float(message.payload)
+				self.update()
 		if message.topic == self.topicRet:
-			self.returnTemperature = float(message.payload)
+			if self.returnTemperature != float(message.payload):
+				self.returnTemperature = float(message.payload)
 		elif message.topic == self.topicFlow:
-			self.flowTemperature = float(message.payload)
-		self.update()
+			if self.flowTemperature != float(message.payload):
+				self.flowTemperature = float(message.payload)
 
 	def requestValues(self):
 		topic = "therminator/request"
