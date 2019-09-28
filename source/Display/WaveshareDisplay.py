@@ -14,12 +14,10 @@ class WaveshareDisplay(Display.Display):
         self.WHITE = 1
         self.BLACK = 0
         super().__init__(config, logFilename)
-        time.sleep(1)
+        time.sleep(30)
+        self.fullUpdate = True
+        self.update()
         initCount = 0
-        while initCount < 3:
-            time.sleep(1)
-            self.fullUpdate = True
-            initCount += 1
         while True:
             time.sleep(self.fullUpdateInterval)
             self.fullUpdate = True

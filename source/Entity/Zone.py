@@ -18,7 +18,7 @@ class Zone(object):
         self.icon = config["icon"]
         self.connect(mqttConfig)
         self.on_update = on_update
-        self.tempEnabled = False
+        self.tempEnabled = True
         self.enabledCheckThread = None
 
     def enabledCheck(self):

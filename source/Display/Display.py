@@ -156,6 +156,7 @@ class Display(object):
             draw = ImageDraw.Draw(image)
             drawc = ImageDraw.Draw(imagec)
             for zone in self.zones:
+                print(".")
                 self.updateZone(zone, i, [draw,drawc])
                 i += 1
             self.updateRequestedPower(self.boiler.getRequestedPower(),draw)
