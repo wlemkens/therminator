@@ -15,7 +15,7 @@ class WaveshareDisplay(Display.Display):
         super().__init__(config, logFilename)
         time.sleep(1)
         while True:
-            time.sleep(self.fullUpdateInterval*60)
+            time.sleep(self.fullUpdateInterval)
             self.fullUpdate = True
 
     def getWidth(self):
@@ -25,5 +25,7 @@ class WaveshareDisplay(Display.Display):
         return self.epd.height
 
     def display(self, image):
-        self.epd.display(self.epd.getbuffer(image[0]), self.epd.getbuffer(image[1]))
+        if self.fullUpdate:
+            self.epd.display(self.epd.getbuffer(image[0]), self.epd.getbuffer(image[1]))
+            self.fullUpdate = False
 

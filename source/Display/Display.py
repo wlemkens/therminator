@@ -69,7 +69,8 @@ class Display(object):
 
     def updateRequestedPower(self, power, draw, heighOffset = 0):
         heightPadding = 35
-        fullSize = self.getHeight()-heightPadding*2
+        fullSize = min(self.getHeight()-heightPadding*2, self.getWidth()/3)
+        heightPadding = (self.getHeight() - fullSize) / 2
         percent = 0.01 * power
         pp = percent * percent
         offset = int(0.5 * fullSize * (1 - percent))
@@ -82,7 +83,8 @@ class Display(object):
 
     def updateDeliveredPower(self, power, draw, heighOffset = 0):
         heightPadding = 35
-        fullSize = self.getHeight()-heightPadding*2
+        fullSize = min(self.getHeight()-heightPadding*2, self.getWidth()/3)
+        heightPadding = (self.getHeight() - fullSize) / 2
         percent = 0.01 * power
         pp = percent * percent
         offset = int(0.5 * fullSize * (1 - percent))
