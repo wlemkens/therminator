@@ -3,13 +3,13 @@
 from __future__ import print_function
 
 import argparse
-from papirus import Papirus
 from PIL import ImageFont, ImageDraw, Image
 import sys
 import os
 import time
 
-from Display.PapirusDisplay import PapirusDisplay
+from Display.WaveshareDisplay import WaveshareDisplay
+#from Display.PapirusDisplay import PapirusDisplay
 #from Display.PapirusTechnicalDisplay import PapirusTechnicalDisplay
 
 
@@ -20,5 +20,6 @@ if __name__ == "__main__":
         log = None
         if len(sys.argv) >= 3:
             log = sys.argv[2]
-        display = PapirusDisplay(filename, log)
+        display = WaveshareDisplay(filename, log)
+#        display = PapirusDisplay(filename, log)
 #        display = PapirusTechnicalDisplay(filename, log)
