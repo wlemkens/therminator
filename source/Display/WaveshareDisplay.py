@@ -5,7 +5,7 @@ import time
 
 from Display import Display
 
-class PapirusDisplay(Display):
+class WaveshareDisplay(Display.Display):
     def __init__(self, config, logFilename = None):
         self.epd = epd7in5bc.EPD()
         self.epd.init()
