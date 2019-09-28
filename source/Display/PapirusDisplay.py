@@ -5,14 +5,13 @@ import time
 
 from Display import Display
 
-WHITE = 1
-BLACK = 0
+class PapirusDisplay(Display.Display):
 
-
-class PapirusDisplay(Display):
-    def __init__(self, config, logFilename = None):
-        Display.__init__(config, logFilename)
+    def __init__(self, config, logFilename):
         self.my_papirus = Papirus(rotation=180)
+        self.WHITE = 1
+        self.BLACK = 0
+        super().__init__(config, logFilename)
         while True:
             time.sleep(self.fullUpdateInterval*60)
             self.fullUpdate = True
@@ -24,11 +23,9 @@ class PapirusDisplay(Display):
         return self.my_papirus.height
 
     def display(self, image):
-        if not self.lock:
-            self.my_papirus.display(image[0])
-            if self.fullUpdate:
-                self.my_papirus.update()
-                self.fullUpdate = False
-            else:
-                self.my_papirus.partial_update()
-
+        self.my_papirus.display(image[0])
+        if self.fullUpdate:
+            self.my_papirus.update()
+            self.fullUpdate = False
+        else:
+            self.my_papirus.partial_update()

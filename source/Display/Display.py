@@ -12,9 +12,9 @@ from Entity.Zone import Zone
 from Entity.Boiler import Boiler
 from Entity.Exterior import Exterior
 
-
 class Display(object):
-    def __init__(self, config, logFilename = None):
+
+    def __init__(self, config, logFilename):
         self.zones = []
         self.boiler = None
         self.lock = False
@@ -31,7 +31,6 @@ class Display(object):
                 f.write("{:};{:};{:};{:}\n".format("requestePower", "deliveredPower","returnTemperature","flowTemperature"))
         self.client = mqtt.Client()
         self.client.connect(self.mqtt["address"], self.mqtt["port"], 60)
-
 
     def getFontSize(self, area, printstring):
         # returns (ideal fontsize, (length of text, height of text)) that maximally
@@ -66,11 +65,11 @@ class Display(object):
         text = "{:}°C".format(temperature)
         size = font.getsize(text)
         x = self.getWidth() - lineWidth - self.fontSize * 3 + (lineWidth + self.fontSize * 3 - size[0]) / 2
-        draw.text((x, padding), text, font=font, fill=BLACK)
+        draw.text((x, padding), text, font=font, fill=self.BLACK)
 
     def updateRequestedPower(self, power, draw, heighOffset = 0):
         heightPadding = 35
-        fullSize = self.self.getHeight()-heightPadding*2
+        fullSize = self.getHeight()-heightPadding*2
         percent = 0.01 * power
         pp = percent * percent
         offset = int(0.5 * fullSize * (1 - percent))
@@ -78,17 +77,17 @@ class Display(object):
         y1 = heightPadding + offset - heighOffset
         x2 = fullSize + 10 - offset
         y2 = heightPadding + fullSize - offset - heighOffset
-        draw.pieslice([10, heightPadding - heighOffset, 10 + fullSize, heightPadding + fullSize - heighOffset], 90, 270, fill=WHITE, outline=BLACK)
-        draw.pieslice([x1, y1, x2, y2], 90, 270, fill=BLACK)
+        draw.pieslice([10, heightPadding - heighOffset, 10 + fullSize, heightPadding + fullSize - heighOffset], 90, 270, fill=self.WHITE, outline=self.BLACK)
+        draw.pieslice([x1, y1, x2, y2], 90, 270, fill=self.BLACK)
 
     def updateDeliveredPower(self, power, draw, heighOffset = 0):
         heightPadding = 35
-        fullSize = self.self.getHeight()-heightPadding*2
+        fullSize = self.getHeight()-heightPadding*2
         percent = 0.01 * power
         pp = percent * percent
         offset = int(0.5 * fullSize * (1 - percent))
-        draw.pieslice([10 + 2, heightPadding - heighOffset, 10 + fullSize + 2, heightPadding + fullSize - heighOffset], -90, 90, fill=WHITE, outline=BLACK)
-        draw.pieslice([10 + offset + 2, heightPadding + offset - heighOffset, fullSize + 10 - offset + 2, heightPadding + fullSize - offset - heighOffset], -90, 90, fill=BLACK)
+        draw.pieslice([10 + 2, heightPadding - heighOffset, 10 + fullSize + 2, heightPadding + fullSize - heighOffset], -90, 90, fill=self.WHITE, outline=self.BLACK)
+        draw.pieslice([10 + offset + 2, heightPadding + offset - heighOffset, fullSize + 10 - offset + 2, heightPadding + fullSize - offset - heighOffset], -90, 90, fill=self.BLACK)
 
 
     def updateZone(self, zone, index, draw):
@@ -106,33 +105,33 @@ class Display(object):
         if index == 0:
             paddingMult = 3
             font = ImageFont.truetype(self.fontPath, self.largeFontSize)
-            draw.text((self.getWidth() - lineWidth - self.fontSize * 3, padding*paddingMult), text, font=font, fill=BLACK)
-            textColor = BLACK
+            draw.text((self.getWidth() - lineWidth - self.fontSize * 3, padding*paddingMult), text, font=font, fill=self.BLACK)
+            textColor = self.BLACK
             if not zone.isEnabled():
                 size = font.getsize(tempText)
                 x1 = self.getWidth() - lineWidth - self.fontSize * 3 - 2
                 y1 = padding*paddingMult+2
                 x2 = x1 + size[0]-4
                 y2 = y1 + size[1]+1
-                draw.rectangle(((x1,y1), (x2,y2)),fill=BLACK,outline=BLACK)
-                textColor = WHITE
+                draw.rectangle(((x1,y1), (x2,y2)),fill=self.BLACK,outline=self.BLACK)
+                textColor = self.WHITE
                 draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3, padding*paddingMult), tempText, font=font, fill=textColor)
             if tempTooLow:
                 draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3 -1, padding*paddingMult-1), tempText, font=font, fill=textColor)
         else:
             paddingMult = 4
             font = ImageFont.truetype(self.fontPath, self.fontSize)
-            draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3, lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), name, font=font, fill=BLACK)
-            draw.text((self.my_papirus.width - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), text, font=font, fill=BLACK)
-            textColor = BLACK
+            draw.text((self.my_papirus.width - lineWidth - self.fontSize * 3, lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), name, font=font, fill=self.BLACK)
+            draw.text((self.my_papirus.width - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), text, font=font, fill=self.BLACK)
+            textColor = self.BLACK
             if not zone.isEnabled():
                 size = font.getsize(tempText)
                 x1 = self.my_papirus.width - lineWidth -2
                 y1 = lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding+2
                 x2 = x1 + size[0]
                 y2 = y1 + size[1]
-                draw.rectangle(((x1,y1), (x2,y2)),fill=BLACK,outline=BLACK)
-                textColor = WHITE
+                draw.rectangle(((x1,y1), (x2,y2)),fill=self.BLACK,outline=self.BLACK)
+                textColor = self.WHITE
                 draw.text((self.my_papirus.width - lineWidth, lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), tempText, font=font, fill=textColor)
             if tempTooLow:
                 draw.text((self.my_papirus.width - lineWidth -1 , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding -1), tempText, font=font, fill=textColor)
@@ -141,7 +140,8 @@ class Display(object):
         if not self.lock:
             self.lock = True
             i = 0
-            image = Image.new('1', (self.getWidth(), self.getHeight()), WHITE)
+            size = (self.getWidth(), self.getHeight())
+            image = Image.new('1', size, self.WHITE)
             draw = ImageDraw.Draw(image)
             for zone in self.zones:
                 self.updateZone(zone, i, draw)
@@ -149,19 +149,16 @@ class Display(object):
             self.updateRequestedPower(self.boiler.getRequestedPower(),draw)
             self.updateDeliveredPower(self.boiler.getDeliveredPower(),draw)
             self.updateExteriorTemperature(self.exterior.getTemperature(),draw)
-            self.display(image)
+            self.display([image])
             self.log()
             self.lock = False
 
-    @abstractmethod
     def display(self, image):
         pass
 
-    @abstractmethod
     def getWidth(self):
         pass
 
-    @abstractmethod
     def getHeight(self):
         pass
 
