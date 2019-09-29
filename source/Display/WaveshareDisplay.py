@@ -82,15 +82,15 @@ class WaveshareDisplay(Display.Display):
                 y1 = lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding+2
                 x2 = x1 + size[0]
                 y2 = y1 + size[1]
-                draw.text((x2, padding*paddingMult), sptext, font=font, fill=self.BLACK)
+                draw.text((x2, lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), sptext, font=font, fill=self.BLACK)
                 if tempTooLow:
                     drawc.rectangle(((x1,y1), (x2,y2)),fill=self.BLACK,outline=self.BLACK)
                     textColor = self.WHITE
-                    draw.text((self.getWidth() - lineWidth - self.fontSize * 3, padding*paddingMult), tempText, font=font, fill=textColor)
+                    draw.text((self.getWidth() - lineWidth, lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), tempText, font=font, fill=textColor)
                 else:
                     draw.rectangle(((x1,y1), (x2,y2)),fill=self.BLACK,outline=self.BLACK)
                     textColor = self.WHITE
-                    draw.text((self.getWidth() - lineWidth - self.fontSize * 3, padding*paddingMult), tempText, font=font, fill=textColor)
+                    draw.text((self.getWidth() - lineWidth, lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), tempText, font=font, fill=textColor)
             else:
                 if tempTooLow:
                     draw.text((self.getWidth() - lineWidth -1 , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding-1), text, font=font, fill=self.BLACK)
