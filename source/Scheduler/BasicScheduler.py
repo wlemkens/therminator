@@ -59,12 +59,13 @@ class Schedule():
         return self.schedule["modes"][modes[0]]["zones"].keys()
 
     def getMode(self):
-        self.mode
+        return self.mode
 
 class BasicScheduler(Scheduler):
     def __init__(self, filename):
         super(BasicScheduler,self).__init__()
         self.schedule = None
+        self.mode = None
         self.controller = {}
         self.boilerInterface = None
         self.loadConfig(filename)
