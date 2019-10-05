@@ -20,7 +20,7 @@ class Display(object):
         self.boiler = None
         self.lock = False
         self.fullUpdate = True
-        self.away = False
+        self.mode = None
         self.fontPath = "/usr/local/share/fonts/Righteous-Regular.ttf"
         self.fontPath = "/usr/local/share/fonts/VoiceActivatedBB_reg.otf"
         self.boldFontPath = "/usr/local/share/fonts/VoiceActivatedBB_bold.otf"
@@ -166,6 +166,11 @@ class Display(object):
         font = ImageFont.truetype(self.boldFontPath, self.awayFontSize)
         draw.text((self.getWidth()*0.1, self.getHeight()*0.1), "AWAY", font=font, fill=self.BLACK)
 
+    def drawMode(self, draws, mode):
+        draw = draws[0]
+        font = ImageFont.truetype(self.boldFontPath, self.awayFontSize)
+        draw.text((self.getWidth()*0.1, self.getHeight()*0.1), mode, font=font, fill=self.BLACK)
+
     def update(self):
         if not self.lock:
             self.lock = True
@@ -175,14 +180,20 @@ class Display(object):
             imagec = Image.new('1', size, self.WHITE)
             draw = ImageDraw.Draw(image)
             drawc = ImageDraw.Draw(imagec)
-            if self.home.isAway():
-                if not self.away:
+            if self.home.isAway() or self.home.getMode() == 'away':
+                if not self.mode == "away":
                     self.drawAway([draw,drawc])
-                    self.away = True
+                    self.mode = "away"
+                    self.fullUpdate = True
+                    self.display([image, imagec])
+            elif self.home.getMode() ==  'night':
+                if not self.mode == "night":
+                    self.drawMode([draw,drawc], "Night")
+                    self.mode = "night"
                     self.fullUpdate = True
                     self.display([image, imagec])
             else:
-                self.away = False
+                self.mode = self.home.getMode()
                 for zone in self.zones:
                     self.updateZone(zone, i, [draw,drawc])
                     i += 1
