@@ -20,6 +20,8 @@ class Display(object):
         self.lock = False
         self.fullUpdate = True
         self.fontPath = "/usr/local/share/fonts/Righteous-Regular.ttf"
+        self.fontPath = "/usr/local/share/fonts/VoiceActivatedBB_reg.otf"
+        self.boldFontPath = "/usr/local/share/fonts/VoiceActivatedBB_bold.otf"
         self.logFile = logFilename
         self.setup, self.mqtt, self.fullUpdateInterval = self.loadConfig(config)
         self.createLayout(self.setup, self.mqtt)
@@ -45,13 +47,13 @@ class Display(object):
         while (stringlength <= maxLength and stringwidth <= maxHeight):
 
             fontsize += 1
-            font = ImageFont.truetype(self.fontPath, fontsize)
+            font = ImageFont.truetype(self.boldFontPath, fontsize)
             size = font.getsize(printstring)
             stringlength = size[0]
             stringwidth = size[1]
 
         #font = ImageFont.truetype('/usr/share/fonts/truetype/freefont/FreeMono.ttf', fontsize-1)
-        font = ImageFont.truetype(self.fontPath, fontsize-1)
+        font = ImageFont.truetype(self.boldFontPath, fontsize-1)
         return fontsize-1, font.getsize(printstring)
 
     def updateExteriorTemperature(self, temperature, draw):
@@ -124,7 +126,10 @@ class Display(object):
             else:
                 if tempTooLow:
                     draw.text((self.getWidth() - lineWidth - self.fontSize * 3 -1, padding*paddingMult-1), tempText, font=font, fill=textColor)
-                draw.text((self.getWidth() - lineWidth - self.fontSize * 3, padding*paddingMult), text, font=font, fill=self.BLACK)
+                    size = font.getsize(tempText)
+                    draw.text((size[0]*.9 + self.getWidth() - lineWidth - self.fontSize * 3, padding*paddingMult), sptext, font=font, fill=self.BLACK)
+                else:
+                    draw.text((self.getWidth() - lineWidth - self.fontSize * 3, padding*paddingMult), text, font=font, fill=self.BLACK)
         else:
             paddingMult = 4
             font = ImageFont.truetype(self.fontPath, self.fontSize)
@@ -137,14 +142,18 @@ class Display(object):
                 y1 = lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding+2
                 x2 = x1 + size[0]
                 y2 = y1 + size[1]
-                draw.text((x2, padding*paddingMult), sptext, font=font, fill=self.BLACK)
+                draw.text((x2, lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), sptext, font=font, fill=self.BLACK)
                 draw.rectangle(((x1,y1), (x2,y2)),fill=self.BLACK,outline=self.BLACK)
                 textColor = self.WHITE
-                draw.text((self.getWidth() - lineWidth - self.fontSize * 3, padding*paddingMult), tempText, font=font, fill=textColor)
+                #draw.text((self.getWidth() - lineWidth - self.fontSize * 3, padding*paddingMult), tempText, font=font, fill=textColor)
+                draw.text((self.getWidth() - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), tempText, font=font, fill=textColor)
             else:
                 if tempTooLow:
                     draw.text((self.getWidth() - lineWidth -1 , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding-1), text, font=font, fill=self.BLACK)
-                draw.text((self.getWidth() - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), text, font=font, fill=self.BLACK)
+                    size = font.getsize(tempText)
+                    draw.text((size[0] * 0.9 + self.getWidth() - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), sptext, font=font, fill=self.BLACK)
+                else:
+                    draw.text((self.getWidth() - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), text, font=font, fill=self.BLACK)
 
     def update(self):
         if not self.lock:
@@ -156,7 +165,6 @@ class Display(object):
             draw = ImageDraw.Draw(image)
             drawc = ImageDraw.Draw(imagec)
             for zone in self.zones:
-                print(".")
                 self.updateZone(zone, i, [draw,drawc])
                 i += 1
             self.updateRequestedPower(self.boiler.getRequestedPower(),draw)
@@ -182,8 +190,10 @@ class Display(object):
         self.exterior = Exterior(mqtt, self.update)
         lineHeight = 1.0 * self.getHeight() / len(self.zones)
         lineWidth = self.getWidth() / 3
-        self.fontSize, dims = self.getFontSize([lineWidth, lineHeight], "44.4/44.4")
-        self.largeFontSize, dims = self.getFontSize([lineWidth + self.fontSize * 3, lineHeight], "44.4/44.4")
+#        self.fontSize, dims = self.getFontSize([lineWidth, lineHeight], "44.4/44.4")
+        self.fontSize, dims = self.getFontSize([lineWidth, lineHeight], "00.0/00.0")
+#        self.largeFontSize, dims = self.getFontSize([lineWidth + self.fontSize * 3, lineHeight], "44.4/44.4")
+        self.largeFontSize, dims = self.getFontSize([lineWidth + self.fontSize * 3, lineHeight], "00.0/00.0")
 
     def loadConfig(self, configFilename):
         setup = None

@@ -52,6 +52,7 @@ class WaveshareDisplay(Display.Display):
         if index == 0:
             paddingMult = 3
             font = ImageFont.truetype(self.fontPath, self.largeFontSize)
+            boldFont = ImageFont.truetype(self.boldFontPath, self.largeFontSize)
             if not zone.isEnabled():
                 size = font.getsize(tempText)
                 x1 = self.getWidth() - lineWidth - self.fontSize * 3 - 2
@@ -69,11 +70,15 @@ class WaveshareDisplay(Display.Display):
                     draw.text((self.getWidth() - lineWidth - self.fontSize * 3, padding*paddingMult), tempText, font=font, fill=textColor)
             else:
                 if tempTooLow:
-                    draw.text((self.getWidth() - lineWidth - self.fontSize * 3 -1, padding*paddingMult-1), tempText, font=font, fill=textColor)
-                draw.text((self.getWidth() - lineWidth - self.fontSize * 3, padding*paddingMult), text, font=font, fill=self.BLACK)
+                    draw.text((self.getWidth() - lineWidth - self.fontSize * 3, padding*paddingMult), tempText, font=boldFont, fill=textColor)
+                    size = font.getsize(tempText)
+                    draw.text((size[0]*.9 + self.getWidth() - lineWidth - self.fontSize * 3, padding*paddingMult), sptext, font=font, fill=self.BLACK)
+                else:
+                    draw.text((self.getWidth() - lineWidth - self.fontSize * 3, padding*paddingMult), text, font=font, fill=self.BLACK)
         else:
             paddingMult = 4
             font = ImageFont.truetype(self.fontPath, self.fontSize)
+            boldFont = ImageFont.truetype(self.boldFontPath, self.fontSize)
             draw.text((self.getWidth() - lineWidth - self.fontSize * 3, lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), name, font=font, fill=self.BLACK)
             textColor = self.BLACK
             if not zone.isEnabled():
@@ -93,5 +98,8 @@ class WaveshareDisplay(Display.Display):
                     draw.text((self.getWidth() - lineWidth, lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), tempText, font=font, fill=textColor)
             else:
                 if tempTooLow:
-                    draw.text((self.getWidth() - lineWidth -1 , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding-1), text, font=font, fill=self.BLACK)
-                draw.text((self.getWidth() - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), text, font=font, fill=self.BLACK)
+                    draw.text((self.getWidth() - lineWidth, lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), text, font=boldFont, fill=self.BLACK)
+                    size = font.getsize(tempText)
+                    draw.text((size[0] * 0.9 + self.getWidth() - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), sptext, font=font, fill=self.BLACK)
+                else:
+                    draw.text((self.getWidth() - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), text, font=font, fill=self.BLACK)
