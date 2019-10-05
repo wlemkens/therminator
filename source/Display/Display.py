@@ -20,10 +20,12 @@ class Display(object):
         self.boiler = None
         self.lock = False
         self.fullUpdate = True
+        self.away = False
         self.fontPath = "/usr/local/share/fonts/Righteous-Regular.ttf"
         self.fontPath = "/usr/local/share/fonts/VoiceActivatedBB_reg.otf"
         self.boldFontPath = "/usr/local/share/fonts/VoiceActivatedBB_bold.otf"
         self.logFile = logFilename
+        self.awayFontSize = 1
         self.setup, self.mqtt, self.fullUpdateInterval = self.loadConfig(config)
         self.createLayout(self.setup, self.mqtt)
         if self.logFile:
@@ -34,6 +36,7 @@ class Display(object):
                 f.write("{:};{:};{:};{:}\n".format("requestePower", "deliveredPower","returnTemperature","flowTemperature"))
         self.client = mqtt.Client()
         self.client.connect(self.mqtt["address"], self.mqtt["port"], 60)
+        self.away = False
 
     def getFontSize(self, area, printstring):
         # returns (ideal fontsize, (length of text, height of text)) that maximally
@@ -114,6 +117,7 @@ class Display(object):
         if index == 0:
             paddingMult = 3
             font = ImageFont.truetype(self.fontPath, self.largeFontSize)
+            boldFont = ImageFont.truetype(self.boldFontPath, self.largeFontSize)
             if not zone.isEnabled():
                 size = font.getsize(tempText)
                 x1 = self.getWidth() - lineWidth - self.fontSize * 3 - 2
@@ -126,7 +130,7 @@ class Display(object):
                 draw.text((self.getWidth() - lineWidth - self.fontSize * 3, padding*paddingMult), tempText, font=font, fill=textColor)
             else:
                 if tempTooLow:
-                    draw.text((self.getWidth() - lineWidth - self.fontSize * 3 -1, padding*paddingMult-1), tempText, font=font, fill=textColor)
+                    draw.text((self.getWidth() - lineWidth - self.fontSize * 3 -1, padding*paddingMult-1), tempText, font=boldFont, fill=textColor)
                     size = font.getsize(tempText)
                     draw.text((size[0]*.9 + self.getWidth() - lineWidth - self.fontSize * 3, padding*paddingMult), sptext, font=font, fill=self.BLACK)
                 else:
@@ -134,6 +138,7 @@ class Display(object):
         else:
             paddingMult = 4
             font = ImageFont.truetype(self.fontPath, self.fontSize)
+            boldFont = ImageFont.truetype(self.boldFontPath, self.fontSize)
             draw.text((self.getWidth() - lineWidth - self.fontSize * 3, lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), name, font=font, fill=self.BLACK)
             #draw.text((self.getWidth() - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), text, font=font, fill=self.BLACK)
             textColor = self.BLACK
@@ -150,7 +155,7 @@ class Display(object):
                 draw.text((self.getWidth() - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), tempText, font=font, fill=textColor)
             else:
                 if tempTooLow:
-                    draw.text((self.getWidth() - lineWidth -1 , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding-1), text, font=font, fill=self.BLACK)
+                    draw.text((self.getWidth() - lineWidth -1 , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding-1), text, font=boldFont, fill=self.BLACK)
                     size = font.getsize(tempText)
                     draw.text((size[0] * 0.9 + self.getWidth() - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), sptext, font=font, fill=self.BLACK)
                 else:
@@ -171,15 +176,20 @@ class Display(object):
             draw = ImageDraw.Draw(image)
             drawc = ImageDraw.Draw(imagec)
             if self.home.isAway():
-                self.drawAway([draw,drawc])
+                if not self.away:
+                    self.drawAway([draw,drawc])
+                    self.away = True
+                    self.fullUpdate = True
+                    self.display([image, imagec])
             else:
+                self.away = False
                 for zone in self.zones:
                     self.updateZone(zone, i, [draw,drawc])
                     i += 1
                 self.updateRequestedPower(self.boiler.getRequestedPower(),draw)
                 self.updateDeliveredPower(self.boiler.getDeliveredPower(),draw)
                 self.updateExteriorTemperature(self.exterior.getTemperature(),draw)
-            self.display([image, imagec])
+                self.display([image, imagec])
             self.log()
             self.lock = False
 
@@ -193,6 +203,7 @@ class Display(object):
         pass
 
     def createLayout(self, setup, mqtt):
+        self.awayFontSize, dims = self.getFontSize([self.getWidth()*0.8, self.getHeight()*0.8], "AWAY")
         self.home = Home(mqtt, self.update)
         for zone in setup["zones"]:
             self.zones += [Zone(zone, mqtt, self.update)]
@@ -204,7 +215,6 @@ class Display(object):
         self.fontSize, dims = self.getFontSize([lineWidth, lineHeight], "00.0/00.0")
 #        self.largeFontSize, dims = self.getFontSize([lineWidth + self.fontSize * 3, lineHeight], "44.4/44.4")
         self.largeFontSize, dims = self.getFontSize([lineWidth + self.fontSize * 3, lineHeight], "00.0/00.0")
-        self.awayFontSize, dims = self.getFontSize([self.getWidth()*0.8, self.getHeight()*0.8], "AWAY")
 
 
     def loadConfig(self, configFilename):
