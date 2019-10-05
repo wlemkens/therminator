@@ -11,6 +11,7 @@ import paho.mqtt.client as mqtt
 from Entity.Zone import Zone
 from Entity.Boiler import Boiler
 from Entity.Exterior import Exterior
+from Entity.Home import Home
 
 class Display(object):
 
@@ -155,6 +156,11 @@ class Display(object):
                 else:
                     draw.text((self.getWidth() - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), text, font=font, fill=self.BLACK)
 
+    def drawAway(self, draws):
+        draw = draws[0]
+        font = ImageFont.truetype(self.boldFontPath, self.awayFontSize)
+        draw.text((self.getWidth()*0.1, self.getHeight()*0.1), "AWAY", font=font, fill=self.BLACK)
+
     def update(self):
         if not self.lock:
             self.lock = True
@@ -164,12 +170,15 @@ class Display(object):
             imagec = Image.new('1', size, self.WHITE)
             draw = ImageDraw.Draw(image)
             drawc = ImageDraw.Draw(imagec)
-            for zone in self.zones:
-                self.updateZone(zone, i, [draw,drawc])
-                i += 1
-            self.updateRequestedPower(self.boiler.getRequestedPower(),draw)
-            self.updateDeliveredPower(self.boiler.getDeliveredPower(),draw)
-            self.updateExteriorTemperature(self.exterior.getTemperature(),draw)
+            if self.home.isAway():
+                self.drawAway([draw,drawc])
+            else:
+                for zone in self.zones:
+                    self.updateZone(zone, i, [draw,drawc])
+                    i += 1
+                self.updateRequestedPower(self.boiler.getRequestedPower(),draw)
+                self.updateDeliveredPower(self.boiler.getDeliveredPower(),draw)
+                self.updateExteriorTemperature(self.exterior.getTemperature(),draw)
             self.display([image, imagec])
             self.log()
             self.lock = False
@@ -184,6 +193,7 @@ class Display(object):
         pass
 
     def createLayout(self, setup, mqtt):
+        self.home = Home(mqtt, self.update)
         for zone in setup["zones"]:
             self.zones += [Zone(zone, mqtt, self.update)]
         self.boiler = Boiler(mqtt, self.update)
@@ -194,6 +204,8 @@ class Display(object):
         self.fontSize, dims = self.getFontSize([lineWidth, lineHeight], "00.0/00.0")
 #        self.largeFontSize, dims = self.getFontSize([lineWidth + self.fontSize * 3, lineHeight], "44.4/44.4")
         self.largeFontSize, dims = self.getFontSize([lineWidth + self.fontSize * 3, lineHeight], "00.0/00.0")
+        self.awayFontSize, dims = self.getFontSize([self.getWidth()*0.8, self.getHeight()*0.8], "AWAY")
+
 
     def loadConfig(self, configFilename):
         setup = None
@@ -226,3 +238,4 @@ class Display(object):
                     f.write("{:};{:};{:};{:}\n".format(self.boiler.getRequestedPower(), self.boiler.getDeliveredPower(), self.boiler.getReturnTemperature(), self.boiler.getFlowTemperature()))
 
 
+1
