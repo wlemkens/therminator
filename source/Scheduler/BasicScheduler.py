@@ -10,6 +10,7 @@ class Schedule():
     def __init__(self, schedule):
         self.schedule = schedule
         self.setpoints = {}
+        self.mode = None
 
     def hasSetpointChanged(self, room):
         if not room in self.setpoints.keys():
@@ -41,7 +42,7 @@ class Schedule():
                 break
         if mode == "none":
             mode = timeTable[-1]["mode"]
-
+        self.mode = mode
         temperatures = self.schedule["modes"][mode]["zones"]
         return temperatures[room]
 
@@ -56,6 +57,9 @@ class Schedule():
     def getZoneNames(self):
         modes = list(self.schedule["modes"].keys())
         return self.schedule["modes"][modes[0]]["zones"].keys()
+
+    def getMode(self):
+        self.mode
 
 class BasicScheduler(Scheduler):
     def __init__(self, filename):
@@ -86,6 +90,10 @@ class BasicScheduler(Scheduler):
                 for controller in self.controller[room]:
                     if (self.schedule.hasSetpointChanged(room)):
                         controller.setSetpoint(self.schedule.getCurrentSetpointTemperature(room) )
+                        mode = self.schedule.getMode()
+                        if mode != self.mode:
+                            self.mode = mode
+                            self.boilerInterface.setMode(mode)
                     if controller.isEnabled():
                         output = controller.getOutput()
                         total += max(0,output)

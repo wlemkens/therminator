@@ -44,6 +44,10 @@ class MQTTBoilerInterface(BoilerInterface):
         outputValue = min(100,max(0, outputValue))
         self.client.publish("therminator/out/boiler_output", outputValue)
 
+    def setMode(self, mode):
+        self.client.publish("therminator/out/mode", mode)
+
+
     # The callback for when the client receives a CONNACK response from the server.
     def on_connect(client, userdata, flags, rc):
         print("Connected with result code "+str(rc))
