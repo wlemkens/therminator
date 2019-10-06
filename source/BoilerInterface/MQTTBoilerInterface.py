@@ -46,6 +46,7 @@ class MQTTBoilerInterface(BoilerInterface):
 
     def setMode(self, mode):
         self.client.publish("therminator/out/mode", mode)
+        self.client.publish("therminator/in/mode", mode)
 
 
     # The callback for when the client receives a CONNACK response from the server.
