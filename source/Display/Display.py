@@ -155,7 +155,7 @@ class Display(object):
                 draw.text((self.getWidth() - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), tempText, font=font, fill=textColor)
             else:
                 if tempTooLow:
-                    draw.text((self.getWidth() - lineWidth -1 , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding-1), text, font=boldFont, fill=self.BLACK)
+                    draw.text((self.getWidth() - lineWidth -1 , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding-1), tempText, font=boldFont, fill=self.BLACK)
                     size = font.getsize(tempText)
                     draw.text((size[0] * 0.9 + self.getWidth() - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), sptext, font=font, fill=self.BLACK)
                 else:
