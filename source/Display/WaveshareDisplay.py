@@ -91,7 +91,7 @@ class WaveshareDisplay(Display.Display):
                 if tempTooLow:
                     drawc.rectangle(((x1,y1), (x2,y2)),fill=self.BLACK,outline=self.BLACK)
                     textColor = self.WHITE
-                    draw.text((self.getWidth() - lineWidth, lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), tempText, font=font, fill=textColor)
+                    drawc.text((self.getWidth() - lineWidth, lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), tempText, font=font, fill=textColor)
                 else:
                     draw.rectangle(((x1,y1), (x2,y2)),fill=self.BLACK,outline=self.BLACK)
                     textColor = self.WHITE
