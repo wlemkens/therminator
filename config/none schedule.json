@@ -19,40 +19,102 @@
     },
     "morning": {
       "zones": {
-        "living": 21.5,
-        "badkamer": 23,
+        "living": 20.5,
+        "badkamer": 21,
         "bureau": 18,
         "kamer_nathan": 16
       }
     },
     "evening": {
       "zones": {
-        "living": 21.5,
-        "badkamer": 23,
+        "living": 20.5,
+        "badkamer": 21,
         "bureau": 18,
         "kamer_nathan": 16
       }
     },
     "day": {
       "zones": {
-        "living": 21.5,
+        "living": 20.5,
         "badkamer": 15,
         "bureau": 18,
+        "kamer_nathan": 15
+      }
+    },
+    "dayhome": {
+      "zones": {
+        "living": 19,
+        "badkamer": 15,
+        "bureau": 19,
         "kamer_nathan": 15
       }
     }
   },
   "daytypes": {
     "workday": [
+      {
+        "start": 360,
+        "mode": "morning"
+      },
+      {
+        "start": 480,
+        "mode": "away"
+      },
+      {
+        "start": 1020,
+        "mode": "day"
+      },
+      {
+        "start": 1200,
+        "mode": "evening"
+      },
+      {
+        "start": 1290,
+        "mode": "night"
+      }
     ],
     "weekend": [
+      {
+        "start": 360,
+        "mode": "night"
+      },
+      {
+        "start": 480,
+        "mode": "night"
+      },
+      {
+        "start": 1200,
+        "mode": "night"
+      },
+      {
+        "start": 1290,
+        "mode": "night"
+      }
+    ],
+    "home": [
+      {
+        "start": 360,
+        "mode": "morning"
+      },
+      {
+        "start": 480,
+        "mode": "dayhome"
+      },
+      {
+        "start": 1200,
+        "mode": "evening"
+      },
+      {
+        "start": 1290,
+        "mode": "night"
+      }
     ]
   },
   "weekschedule": [
-    "weekend",
-    "weekend",
-    "weekend",
-    "weekend",
+    "workday",
+    "workday",
+    "workday",
+    "workday",
     "weekend",
     "weekend",
     "weekend"

@@ -19,7 +19,7 @@
     },
     "morning": {
       "zones": {
-        "living": 21.5,
+        "living": 20.5,
         "badkamer": 22,
         "bureau": 18,
         "kamer_nathan": 16
@@ -27,7 +27,7 @@
     },
     "evening": {
       "zones": {
-        "living": 21.5,
+        "living": 20.5,
         "badkamer": 22,
         "bureau": 18,
         "kamer_nathan": 16
@@ -35,7 +35,7 @@
     },
     "day": {
       "zones": {
-        "living": 21.5,
+        "living": 20.5,
         "badkamer": 15,
         "bureau": 18,
         "kamer_nathan": 15
