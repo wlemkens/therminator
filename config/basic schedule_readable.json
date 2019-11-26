@@ -1,0 +1,166 @@
+{
+  "name": "standard",
+  "modes": {
+    "night": {
+      "zones": {
+        "living": 15,
+        "badkamer": 15,
+        "bureau": 18,
+        "kamer_nathan": 16
+      }
+    },
+    "away": {
+      "zones": {
+        "living": 15,
+        "badkamer": 15,
+        "bureau": 18,
+        "kamer_nathan": 15
+      }
+    },
+    "morning": {
+      "zones": {
+        "living": 20.5,
+        "badkamer": 21,
+        "bureau": 18,
+        "kamer_nathan": 16
+      }
+    },
+    "evening": {
+      "zones": {
+        "living": 20.5,
+        "badkamer": 21,
+        "bureau": 18,
+        "kamer_nathan": 16
+      }
+    },
+    "day": {
+      "zones": {
+        "living": 20.5,
+        "badkamer": 15,
+        "bureau": 18,
+        "kamer_nathan": 15
+      }
+    },
+    "dayhome": {
+      "zones": {
+        "living": 19,
+        "badkamer": 15,
+        "bureau": 19,
+        "kamer_nathan": 15
+      }
+    }
+  },
+  "daytypes": {
+    "workday": [
+      {
+        "start": "05:30",
+        "mode": "morning"
+      },
+      {
+        "start": "08:00",
+        "mode": "away"
+      },
+      {
+        "start": "17:00",
+        "mode": "day"
+      },
+      {
+        "start": "20:00",
+        "mode": "evening"
+      },
+      {
+        "start": "21:30",
+        "mode": "night"
+      }
+    ],
+    "halfday": [
+      {
+        "start": "05:30",
+        "mode": "morning"
+      },
+      {
+        "start": "08:00",
+        "mode": "away"
+      },
+      {
+        "start": "12:00",
+        "mode": "day"
+      },
+      {
+        "start": "20:00",
+        "mode": "evening"
+      },
+      {
+        "start": "21:30",
+        "mode": "night"
+      }
+    ],
+    "shortday": [
+      {
+        "start": "05:30",
+        "mode": "morning"
+      },
+      {
+        "start": "08:00",
+        "mode": "away"
+      },
+      {
+        "start": "15:30",
+        "mode": "day"
+      },
+      {
+        "start": "20:00",
+        "mode": "evening"
+      },
+      {
+        "start": "21:30",
+        "mode": "night"
+      }
+    ],
+    "weekend": [
+      {
+        "start": "05:30",
+        "mode": "morning"
+      },
+      {
+        "start": "08:00",
+        "mode": "day"
+      },
+      {
+        "start": "20:00",
+        "mode": "evening"
+      },
+      {
+        "start": "21:30",
+        "mode": "night"
+      }
+    ],
+    "home": [
+      {
+        "start": "05:30",
+        "mode": "morning"
+      },
+      {
+        "start": "08:00",
+        "mode": "dayhome"
+      },
+      {
+        "start": "20:00",
+        "mode": "evening"
+      },
+      {
+        "start": "21:30",
+        "mode": "night"
+      }
+    ]
+  },
+  "weekschedule": [
+    "workday",
+    "workday",
+    "halfday",
+    "shortday",
+    "weekend",
+    "weekend",
+    "weekend"
+  ]
+}
