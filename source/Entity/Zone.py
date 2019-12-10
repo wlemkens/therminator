@@ -5,6 +5,7 @@ import time
 
 class Zone(object):
     def __init__(self, config, mqttConfig, on_update):
+        self.offTemperature = 10
         self.temperature = None
         self.setpoint = None
         self.level = None
@@ -22,7 +23,9 @@ class Zone(object):
         self.enabledCheckThread = None
 
     def enabledCheck(self):
+        print("Checking if {:} is enabled".format(self.name))
         if self.enabled != self.tempEnabled:
+            print("Enabled status changed from  {:} to {:}".format(self.enabled, self.tempEnabled))
             self.enabled = self.tempEnabled
             self.update()
 
@@ -44,7 +47,7 @@ class Zone(object):
             self.tempEnabled = int((message.payload))
             if self.enabledCheckThread:
                 self.enabledCheckThread.cancel()
-            self.enabledCheckThread = threading.Timer(10, self.enabledCheck)
+            self.enabledCheckThread = threading.Timer(self.offTemperature, self.enabledCheck)
             self.enabledCheckThread.start()
 
     def requestValues(self):

@@ -9,7 +9,7 @@ from HeatingInterface.HeatingInterface import HeatingInterface
 
 class RadiatorHeatingInterface(HeatingInterface):
     def __init__(self, name, config):
-        self.setpointOFF = 15.0
+        self.setpointOFF = 10.0
         self.setpointDelay = 30
         self.address  = config["address"]
         self.port = config["port"]
@@ -36,7 +36,8 @@ class RadiatorHeatingInterface(HeatingInterface):
 
     def storeSetpoint(self, setpoint):
         if self.enabled or setpoint != self.setpointOFF:
-            #print("Storing setpoint {:}".format(setpoint))
+            print(datetime.datetime.now())
+            print("Storing setpoint {:}".format(setpoint))
             topic = "therminator/out/{:}_stored_setpoint".format(self.name)
             self.stored_setpoint = setpoint
             self.client.publish(topic, setpoint)
@@ -58,7 +59,8 @@ class RadiatorHeatingInterface(HeatingInterface):
         return self.setpoint
 
     def setSetpoint(self, setpoint):
-        #print("Publishing setpoint {:}".format(setpoint))
+        print(datetime.datetime.now())
+        print("Publishing setpoint {:}".format(setpoint))
         self.client.publish("therminator/out/{:}_setpoint".format(self.name), setpoint)
         self.setpoint = setpoint
 
@@ -74,6 +76,7 @@ class RadiatorHeatingInterface(HeatingInterface):
 
 
     def on_message(self, client, userdata, message):
+        print(datetime.datetime.now())
         print("Received {:} : {:}".format(message.topic, message.payload))
         if message.topic == self.topic_temp:
             self.temperature = float(message.payload)
@@ -93,6 +96,7 @@ class RadiatorHeatingInterface(HeatingInterface):
         print ("subd")
 
     def on_connect(self, client, userdata, flags, rc):
+        print(datetime.datetime.now())
         print ("Connected")
 
     def requestValues(self):
