@@ -20,7 +20,15 @@
     "morning": {
       "zones": {
         "living": 20.5,
-        "badkamer": 22,
+        "badkamer": 21.5,
+        "bureau": 18,
+        "kamer_nathan": 16
+      }
+    },
+    "pre-evening": {
+      "zones": {
+        "living": 20.5,
+        "badkamer": 15,
         "bureau": 18,
         "kamer_nathan": 16
       }
@@ -28,7 +36,7 @@
     "evening": {
       "zones": {
         "living": 20.5,
-        "badkamer": 22,
+        "badkamer": 21.5,
         "bureau": 18,
         "kamer_nathan": 16
       }
@@ -57,6 +65,10 @@
         "mode": "day"
       },
       {
+        "start": "19:30",
+        "mode": "pre-evening"
+      },
+      {
         "start": "20:00",
         "mode": "evening"
       },
@@ -73,6 +85,10 @@
       {
         "start": "08:30",
         "mode": "day"
+      },
+      {
+        "start": "19:30",
+        "mode": "pre-evening"
       },
       {
         "start": "20:00",
