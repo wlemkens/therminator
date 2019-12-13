@@ -37,7 +37,7 @@ class RadiatorHeatingInterface(HeatingInterface):
     def storeSetpoint(self, setpoint):
         if self.enabled or setpoint != self.setpointOFF:
             print(datetime.datetime.now())
-            print("Storing setpoint {:}".format(setpoint))
+            print("Storing setpoint {:} (was {:})".format(setpoint, self.stored_setpoint))
             topic = "therminator/out/{:}_stored_setpoint".format(self.name)
             self.stored_setpoint = setpoint
             self.client.publish(topic, setpoint)
@@ -60,7 +60,7 @@ class RadiatorHeatingInterface(HeatingInterface):
 
     def setSetpoint(self, setpoint):
         print(datetime.datetime.now())
-        print("Publishing setpoint {:}".format(setpoint))
+        print("Publishing setpoint {:} from {:} to {:}".format(setpoint, self.setpoint, setpoint))
         self.client.publish("therminator/out/{:}_setpoint".format(self.name), setpoint)
         self.setpoint = setpoint
 
