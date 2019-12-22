@@ -24,8 +24,12 @@ def getEndIndices(data):
     indices = np.where(data[1:] - data[:-1] == 1)[0] + 1
     return np.append(indices[np.where(indices[1:] - indices[:-1] != 1)[0]], indices[-1])
 
+def filterBlock(block):
+    return np.array(np.where(block[1:] - block[:-1] > 0)[0])
+
+
 # Check state when heating is on
-def calculateHeatingCurve(setpoints, temperatures, otherSetpoints, otherTemperatures):
+def calculateQuadraticHeatingCurve(times, setpoints, temperatures, externalTs, h_loss, otherSetpoints, otherTemperatures):
     # Filter the points where the set point is higher or equal to the temperature, but only for the requested room
     otherDiffs = [otherSP - otherT <= 0 for otherSP, otherT in zip(otherSetpoints, otherTemperatures)]
     diffs = setpoints - temperatures >= 0;
@@ -34,10 +38,68 @@ def calculateHeatingCurve(setpoints, temperatures, otherSetpoints, otherTemperat
     startIndices = indices[getStartIndices(indices)]
     endIndices = indices[getEndIndices(indices)]
     blocks = [[range(start, end + 1)] for start,end in zip(startIndices, endIndices)]
-    temperatures_filtered = [temperatures[block] for block in blocks]
-    setpoints_filtered =[setpoints[block] for block in blocks]
-    print(temperatures_filtered)
-    print(setpoints_filtered)
+    temperatures_filtered = np.array([np.array(temperatures[block]) for block in blocks])
+    setpoints_filtered =np.array([np.array(setpoints[block]) for block in blocks])
+    externalTs_filtered =np.array([np.array(externalTs[block]) for block in blocks])
+    times_filtered = np.array([np.array(times[block]) for block in blocks])
+    blockIndices = [filterBlock(np.array(block)) for block in temperatures_filtered]
+    dT_blocks = np.array([temps[block+1] - temps[block] for temps,block in zip(temperatures_filtered, blockIndices)])
+    dt_blocks = np.array([times[block+1] - times[np.append([0], block[:-1]+1)] for times,block in zip(times_filtered, blockIndices)])
+    dTh_blocks = dT_blocks/dt_blocks
+    TSP_blocks = np.array([temps[np.append([0], block+1)][:-1] for temps,block in zip(setpoints_filtered, blockIndices)])
+    T_blocks = np.array([temps[np.append([0], block+1)][:-1] for temps,block in zip(temperatures_filtered, blockIndices)])
+    externalT_blocks = np.array([temps[np.append([0], block+1)][:-1] for temps,block in zip(externalTs_filtered, blockIndices)])
+    deltaT_ext_blocks = T_blocks - externalT_blocks
+    deltaT_err_blocks = TSP_blocks - T_blocks
+    # print("dTh", (dTh_blocks))
+    # print("deltaT_ext", (deltaT_ext_blocks))
+    # print("deltaT_err", (deltaT_err_blocks))
+    deltaT_err_1 = np.concatenate([block[:-2] for block in deltaT_err_blocks])
+    deltaT_err_2 = np.concatenate([block[1:-1] for block in deltaT_err_blocks])
+    deltaT_err_3 = np.concatenate([block[2:] for block in deltaT_err_blocks])
+    deltaT_ext_1 = np.concatenate([block[:-2] for block in deltaT_ext_blocks])
+    deltaT_ext_2 = np.concatenate([block[1:-1] for block in deltaT_ext_blocks])
+    deltaT_ext_3 = np.concatenate([block[2:] for block in deltaT_ext_blocks])
+    # print ("deltaT_err_1", deltaT_err_1)
+    # print ("deltaT_err_2", deltaT_err_2)
+    # print ("deltaT_err_3", deltaT_err_3)
+    # print ("deltaT_ext_1", deltaT_ext_1)
+    # print ("deltaT_ext_2", deltaT_ext_2)
+    # print ("deltaT_ext_3", deltaT_ext_3)
+    b = h_loss * ((deltaT_ext_1 - deltaT_ext_2) / (deltaT_err_1**2 - deltaT_err_2**2) - (deltaT_ext_2 - deltaT_ext_3) / (deltaT_err_2**2 - deltaT_err_3**2)) / ((deltaT_err_1 - deltaT_err_2) / (deltaT_err_1**2 - deltaT_err_2**2) - (deltaT_err_2 - deltaT_err_3) / (deltaT_err_2**2 - deltaT_err_3**2))
+    a = h_loss * ((deltaT_ext_1 - deltaT_ext_2) / (deltaT_err_1**2 - deltaT_err_2**2)) - b * ((deltaT_err_1 - deltaT_err_2) / (deltaT_err_1**2 - deltaT_err_2**2))
+    # print("a", a)
+    # print("b", b)
+    print("median a =",np.nanmedian(a))
+    print("median b =",np.nanmedian(b))
+    return [np.nanmedian(a), np.nanmedian(b)]
+
+def calculateLinearHeatingCurve(times, setpoints, temperatures, externalTs, h_loss, otherSetpoints, otherTemperatures):
+    # Filter the points where the set point is higher or equal to the temperature, but only for the requested room
+    otherDiffs = [otherSP - otherT <= 0 for otherSP, otherT in zip(otherSetpoints, otherTemperatures)]
+    diffs = setpoints - temperatures >= 0;
+    samplePoints = diffs & np.array(otherDiffs).all(0)
+    indices = np.where(samplePoints)[0]
+    startIndices = indices[getStartIndices(indices)]
+    endIndices = indices[getEndIndices(indices)]
+    blocks = [[range(start, end + 1)] for start,end in zip(startIndices, endIndices)]
+    temperatures_filtered = np.array([np.array(temperatures[block]) for block in blocks])
+    setpoints_filtered =np.array([np.array(setpoints[block]) for block in blocks])
+    externalTs_filtered =np.array([np.array(externalTs[block]) for block in blocks])
+    times_filtered = np.array([np.array(times[block]) for block in blocks])
+    blockIndices = [filterBlock(np.array(block)) for block in temperatures_filtered]
+    dT_blocks = np.array([temps[block+1] - temps[block] for temps,block in zip(temperatures_filtered, blockIndices)])
+    dt_blocks = np.array([times[block+1] - times[np.append([0], block[:-1]+1)] for times,block in zip(times_filtered, blockIndices)])
+    dTh_blocks = dT_blocks/dt_blocks
+    TSP_blocks = np.array([temps[np.append([0], block+1)][:-1] for temps,block in zip(setpoints_filtered, blockIndices)])
+    T_blocks = np.array([temps[np.append([0], block+1)][:-1] for temps,block in zip(temperatures_filtered, blockIndices)])
+    externalT_blocks = np.array([temps[np.append([0], block+1)][:-1] for temps,block in zip(externalTs_filtered, blockIndices)])
+    deltaT_ext_blocks = T_blocks - externalT_blocks
+    deltaT_err_blocks = TSP_blocks - T_blocks
+
+    h = (np.concatenate(dTh_blocks) + np.concatenate(deltaT_ext_blocks) * h_loss) / np.concatenate(deltaT_err_blocks)
+    # print(h)
+    return h
 
 
 
@@ -65,6 +127,7 @@ def loadFile(filename):
 
 
 loadFile(sys.argv[1])
+times = np.array(times)
 livingSP = np.array(livingSP)
 livingT = np.array(livingT)
 badkamerSP = np.array(badkamerSP)
@@ -106,6 +169,10 @@ Tdt_badkamer_filtered = Tdt_badkamer[~np.isnan(Tdt_badkamer)]
 Tdt_badkamer_filtered = Tdt_badkamer_filtered[np.where(Tdt_badkamer_filtered > 0)]
 Tdt_nathan_filtered = Tdt_nathan[~np.isnan(Tdt_nathan)]
 Tdt_nathan_filtered = Tdt_nathan_filtered[np.where(Tdt_nathan_filtered > 0)]
+h_loss_living = np.mean(Tdt_living_filtered)
+h_loss_bureau = np.mean(Tdt_bureau_filtered)
+h_loss_badkamer = np.mean(Tdt_badkamer_filtered)
+h_loss_nathan = np.mean(Tdt_nathan_filtered)
 print("Living heat loss {:}°C/°Cs".format(np.median(Tdt_living_filtered)))
 print("Living heat loss {:}°C/°Cs".format(np.mean(Tdt_living_filtered)))
 print("Bureau heat loss {:}°C/°Cs".format(np.median(Tdt_bureau_filtered)))
@@ -115,17 +182,12 @@ print("Badkamer heat loss {:}°C/°Cs".format(np.mean(Tdt_badkamer_filtered)))
 print("Nathan heat loss {:}°C/°Cs".format(np.median(Tdt_nathan_filtered)))
 print("Nathan heat loss {:}°C/°Cs".format(np.mean(Tdt_nathan_filtered)))
 
-# livingSP = np.array([10,10,10,10,10,10,10])
-# livingT = np.array([10,9,9,9,9,9,10])
-# bureauSP = np.array([10,10,10,10,10,10,10])
-# badkamerSP = np.array([10,11,11,10,10,10,10])
-# nathanSP = np.array([10,10,10,10,10,10,10])
-# bureauT = np.array([10,10,10,10,10,10,10])
-# badkamerT = np.array([10,10,10,10,10,10,10])
-# nathanT = np.array([10,10,10,10,10,10,10])
-calculateHeatingCurve(livingSP, livingT, [bureauSP, badkamerSP, nathanSP], [bureauT, badkamerT, nathanT])
-
-# should return 0,1
-# starts = getStartIndices(np.array([1,2,3,6,8,9,10,11,15,16]))
-# starts = getStartIndices(np.array([0,3,4,5,6]))
-# print(starts)
+secs = np.array([timestmp.timestamp() for timestmp in times])
+h_living = calculateLinearHeatingCurve(secs, livingSP, livingT, exteriorT, h_loss_living, [livingSP, bureauSP, badkamerSP, nathanSP], [livingT, bureauT, badkamerT, nathanT])
+h_bureau = calculateLinearHeatingCurve(secs, bureauSP, livingT, exteriorT, h_loss_living, [bureauSP, badkamerSP, nathanSP], [livingT, badkamerT, nathanT])
+h_badkamer = calculateLinearHeatingCurve(secs, badkamerSP, badkamerT, exteriorT, h_loss_badkamer, [livingSP, bureauSP, nathanSP], [livingT, bureauT, nathanT])
+h_nathan = calculateLinearHeatingCurve(secs, nathanSP, nathanT, exteriorT, h_loss_nathan, [livingSP, bureauSP, badkamerSP], [livingT, bureauT, badkamerT])
+print("Living heating coefficient {:}°C/°Cs".format(h_living))
+print("Bureau heating coefficient {:}°C/°Cs".format(h_bureau))
+print("Badkamer heating coefficient {:}°C/°Cs".format(h_badkamer))
+print("Nathan heating coefficient {:}°C/°Cs".format(h_nathan))
