@@ -33,7 +33,7 @@ class Display(object):
                 f.write("datetime;")
                 for zone in self.zones:
                     f.write("{:}_{:};{:}_{:};{:}_{:};".format("setpoint",zone.getName(), "temperature",zone.getName(),"level",zone.getName()))
-                f.write("{:};{:};{:};{:}\n".format("requestePower", "deliveredPower","returnTemperature","flowTemperature"))
+                f.write("{:};{:};{:};{:};{:}\n".format("requestePower", "deliveredPower","returnTemperature","flowTemperature","exteriorTemperature"))
         self.client = mqtt.Client()
         self.client.connect(self.mqtt["address"], self.mqtt["port"], 60)
         self.away = False
@@ -256,7 +256,7 @@ class Display(object):
                     f.write("{:};".format(dtime))
                     for zone in self.zones:
                         f.write("{:};{:};{:};".format(zone.getSetpoint(), zone.getTemperature(), zone.getLevel()))
-                    f.write("{:};{:};{:};{:}\n".format(self.boiler.getRequestedPower(), self.boiler.getDeliveredPower(), self.boiler.getReturnTemperature(), self.boiler.getFlowTemperature()))
+                    f.write("{:};{:};{:};{:};{:}\n".format(self.boiler.getRequestedPower(), self.boiler.getDeliveredPower(), self.boiler.getReturnTemperature(), self.boiler.getFlowTemperature(), self.exterior.getTemperature()))
 
 
 1
