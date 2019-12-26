@@ -1,4 +1,5 @@
 from Scheduler.BasicScheduler import BasicScheduler
+from Scheduler.PredictiveScheduler import PredictiveScheduler
 from Controller.ControllerFactory import ControllerFactory
 from BoilerInterface.BoilerInterfaceFactory import BoilerInterfaceFactory
 from Setup import Setup
@@ -8,6 +9,7 @@ import json
 
 class SchedulerType(object):
     BASICSCHEDULER = "basic"
+    PREDICTIVESCHEDULER = "predictive"
 
 class SchedulerFactory(object):
     def loadSetup(self, filename):
@@ -29,6 +31,17 @@ class SchedulerFactory(object):
         setup = self.loadSetup(setupFile)
         if schedulerType == SchedulerType.BASICSCHEDULER:
             scheduler = BasicScheduler(parameters)
+            for zone in setup.getZoneNames():
+                controllerMeta = controllerTypes["default"]
+                if zone in controllerTypes:
+                    controllerMeta = controllerTypes[zone]
+
+                for zoneType in setup.getZoneTypes(zone):
+                    scheduler.addController(zone, controllerFactory.createController(scheduler.sensorNames, controllerMeta, zone, zoneType))
+            scheduler.addBoilerController(boilerFactory.createBoilerInterface(boilerType, boilerConfig))
+            return scheduler
+        elif schedulerType == SchedulerType.PREDICTIVESCHEDULER:
+            scheduler = PredictiveScheduler(parameters)
             for zone in setup.getZoneNames():
                 controllerMeta = controllerTypes["default"]
                 if zone in controllerTypes:

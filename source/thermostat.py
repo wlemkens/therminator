@@ -21,4 +21,4 @@ if __name__ == "__main__":
 
         scheduler.start()
     else:
-        print("Usage {s:0} </path/to/config.json>".format(sys.argv[0]))
+        print("Usage {:} </path/to/config.json>".format(sys.argv[0]))

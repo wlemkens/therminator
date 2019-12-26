@@ -5,79 +5,29 @@ import time
 
 # Project imports
 from Scheduler.Scheduler import Scheduler
+from Scheduler.BasicScheduler import Schedule
+from Scheduler.heating_coefficient import *
 
-class Schedule():
-    def __init__(self, schedule):
-        self.schedule = schedule
-        self.setpoints = {}
-        self.mode = None
-
-    def hasSetpointChanged(self, room):
-        if not room in self.setpoints.keys():
-            return True
-        return self.setpoints[room] != self._currentSetpointTemperature_(room)
-
-    def getNextChange(self, room):
-        dayOfWeek = datetime.datetime.today().weekday()
-        now = datetime.datetime.now()
-        minutes = now.hour * 60 + now.minute
-        dayType = self.schedule["weekschedule"][dayOfWeek]
-        timeTable = self.schedule["daytypes"][dayType]
-        for i in range(len(timeTable)):
-            if (timeTable[i]["start"] > minutes):
-                mode = timeTable[i]["mode"]
-                temperature = self.schedule["modes"][mode]["zones"][room]
-                return timeTable[i]["start"] * 60, temperature
-        mode = timeTable[-1]["mode"]
-        temperature = self.schedule["modes"][mode]["zones"][room]
-        return timeTable[-1] * 60, temperature
-
-
-    def _currentSetpointTemperature_(self, room):
-        dayOfWeek = datetime.datetime.today().weekday()
-        now = datetime.datetime.now()
-        minutes = now.hour * 60 + now.minute
-        dayType = self.schedule["weekschedule"][dayOfWeek]
-        timeTable = self.schedule["daytypes"][dayType]
-        mode = "none"
-        for i in range(len(timeTable)):
-            if (timeTable[i]["start"] > minutes):
-                mode = timeTable[i-1]["mode"]
-                break
-        if mode == "none":
-            mode = timeTable[-1]["mode"]
-        self.mode = mode
-        temperatures = self.schedule["modes"][mode]["zones"]
-        return temperatures[room]
-
-    def getCurrentSetpointTemperature(self, room):
-        self.setpoints[room] = self._currentSetpointTemperature_(room)
-        return self.setpoints[room]
-
-
-    def zoneCount(self):
-        return len(self.schedule["modes"][0]["zones"])
-
-    def getZoneNames(self):
-        modes = list(self.schedule["modes"].keys())
-        return self.schedule["modes"][modes[0]]["zones"].keys()
-
-    def getMode(self):
-        return self.mode
-
-class BasicScheduler(Scheduler):
+class PredictiveScheduler(Scheduler):
     def __init__(self, filename):
-        super(BasicScheduler,self).__init__()
+        super(PredictiveScheduler,self).__init__()
         self.schedule = None
         self.mode = None
         self.controller = {}
         self.boilerInterface = None
         self.loadConfig(filename)
+        self.h = None
+        self.h_loss = None
+        self.loadLog(self.logDirectory)
+
+    def loadLog(self, directory):
+        self.h, self.h_loss = calculateCoefficientsFromBestLog(directory)
 
     def loadConfig(self, filename):
         with open(filename) as f:
             self.schedule = Schedule(json.load(f))
             daytypes = self.schedule.schedule["daytypes"]
+            self.logDirectory = self.schedule.schedule["log_directory"]
             for typename, daytype in daytypes.items():
                 for period in daytype:
                     if ":" in str(period["start"]):
@@ -93,12 +43,20 @@ class BasicScheduler(Scheduler):
             total = 0
             for room in rooms:
                 for controller in self.controller[room]:
-                    if (self.schedule.hasSetpointChanged(room)):
-                        controller.setSetpoint(self.schedule.getCurrentSetpointTemperature(room) )
+                    time, nextSetpointTemperature = self.schedule.getNextChange(room)
+                    temperature = self.controller.getTemperature()
+                    currentSP = self.controller.getSetpoint()
+                    scheduledSP = self.schedule.getCurrentSetpointTemperature(room)
+                    hasChanged = self.schedule.hasSetpointChanged(room)
+                    if (nextSetpointTemperature > currentSP or hasChanged):
+                        forFutureSP = heating_coefficient.calculateSetpoint(time, nextSetpointTemperature, temperature, externalTemperature, self.h_loss[room], self.h[room])
+                        if forFutureSP > currentSP or hasChanged:
+                            controller.setSetpoint(scheduledSP)
                         mode = self.schedule.getMode()
                         if mode != self.mode:
                             self.mode = mode
                             self.boilerInterface.setMode(mode)
+
                     if controller.isEnabled():
                         output = controller.getOutput()
                         total += max(0,output)
