@@ -25,12 +25,15 @@ class Schedule():
         timeTable = self.schedule["daytypes"][dayType]
         for i in range(len(timeTable)):
             if (timeTable[i]["start"] > minutes):
+                currentMode = timeTable[i-1]["mode"]
+                currentTemperature = self.schedule["modes"][currentMode]["zones"][room]
                 mode = timeTable[i]["mode"]
                 temperature = self.schedule["modes"][mode]["zones"][room]
-                return timeTable[i]["start"] * 60, temperature
+                if currentTemperature != temperature:
+                    return timeTable[i]["start"] * 60, temperature
         mode = timeTable[-1]["mode"]
         temperature = self.schedule["modes"][mode]["zones"][room]
-        return timeTable[-1] * 60, temperature
+        return timeTable[-1]["start"] * 60, temperature
 
 
     def _currentSetpointTemperature_(self, room):

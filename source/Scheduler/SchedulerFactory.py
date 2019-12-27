@@ -2,6 +2,7 @@ from Scheduler.BasicScheduler import BasicScheduler
 from Scheduler.PredictiveScheduler import PredictiveScheduler
 from Controller.ControllerFactory import ControllerFactory
 from BoilerInterface.BoilerInterfaceFactory import BoilerInterfaceFactory
+from Entity.Exterior import Exterior
 from Setup import Setup
 
 from enum import Enum
@@ -23,9 +24,10 @@ class SchedulerFactory(object):
         schedulerConfig = config["scheduler"]["configFile"]
         boilerType = config["boiler_controller"]["type"]
         boilerConfig = config["boiler_controller"]["configFile"]
-        return self.setupScheduler(schedulerType, controllerTypes, setupFile, schedulerConfig, boilerType, boilerConfig)
+        mqttFile = config["mqtt"]["configFile"]
+        return self.setupScheduler(schedulerType, controllerTypes, setupFile, schedulerConfig, boilerType, boilerConfig,mqttFile)
 
-    def setupScheduler(self, schedulerType, controllerTypes, setupFile, parameters, boilerType, boilerConfig):
+    def setupScheduler(self, schedulerType, controllerTypes, setupFile, parameters, boilerType, boilerConfig, mqttFile):
         controllerFactory = ControllerFactory()
         boilerFactory = BoilerInterfaceFactory()
         setup = self.loadSetup(setupFile)
@@ -50,6 +52,9 @@ class SchedulerFactory(object):
                 for zoneType in setup.getZoneTypes(zone):
                     scheduler.addController(zone, controllerFactory.createController(scheduler.sensorNames, controllerMeta, zone, zoneType))
             scheduler.addBoilerController(boilerFactory.createBoilerInterface(boilerType, boilerConfig))
+            with open(mqttFile) as f:
+                mqttConfig = json.load(f)
+                scheduler.addExterior(Exterior(mqttConfig, None))
             return scheduler
         else:
             raise ValueError("No scheduler of specified type")

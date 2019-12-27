@@ -198,14 +198,16 @@ def calculateCoefficientsFromLog(log):
     h_loss["bureau"] = calculateHeatLoss(log[10], log[0], log[6], log[11])
     h["bureau"] = calculateLinearHeatingCurve(log[0], log[5], log[6], log[11], h_loss["bureau"], [log[1], log[3], log[7]], [log[2], log[4], log[8]])
     h_loss["kamer_nathan"] = calculateHeatLoss(log[10], log[0], log[8], log[11])
-    h["kamer_nathan"] = calculateLinearHeatingCurve(log[0], log[7], log[8], log[11], h_loss["nathan"], [log[1], log[3], log[5]], [log[2], log[4], log[6]])
+    h["kamer_nathan"] = calculateLinearHeatingCurve(log[0], log[7], log[8], log[11], h_loss["kamer_nathan"], [log[1], log[3], log[5]], [log[2], log[4], log[6]])
     return h, h_loss
 
 def calculateSetpoint(tTime, targetTemperature, temperature, externalTemperature, h_loss, h):
-    now = datetime.time.now()
-    nowTime = now.hour * 3600 + now.hour * 60 + now.seconds
+    now = datetime.datetime.now()
+    nowTime = now.hour * 3600 + now.hour * 60 + now.second
     targetTime = tTime
     if nowTime > tTime:
         targetTime += 24 * 3600
-    spTemperature = (targetTemperature - temperature) * h + (externalTemperature - temperature) * h_loss
+    # The temperature difference the system can have in the available time
+    deltaT = ((targetTemperature - temperature) * h + (externalTemperature - temperature) * h_loss) * (targetTime - nowTime)
+    spTemperature = targetTemperature - deltaT
     return spTemperature

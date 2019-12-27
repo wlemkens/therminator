@@ -43,15 +43,19 @@ class PredictiveScheduler(Scheduler):
             total = 0
             for room in rooms:
                 for controller in self.controller[room]:
-                    time, nextSetpointTemperature = self.schedule.getNextChange(room)
-                    temperature = self.controller.getTemperature()
-                    currentSP = self.controller.getSetpoint()
+                    spTime, nextSetpointTemperature = self.schedule.getNextChange(room)
+                    temperature = controller.getTemperature()
+                    currentSP = controller.getSetpoint()
                     scheduledSP = self.schedule.getCurrentSetpointTemperature(room)
                     hasChanged = self.schedule.hasSetpointChanged(room)
-                    if (nextSetpointTemperature > currentSP or hasChanged):
-                        forFutureSP = heating_coefficient.calculateSetpoint(time, nextSetpointTemperature, temperature, externalTemperature, self.h_loss[room], self.h[room])
-                        if forFutureSP > currentSP or hasChanged:
-                            controller.setSetpoint(scheduledSP)
+                    if ((currentSP != None and nextSetpointTemperature > currentSP) or hasChanged):
+                        externalTemperature = self.exterior.getTemperature()
+                        forFutureSP = calculateSetpoint(spTime, nextSetpointTemperature, temperature, externalTemperature, self.h_loss[room], self.h[room])
+                        if (forFutureSP > currentSP and currentSP < nextSetpointTemperature) or hasChanged:
+                            if hasChanged:
+                                controller.setSetpoint(scheduledSP)
+                            else:
+                                controller.setSetpoint(nextSetpointTemperature)
                         mode = self.schedule.getMode()
                         if mode != self.mode:
                             self.mode = mode
@@ -84,3 +88,6 @@ class PredictiveScheduler(Scheduler):
 
     def addBoilerController(self, controller):
         self.boilerInterface = controller
+
+    def addExterior(self, exterior):
+        self.exterior = exterior
