@@ -19,6 +19,7 @@ class PredictiveScheduler(Scheduler):
         self.h = None
         self.h_loss = None
         self.loadLog(self.logDirectory)
+        print("Using predictive scheduler")
 
     def loadLog(self, directory):
         self.h, self.h_loss = calculateCoefficientsFromBestLog(directory)
@@ -45,7 +46,7 @@ class PredictiveScheduler(Scheduler):
                 for controller in self.controller[room]:
                     spTime, nextSetpointTemperature = self.schedule.getNextChange(room)
                     temperature = controller.getTemperature()
-                    currentSP = controller.getSetStoredSetpoint()
+                    currentSP = controller.getStoredSetpoint()
                     scheduledSP = self.schedule.getCurrentSetpointTemperature(room)
                     hasChanged = self.schedule.hasSetpointChanged(room)
                     if ((currentSP != None and nextSetpointTemperature > currentSP) or hasChanged):

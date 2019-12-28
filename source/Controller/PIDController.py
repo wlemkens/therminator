@@ -25,6 +25,9 @@ class PIDController(Controller):
     def getSetpoint(self):
         return self.heatingInterface.getSetpoint()
 
+    def getStoredSetpoint(self):
+        return self.heatingInterface.getStoredSetpoint()
+
     def getTemperature(self):
         return self.heatingInterface.getTemperature()
 
