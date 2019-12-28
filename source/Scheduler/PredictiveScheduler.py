@@ -49,7 +49,7 @@ class PredictiveScheduler(Scheduler):
                     currentSP = controller.getStoredSetpoint()
                     scheduledSP = self.schedule.getCurrentSetpointTemperature(room)
                     hasChanged = self.schedule.hasSetpointChanged(room)
-                    if ((currentSP != None and nextSetpointTemperature > currentSP and temperature != None and externalTemperature != None) or hasChanged):
+                    if ((currentSP != None and nextSetpointTemperature > currentSP and temperature != None) or hasChanged):
                         externalTemperature = self.exterior.getTemperature()
                         forFutureSP = calculateSetpoint(spTime, nextSetpointTemperature, temperature, externalTemperature, self.h_loss[room], self.h[room])
                         if (forFutureSP > currentSP and currentSP < nextSetpointTemperature) or hasChanged:
