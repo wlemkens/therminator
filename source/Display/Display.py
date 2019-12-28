@@ -2,6 +2,7 @@ from __future__ import print_function
 
 from PIL import ImageFont, ImageDraw, Image
 import time
+import threading
 from datetime import datetime
 
 import json
@@ -203,6 +204,14 @@ class Display(object):
                 self.display([image, imagec])
             self.log()
             self.lock = False
+        else:
+            if self.delayedUpdate:
+                self.delayedUpdate.cancel()
+                self.delayedUpdate = None
+            self.delayedUpdate = threading.Timer(self.fullUpdateInterval, self.delayedUpdate)
+
+    def delayedUpdate(self):
+        self.update()
 
     def display(self, image):
         pass
