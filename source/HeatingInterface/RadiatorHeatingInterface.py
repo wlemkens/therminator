@@ -58,6 +58,9 @@ class RadiatorHeatingInterface(HeatingInterface):
     def getSetpoint(self):
         return self.setpoint
 
+    def getStoredSetpoint(self):
+        return self.stored_setpoint
+
     def setSetpoint(self, setpoint):
         print(datetime.datetime.now())
         print("Publishing setpoint {:} from {:} to {:}".format(setpoint, self.setpoint, setpoint))
