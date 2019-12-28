@@ -6,6 +6,7 @@ import time
 class Zone(object):
     def __init__(self, config, mqttConfig, on_update):
         self.offTemperature = 10
+        self.offDelay = 10
         self.temperature = None
         self.setpoint = None
         self.level = None
@@ -47,7 +48,7 @@ class Zone(object):
             self.tempEnabled = int((message.payload))
             if self.enabledCheckThread:
                 self.enabledCheckThread.cancel()
-            self.enabledCheckThread = threading.Timer(self.offTemperature, self.enabledCheck)
+            self.enabledCheckThread = threading.Timer(self.offDelay, self.enabledCheck)
             self.enabledCheckThread.start()
 
     def requestValues(self):
