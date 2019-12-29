@@ -56,8 +56,9 @@ class PredictiveScheduler(Scheduler):
                             externalTemperature = self.exterior.getTemperature()
                             if externalTemperature != None:
                                 forFutureSP = calculateSetpoint(spTime, nextSetpointTemperature, temperature, externalTemperature, self.h_loss[room], self.h[room])
-                            if (forFutureSP > currentSP and currentSP < nextSetpointTemperature):
-                                controller.setSetpoint(nextSetpointTemperature)
+                                print("Minimum required temperature for {:} is {:}°C".format(room, forFutureSP))
+                                if (forFutureSP > currentSP and currentSP < nextSetpointTemperature):
+                                    controller.setSetpoint(nextSetpointTemperature)
                         mode = self.schedule.getMode()
                         if mode != self.mode:
                             self.mode = mode
