@@ -99,7 +99,7 @@ def calculateLinearHeatingCurve(times, setpoints, temperatures, externalTs, h_lo
     else:
         h = 0.005
     # print(h)
-    return h
+    return h / 2
 
 def calculateHeatLoss(actP, times, temperatures, exteriorT):
     # Check state when heating is off
