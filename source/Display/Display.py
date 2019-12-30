@@ -175,6 +175,9 @@ class Display(object):
     def update(self):
         if not self.lock:
             self.lock = True
+            if self.delayedUpdate:
+                self.delayedUpdate.cancel()
+                self.delayedUpdate = None
             i = 0
             size = (self.getWidth(), self.getHeight())
             image = Image.new('1', size, self.WHITE)
