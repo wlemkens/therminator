@@ -27,6 +27,7 @@ class Display(object):
         self.boldFontPath = "/usr/local/share/fonts/VoiceActivatedBB_bold.otf"
         self.logFile = logFilename
         self.awayFontSize = 1
+        self.delayedUpdateTimer = None
         self.setup, self.mqtt, self.fullUpdateInterval = self.loadConfig(config)
         self.createLayout(self.setup, self.mqtt)
         if self.logFile:
@@ -175,9 +176,9 @@ class Display(object):
     def update(self):
         if not self.lock:
             self.lock = True
-            if self.delayedUpdate:
-                self.delayedUpdate.cancel()
-                self.delayedUpdate = None
+            if self.delayedUpdateTimer != None:
+                self.delayedUpdateTimer.cancel()
+                self.delayedUpdateTimer = None
             i = 0
             size = (self.getWidth(), self.getHeight())
             image = Image.new('1', size, self.WHITE)
@@ -208,10 +209,10 @@ class Display(object):
             self.log()
             self.lock = False
         else:
-            if self.delayedUpdate:
-                self.delayedUpdate.cancel()
-                self.delayedUpdate = None
-            self.delayedUpdate = threading.Timer(self.fullUpdateInterval, self.delayedUpdate)
+            if self.delayedUpdateTimer:
+                self.delayedUpdateTimer.cancel()
+                self.delayedUpdateTimer = None
+            self.delayedUpdateTimer = threading.Timer(self.fullUpdateInterval, self.delayedUpdate)
 
     def delayedUpdate(self):
         self.update()
