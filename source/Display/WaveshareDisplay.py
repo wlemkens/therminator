@@ -47,40 +47,55 @@ class WaveshareDisplay(Display.Display):
         tempText = "{:} ".format(zone.getTemperature())
         temp = zone.getTemperature()
         sp = zone.getSetpoint()
+        batteryText = "{:}%".format(zone.getBattery())
         tempTooLow = temp != None and sp != None and temp < sp
         textColor = self.BLACK
         if index == 0:
             paddingMult = 3
             font = ImageFont.truetype(self.fontPath, self.largeFontSize)
             boldFont = ImageFont.truetype(self.boldFontPath, self.largeFontSize)
+            fullSize = font.getsize(text)
+            smallFont = ImageFont.truetype(self.fontPath, self.largeFontSize*0.4)
             if not zone.isEnabled():
                 size = font.getsize(tempText)
                 x1 = self.getWidth() - lineWidth - self.fontSize * 3 - 2
                 y1 = padding*paddingMult+2
                 x2 = x1 + size[0]-4
                 y2 = y1 + size[1]+1
+                x = self.getWidth() - lineWidth - self.fontSize * 3
+                y = padding*paddingMult
                 draw.text((x2, padding*paddingMult), sptext, font=font, fill=self.BLACK)
                 if tempTooLow:
                     drawc.rectangle(((x1,y1), (x2,y2)),fill=self.BLACK,outline=self.BLACK)
                     textColor = self.WHITE
-                    drawc.text((self.getWidth() - lineWidth - self.fontSize * 3, padding*paddingMult), tempText, font=font, fill=textColor)
+                    drawc.text((x, y), tempText, font=font, fill=textColor)
                 else:
                     draw.rectangle(((x1,y1), (x2,y2)),fill=self.BLACK,outline=self.BLACK)
                     textColor = self.WHITE
-                    draw.text((self.getWidth() - lineWidth - self.fontSize * 3, padding*paddingMult), tempText, font=font, fill=textColor)
+                    draw.text((x, y), tempText, font=font, fill=textColor)
+                draw.text((x,x), batteryText, font=smallFont, fill=textColor)
             else:
+                x = self.getWidth() - lineWidth - self.fontSize * 3
+                y = padding*paddingMult
                 if tempTooLow:
-                    draw.text((self.getWidth() - lineWidth - self.fontSize * 3, padding*paddingMult), tempText, font=boldFont, fill=textColor)
+                    draw.text((x, y), tempText, font=boldFont, fill=textColor)
                     size = font.getsize(tempText)
-                    draw.text((size[0]*.9 + self.getWidth() - lineWidth - self.fontSize * 3, padding*paddingMult), sptext, font=font, fill=self.BLACK)
+                    draw.text((size[0]*.9 + self.getWidth() - lineWidth - self.fontSize * 3, y), sptext, font=font, fill=self.BLACK)
                 else:
-                    draw.text((self.getWidth() - lineWidth - self.fontSize * 3, padding*paddingMult), text, font=font, fill=self.BLACK)
+                    draw.text((x, y), text, font=font, fill=self.BLACK)
+                draw.text((x+fullSize[0]*1.1,y), batteryText, font=smallFont, fill=textColor)
         else:
             paddingMult = 4
             font = ImageFont.truetype(self.fontPath, self.fontSize)
+            fullSize = font.getsize(text)
+            smallFont = ImageFont.truetype(self.fontPath, self.fontSize*0.4)
             boldFont = ImageFont.truetype(self.boldFontPath, self.fontSize)
-            draw.text((self.getWidth() - lineWidth - self.fontSize * 3, lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), name, font=font, fill=self.BLACK)
+            x = self.getWidth() - lineWidth - self.fontSize * 3
+            y = lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding
+            draw.text((x, y), name, font=font, fill=self.BLACK)
             textColor = self.BLACK
+            tx = self.getWidth() - lineWidth
+            ty = lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding
             if not zone.isEnabled():
                 size = font.getsize(tempText)
                 x1 = self.getWidth() - lineWidth -2
@@ -91,15 +106,16 @@ class WaveshareDisplay(Display.Display):
                 if tempTooLow:
                     drawc.rectangle(((x1,y1), (x2,y2)),fill=self.BLACK,outline=self.BLACK)
                     textColor = self.WHITE
-                    drawc.text((self.getWidth() - lineWidth, lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), tempText, font=font, fill=textColor)
+                    drawc.text((tx, ty), tempText, font=font, fill=textColor)
                 else:
                     draw.rectangle(((x1,y1), (x2,y2)),fill=self.BLACK,outline=self.BLACK)
                     textColor = self.WHITE
-                    draw.text((self.getWidth() - lineWidth, lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), tempText, font=font, fill=textColor)
+                    draw.text((tx, ty), tempText, font=font, fill=textColor)
             else:
                 if tempTooLow:
                     draw.text((self.getWidth() - lineWidth, lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), tempText, font=boldFont, fill=self.BLACK)
                     size = font.getsize(tempText)
                     draw.text((size[0] * 0.9 + self.getWidth() - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), sptext, font=font, fill=self.BLACK)
                 else:
-                    draw.text((self.getWidth() - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), text, font=font, fill=self.BLACK)
+                    draw.text((tx, ty), text, font=font, fill=self.BLACK)
+            draw.text((tx+fullSize[0]*1.1,ty), batteryText, font=smallFont, fill=textColor)
