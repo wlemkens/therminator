@@ -55,7 +55,7 @@ class WaveshareDisplay(Display.Display):
             font = ImageFont.truetype(self.fontPath, self.largeFontSize)
             boldFont = ImageFont.truetype(self.boldFontPath, self.largeFontSize)
             fullSize = font.getsize(text)
-            smallFont = ImageFont.truetype(self.fontPath, self.largeFontSize*0.4)
+            smallFont = ImageFont.truetype(self.fontPath, int(self.largeFontSize*0.4))
             if not zone.isEnabled():
                 size = font.getsize(tempText)
                 x1 = self.getWidth() - lineWidth - self.fontSize * 3 - 2
@@ -73,7 +73,7 @@ class WaveshareDisplay(Display.Display):
                     draw.rectangle(((x1,y1), (x2,y2)),fill=self.BLACK,outline=self.BLACK)
                     textColor = self.WHITE
                     draw.text((x, y), tempText, font=font, fill=textColor)
-                draw.text((x,x), batteryText, font=smallFont, fill=textColor)
+                draw.text((x-20,y+10+fullSize[1]), batteryText, font=smallFont, fill=textColor)
             else:
                 x = self.getWidth() - lineWidth - self.fontSize * 3
                 y = padding*paddingMult
@@ -83,12 +83,12 @@ class WaveshareDisplay(Display.Display):
                     draw.text((size[0]*.9 + self.getWidth() - lineWidth - self.fontSize * 3, y), sptext, font=font, fill=self.BLACK)
                 else:
                     draw.text((x, y), text, font=font, fill=self.BLACK)
-                draw.text((x+fullSize[0]*1.1,y), batteryText, font=smallFont, fill=textColor)
+                draw.text((x-20,y+5+fullSize[1]), batteryText, font=smallFont, fill=textColor)
         else:
             paddingMult = 4
             font = ImageFont.truetype(self.fontPath, self.fontSize)
             fullSize = font.getsize(text)
-            smallFont = ImageFont.truetype(self.fontPath, self.fontSize*0.4)
+            smallFont = ImageFont.truetype(self.fontPath, int(self.fontSize*0.4))
             boldFont = ImageFont.truetype(self.boldFontPath, self.fontSize)
             x = self.getWidth() - lineWidth - self.fontSize * 3
             y = lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding
@@ -118,4 +118,4 @@ class WaveshareDisplay(Display.Display):
                     draw.text((size[0] * 0.9 + self.getWidth() - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), sptext, font=font, fill=self.BLACK)
                 else:
                     draw.text((tx, ty), text, font=font, fill=self.BLACK)
-            draw.text((tx+fullSize[0]*1.1,ty), batteryText, font=smallFont, fill=textColor)
+            draw.text((tx-30, ty-5+fullSize[1]), batteryText, font=smallFont, fill=self.BLACK)
