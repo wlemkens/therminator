@@ -12,6 +12,9 @@
       "configFile":"/home/wim/projects/therminator/config/pid config.json"
     }
   },
+  "mqtt":{
+    "configFile":"/home/wim/projects/therminator/config/mqtt.json"
+  },
   "boiler_controller":{
       "type": "mqtt",
       "configFile":"/home/wim/projects/therminator/config/boiler_config.json"

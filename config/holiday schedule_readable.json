@@ -1,6 +1,14 @@
 {
   "name": "standard",
   "modes": {
+    "pre-night": {
+      "zones": {
+        "living": 15,
+        "badkamer": 15,
+        "bureau": 18,
+        "kamer_nathan": 16
+      }
+    },
     "night": {
       "zones": {
         "living": 15,
@@ -20,7 +28,7 @@
     "morning": {
       "zones": {
         "living": 20.5,
-        "badkamer": 21.5,
+        "badkamer": 23.0,
         "bureau": 18,
         "kamer_nathan": 16
       }
@@ -53,7 +61,7 @@
   "daytypes": {
     "workday": [
       {
-        "start": "06:00",
+        "start": "05:00",
         "mode": "morning"
       },
       {
@@ -74,12 +82,16 @@
       },
       {
         "start": "21:30",
+        "mode": "pre-night"
+      },
+      {
+        "start": "22:30",
         "mode": "night"
       }
     ],
     "weekend": [
       {
-        "start": "06:00",
+        "start": "05:00",
         "mode": "morning"
       },
       {
@@ -96,6 +108,10 @@
       },
       {
         "start": "21:30",
+        "mode": "pre-night"
+      },
+      {
+        "start": "22:30",
         "mode": "night"
       }
     ]
@@ -108,5 +124,6 @@
     "weekend",
     "weekend",
     "weekend"
-  ]
+  ],
+  "log_directory" : "/home/wim/"
 }
