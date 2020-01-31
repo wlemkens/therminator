@@ -179,6 +179,48 @@ def loadLog(log):
             lineNb += 1
     return np.array(times), np.array(livingSP), np.array(livingT), np.array(badkamerSP), np.array(badkamerT), np.array(bureauSP), np.array(bureauT), np.array(nathanSP), np.array(nathanT), np.array(reqP), np.array(actP), np.array(exteriorT)
 
+def loadLogV2(log):
+    times = []
+    livingSP = []
+    livingT = []
+    livingOn = []
+    badkamerSP = []
+    badkamerT = []
+    badkamerOn = []
+    bureauSP = []
+    bureauT = []
+    bureauOn = []
+    nathanSP = []
+    nathanT = []
+    nathanOn = []
+    reqP = []
+    actP = []
+    exteriorT = []
+    with open(log, "r") as f:
+        lineNb = 0
+        for line in f:
+            if lineNb > 0:
+                parts = line.split(";")
+                time = datetime.datetime.strptime(parts[0], '%Y-%m-%d %H:%M:%S').timestamp()
+                times += [time]
+                livingSP += [float(parts[1])]
+                livingT += [float(parts[2])]
+                livingOn += [int(parts[3])]
+                badkamerSP += [float(parts[5])]
+                badkamerT += [float(parts[6])]
+                badkamerOn += [int(parts[7])]
+                bureauSP += [float(parts[9])]
+                bureauT += [float(parts[10])]
+                bureauOn += [int(parts[11])]
+                nathanSP += [float(parts[13])]
+                nathanT += [float(parts[14])]
+                nathanOn += [int(parts[15])]
+                reqP += [float(parts[17])]
+                actP += [float(parts[18])]
+                exteriorT += [float(parts[21])]
+            lineNb += 1
+    return np.array(times), np.array(livingSP), np.array(livingT), np.array(livingOn), np.array(badkamerSP), np.array(badkamerT), np.array(badkamerOn), np.array(bureauSP), np.array(bureauT), np.array(bureauOn), np.array(nathanSP), np.array(nathanT), np.array(nathanT), np.array(reqP), np.array(actP), np.array(exteriorT)
+
 
 def calculateCoefficientsFromBestLog(directory):
     logs = getLogs(directory)
@@ -208,6 +250,32 @@ def calculateSetpoint(tTime, targetTemperature, temperature, externalTemperature
     if nowTime > tTime:
         targetTime += 24 * 3600
     # The temperature difference the system can have in the available time
-    deltaT = ((targetTemperature - temperature) * h + (externalTemperature - temperature) * h_loss) * (targetTime - nowTime)
+    deltaT_in = targetTemperature - temperature
+    deltaT_out = externalTemperature - temperature
+    dT_in = deltaT_in * h
+    dT_out = deltaT_out * h_loss
+    deltaT = (dT_in + dT_out) * (targetTime - nowTime)
     spTemperature = targetTemperature - deltaT
     return spTemperature
+
+def simulateFutureTemperature(tTime, targetTemperature, temperature, externalTemperature, h_loss, h, steps):
+    now = datetime.datetime.now()
+    nowTime = now.hour * 3600 + now.hour * 60 + now.second
+    targetTime = tTime
+    if nowTime > tTime:
+        targetTime += 24 * 3600
+    deltaTime = targetTime - nowTime
+    stepSize = deltaTime / steps
+    simTemperature = temperature
+    for time in np.arange(0, deltaTime, stepSize):
+        deltaT_out = externalTemperature - simTemperature
+        dT_out = deltaT_out * h_loss
+        T_loss = dT_out * stepSize
+        deltaT_in = max(0, targetTemperature - simTemperature - T_loss)
+        dT_in = deltaT_in * h
+        T_heat = dT_in * stepSize
+        simTemperature += T_heat
+        if simTemperature > targetTemperature:
+            return simTemperature
+        simTemperature += T_loss
+    return simTemperature

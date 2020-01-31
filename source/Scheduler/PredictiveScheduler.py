@@ -19,6 +19,7 @@ class PredictiveScheduler(Scheduler):
         self.h = None
         self.h_loss = None
         self.loadLog(self.logDirectory)
+        self.nbSimSteps = 10
         print("Using predictive scheduler")
 
     def loadLog(self, directory):
@@ -49,6 +50,12 @@ class PredictiveScheduler(Scheduler):
                     currentSP = controller.getStoredSetpoint()
                     hasChanged = self.schedule.hasSetpointChanged(room)
                     scheduledSP = self.schedule.getCurrentSetpointTemperature(room)
+                    #TMP debugging
+                    externalTemperature = self.exterior.getTemperature()
+                    if externalTemperature != None and temperature != None:
+                        futureTemp = simulateFutureTemperature(spTime, nextSetpointTemperature, temperature, externalTemperature, self.h_loss[room], self.h[room], self.nbSimSteps)
+                        print(">Future temperature for {:} is {:}°C".format(room, futureTemp))
+
                     if ((currentSP != None and nextSetpointTemperature > currentSP and temperature != None) or hasChanged):
                         if hasChanged:
                             controller.setSetpoint(scheduledSP)
