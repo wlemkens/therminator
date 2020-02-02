@@ -69,25 +69,25 @@ class Schedule():
         return self.mode
 
 class BasicScheduler(Scheduler):
-    def __init__(self, filename):
+    def __init__(self, schedule, modes, dayttypes):
         super(BasicScheduler,self).__init__()
         self.schedule = None
         self.mode = None
         self.controller = {}
         self.boilerInterface = None
-        self.loadConfig(filename)
+        self.loadConfig(schedule, modes, dayttypes)
 
-    def loadConfig(self, filename):
-        with open(filename) as f:
-            self.schedule = Schedule(json.load(f))
-            daytypes = self.schedule.schedule["daytypes"]
+    def loadConfig(self, schedule, modes, daytypes):
+            self.schedule = Schedule({"weekschedule" : schedule,
+                             "modes": modes,
+                             "daytypes": daytypes})
+            daytypes = daytypes
             for typename, daytype in daytypes.items():
                 for period in daytype:
                     if ":" in str(period["start"]):
                         start = period["start"]
                         time = datetime.datetime.strptime(start, "%H:%M")
                         period["start"] = time.hour * 60 + time.minute
-#                        print("{:} -> {:}".format(start, period["start"]))
 
     def run(self):
         while True:

@@ -27,12 +27,12 @@ class SchedulerFactory(object):
         mqttFile = config["mqtt"]["configFile"]
         return self.setupScheduler(schedulerType, controllerTypes, setupFile, schedulerConfig, boilerType, boilerConfig,mqttFile)
 
-    def setupScheduler(self, schedulerType, controllerTypes, setupFile, parameters, boilerType, boilerConfig, mqttFile):
+    def setupScheduler(self, schedulerType, controllerTypes, setupFile, schedule, modes, daytypes, boilerType, boilerConfig, mqttFile):
         controllerFactory = ControllerFactory()
         boilerFactory = BoilerInterfaceFactory()
         setup = self.loadSetup(setupFile)
         if schedulerType == SchedulerType.BASICSCHEDULER:
-            scheduler = BasicScheduler(parameters)
+            scheduler = BasicScheduler(schedule, modes, daytypes)
             for zone in setup.getZoneNames():
                 controllerMeta = controllerTypes["default"]
                 if zone in controllerTypes:
@@ -43,7 +43,7 @@ class SchedulerFactory(object):
             scheduler.addBoilerController(boilerFactory.createBoilerInterface(boilerType, boilerConfig))
             return scheduler
         elif schedulerType == SchedulerType.PREDICTIVESCHEDULER:
-            scheduler = PredictiveScheduler(parameters)
+            scheduler = PredictiveScheduler(schedule, modes, daytypes)
             for zone in setup.getZoneNames():
                 controllerMeta = controllerTypes["default"]
                 if zone in controllerTypes:
