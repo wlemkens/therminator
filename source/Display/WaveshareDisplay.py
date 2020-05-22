@@ -42,8 +42,12 @@ class WaveshareDisplay(Display.Display):
         freeSpace = self.getHeight() - totalHeight
         padding = freeSpace/5
         name = "{:}".format(zone.getLabel())
-        text = "{:}/{:} ".format(zone.getTemperature(), zone.getSetpoint())
-        sptext = "/{:} ".format(zone.getSetpoint())
+        sp = zone.getSetpoint()
+        text = "{:} ".format(zone.getTemperature())
+        sptext = " "
+        if sp:
+            text = "{:}/{:} ".format(zone.getTemperature(), zone.getSetpoint())
+            sptext = "/{:} ".format(zone.getSetpoint())
         tempText = "{:} ".format(zone.getTemperature())
         temp = zone.getTemperature()
         sp = zone.getSetpoint()
@@ -73,7 +77,7 @@ class WaveshareDisplay(Display.Display):
                     draw.rectangle(((x1,y1), (x2,y2)),fill=self.BLACK,outline=self.BLACK)
                     textColor = self.WHITE
                     draw.text((x, y), tempText, font=font, fill=textColor)
-                draw.text((x-20,y+10+fullSize[1]), batteryText, font=smallFont, fill=textColor)
+#                draw.text((x-20,y+10+fullSize[1]), batteryText, font=smallFont, fill=textColor)
             else:
                 x = self.getWidth() - lineWidth - self.fontSize * 3
                 y = padding*paddingMult
@@ -83,7 +87,7 @@ class WaveshareDisplay(Display.Display):
                     draw.text((size[0]*.9 + self.getWidth() - lineWidth - self.fontSize * 3, y), sptext, font=font, fill=self.BLACK)
                 else:
                     draw.text((x, y), text, font=font, fill=self.BLACK)
-                draw.text((x-20,y+5+fullSize[1]), batteryText, font=smallFont, fill=textColor)
+            draw.text((x-20,y+5+fullSize[1]), batteryText, font=smallFont, fill=self.BLACK)
         else:
             paddingMult = 4
             font = ImageFont.truetype(self.fontPath, self.fontSize)
