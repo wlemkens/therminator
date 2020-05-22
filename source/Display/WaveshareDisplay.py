@@ -51,7 +51,10 @@ class WaveshareDisplay(Display.Display):
         tempText = "{:} ".format(zone.getTemperature())
         temp = zone.getTemperature()
         sp = zone.getSetpoint()
-        batteryText = "{:}%".format(zone.getBattery())
+        battery = zone.getBattery()
+        batteryText = ""
+        if battery:
+            batteryText = "{:}%".format(battery)
         tempTooLow = temp != None and sp != None and temp < sp
         textColor = self.BLACK
         if index == 0:
@@ -87,7 +90,10 @@ class WaveshareDisplay(Display.Display):
                     draw.text((size[0]*.9 + self.getWidth() - lineWidth - self.fontSize * 3, y), sptext, font=font, fill=self.BLACK)
                 else:
                     draw.text((x, y), text, font=font, fill=self.BLACK)
-            draw.text((x-20,y+5+fullSize[1]), batteryText, font=smallFont, fill=self.BLACK)
+            if battery and battery > 5:
+                draw.text((x-20,y+5+fullSize[1]), batteryText, font=smallFont, fill=self.BLACK)
+            else:
+                drawc.text((x-20,y+5+fullSize[1]), batteryText, font=smallFont, fill=self.BLACK)
         else:
             paddingMult = 4
             font = ImageFont.truetype(self.fontPath, self.fontSize)
@@ -122,4 +128,8 @@ class WaveshareDisplay(Display.Display):
                     draw.text((size[0] * 0.9 + self.getWidth() - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), sptext, font=font, fill=self.BLACK)
                 else:
                     draw.text((tx, ty), text, font=font, fill=self.BLACK)
-            draw.text((tx-30, ty-5+fullSize[1]), batteryText, font=smallFont, fill=self.BLACK)
+            if battery and battery > 5:
+                draw.text((tx-30, ty-5+fullSize[1]), batteryText, font=smallFont, fill=self.BLACK)
+            else:
+                drawc.text((tx-30, ty-5+fullSize[1]), batteryText, font=smallFont, fill=self.BLACK)
+
