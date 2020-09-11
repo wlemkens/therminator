@@ -173,6 +173,9 @@ class Display(object):
         font = ImageFont.truetype(self.boldFontPath, self.awayFontSize)
         draw.text((self.getWidth()*0.1, self.getHeight()*0.1), mode, font=font, fill=self.BLACK)
 
+    def setToSleep(self):
+        pass
+
     def update(self):
         if not self.lock:
             self.lock = True
@@ -192,12 +195,14 @@ class Display(object):
                     self.mode = "away"
                     self.fullUpdate = True
                     self.display([image, imagec])
+                    self.setToSleep()
             elif self.home.getMode() ==  'night':
                 if not self.mode == "night":
                     self.drawMode([draw,drawc], "Night")
                     self.mode = "night"
                     self.fullUpdate = True
                     self.display([image, imagec])
+                    self.setToSleep()
             else:
                 self.mode = self.home.getMode()
                 for zone in self.zones:

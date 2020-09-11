@@ -8,6 +8,7 @@ from Display import Display
 
 class WaveshareDisplay(Display.Display):
     def __init__(self, config, logFilename = None):
+        self.isSleeping = False
         self.epd = epd7in5bc.EPD()
         self.epd.init()
         self.epd.Clear()
@@ -22,6 +23,21 @@ class WaveshareDisplay(Display.Display):
             time.sleep(self.fullUpdateInterval)
             self.fullUpdate = True
 
+    def setToSleep(self):
+        print("Setting device to sleep")
+        try:
+            print("sleep...")
+            time.sleep(2)
+            print("sleep...")
+            self.epd.sleep()
+            print("sleep device")
+            #self.epd.Dev_exit()
+            print("exit")
+            self.isSleeping = True
+            print("Device is sleeping")
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+
     def getWidth(self):
         return self.epd.width
 
@@ -29,7 +45,21 @@ class WaveshareDisplay(Display.Display):
         return self.epd.height
 
     def display(self, image):
+        print("Displaying")
+        if self.isSleeping:
+            print("Waking up")
+#            self.epd = epd7in5bc.EPD()
+            self.epd.init()
+            print("Device set up")
+#            self.epd.clear()
+#            print("Device initialized")
+#            time.sleep(10)
+            self.isSleeping = False
+            print("Device was sleeping")
+
+        print("Update")
         if self.fullUpdate:
+            print("Doing full update")
             self.epd.display(self.epd.getbuffer(image[0]), self.epd.getbuffer(image[1]))
             self.fullUpdate = False
 
