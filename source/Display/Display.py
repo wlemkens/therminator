@@ -185,6 +185,7 @@ class Display(object):
             imagec = Image.new('1', size, self.WHITE)
             draw = ImageDraw.Draw(image)
             drawc = ImageDraw.Draw(imagec)
+            print("Mode = '{:}'".format(self.home.getMode()))
             if self.home.isAway() or self.home.getMode() == 'away':
                 if not self.mode == "away":
                     self.drawAway([draw,drawc])

@@ -55,6 +55,8 @@ class WaveshareDisplay(Display.Display):
         batteryText = ""
         if battery:
             batteryText = "{:}%".format(battery)
+        else:
+            print("No battery status for {:}".format(zone.getLabel()))
         tempTooLow = temp != None and sp != None and temp < sp
         textColor = self.BLACK
         if index == 0:

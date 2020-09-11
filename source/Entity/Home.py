@@ -17,7 +17,9 @@ class Home(object):
                 self.away = int(message.payload)
                 self.update()
         if message.topic == self.topicMode:
+            print("Received mode '{:}'".format(str(message.payload, 'utf-8')))
             if self.mode != str(message.payload, 'utf-8'):
+                print("Switching to mode '{:}'".format(str(message.payload, 'utf-8')))
                 self.mode = str(message.payload, 'utf-8')
                 self.update()
 

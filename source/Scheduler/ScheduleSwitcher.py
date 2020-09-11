@@ -30,7 +30,6 @@ class ScheduleSwitcher(object):
         self.scheduler.start()
 
     def selectSchedule(self, scheduleName):
-        print("Sitching to schedule '{:}'".format(scheduleName))
         self.scheduler.loadConfig(self.schedules[scheduleName], self.modes, self.daytypes)
 
     def connect(self, mqttConfig):

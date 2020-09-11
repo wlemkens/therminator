@@ -88,20 +88,21 @@ class BasicScheduler(Scheduler):
                         start = period["start"]
                         time = datetime.datetime.strptime(start, "%H:%M")
                         period["start"] = time.hour * 60 + time.minute
+            self.mode = None
 
     def run(self):
         while True:
             self.nextCallTime += self.interval
             rooms = self.schedule.getZoneNames()
             total = 0
+            mode = self.schedule.getMode()
+            if mode != self.mode:
+                self.mode = mode
+                self.boilerInterface.setMode(mode)
             for room in rooms:
                 for controller in self.controller[room]:
                     if (self.schedule.hasSetpointChanged(room)):
                         controller.setSetpoint(self.schedule.getCurrentSetpointTemperature(room) )
-                        mode = self.schedule.getMode()
-                        if mode != self.mode:
-                            self.mode = mode
-                            self.boilerInterface.setMode(mode)
                     if controller.isEnabled():
                         output = controller.getOutput()
                         total += max(0,output)
