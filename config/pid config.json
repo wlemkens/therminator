@@ -30,6 +30,13 @@
       "d": 1000,
       "errorSumLimit": 2,
       "historyRange": 10
+    },
+    "kamer_ariane": {
+      "p": 1.0,
+      "i": 0.0,
+      "d": 1000,
+      "errorSumLimit": 2,
+      "historyRange": 10
     }
   }
 }

@@ -5,6 +5,7 @@
         "living": 15,
         "badkamer": 15,
         "bureau": 18,
+        "kamer_ariane": 16,
         "kamer_nathan": 16
       }
     },
@@ -13,7 +14,17 @@
         "living": 15,
         "badkamer": 15,
         "bureau": 18,
+        "kamer_ariane": 16,
         "kamer_nathan": 16
+      }
+    },
+    "semi-away": {
+      "zones": {
+        "living": 15,
+        "badkamer": 15,
+        "bureau": 18,
+        "kamer_ariane": 15,
+        "kamer_nathan": 15
       }
     },
     "away": {
@@ -21,6 +32,7 @@
         "living": 15,
         "badkamer": 15,
         "bureau": 18,
+        "kamer_ariane": 15,
         "kamer_nathan": 15
       }
     },
@@ -29,6 +41,7 @@
         "living": 20.5,
         "badkamer": 26,
         "bureau": 18,
+        "kamer_ariane": 16,
         "kamer_nathan": 16
       }
     },
@@ -36,7 +49,8 @@
       "zones": {
         "living": 20.5,
         "badkamer": 22,
-        "bureau": 18,
+        "bureau": 18.5,
+        "kamer_ariane": 16,
         "kamer_nathan": 16
       }
     },
@@ -45,6 +59,7 @@
         "living": 20.5,
         "badkamer": 22,
         "bureau": 18,
+        "kamer_ariane": 16,
         "kamer_nathan": 16
       }
     },
@@ -53,6 +68,7 @@
         "living": 20.5,
         "badkamer": 15,
         "bureau": 18,
+        "kamer_ariane": 15,
         "kamer_nathan": 15
       }
     },
@@ -60,7 +76,8 @@
       "zones": {
         "living": 19,
         "badkamer": 15,
-        "bureau": 19,
+        "bureau": 20.5,
+        "kamer_ariane": 15,
         "kamer_nathan": 15
       }
     }
@@ -68,11 +85,15 @@
   "daytypes": {
     "workday": [
       {
-        "start": "04:00",
+        "start": "06:00",
         "mode": "morning"
       },
       {
         "start": "08:00",
+        "mode": "semi-away"
+      },
+      {
+        "start": "08:30",
         "mode": "away"
       },
       {
@@ -98,11 +119,15 @@
     ],
     "halfday": [
       {
-        "start": "04:00",
+        "start": "06:00",
         "mode": "morning"
       },
       {
         "start": "08:00",
+        "mode": "semi-away"
+      },
+      {
+        "start": "08:30",
         "mode": "away"
       },
       {
@@ -128,11 +153,15 @@
     ],
     "shortday": [
       {
-        "start": "04:00",
+        "start": "06:00",
         "mode": "morning"
       },
       {
         "start": "08:00",
+        "mode": "semi-away"
+      },
+      {
+        "start": "08:30",
         "mode": "away"
       },
       {
@@ -158,7 +187,7 @@
     ],
     "weekend": [
       {
-        "start": "04:00",
+        "start": "06:00",
         "mode": "morning"
       },
       {
@@ -184,7 +213,7 @@
     ],
     "home": [
       {
-        "start": "04:00",
+        "start": "06:00",
         "mode": "morning"
       },
       {
@@ -221,7 +250,7 @@
       "workday",
       "halfday",
       "shortday",
-      "weekend",
+      "home",
       "weekend",
       "weekend"
     ],
@@ -233,6 +262,15 @@
       "weekend",
       "weekend",
       "weekend"
+    ],
+    "work-home": [
+      "home",
+      "home",
+      "home",
+      "home",
+      "home",
+      "home",
+      "home"
     ],
     "away": [
       "away",

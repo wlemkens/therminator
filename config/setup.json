@@ -9,8 +9,13 @@
     "bureau": [
       "radiator"
     ],
+    "kamer_ariane": [
+      "radiator"
+    ],
     "kamer_nathan": [
       "radiator"
+    ],
+    "slaapkamer": [
     ]
   },
   "priority": "performance"
