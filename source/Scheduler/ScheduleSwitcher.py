@@ -36,7 +36,7 @@ class ScheduleSwitcher(object):
         self.client = mqtt.Client()
         self.client.on_message = self.on_message
         self.client.connect(mqttConfig["address"], mqttConfig["port"], 60)
-        self.client.loop_start()
+#        self.client.loop_start()
         topics = [(self.topicSchedule, 1)]
         self.client.loop_start()
         r = self.client.subscribe(topics)

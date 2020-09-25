@@ -22,7 +22,6 @@ class Display(object):
         self.lock = False
         self.fullUpdate = True
         self.mode = None
-        self.fontPath = "/usr/local/share/fonts/Righteous-Regular.ttf"
         self.fontPath = "/usr/local/share/fonts/VoiceActivatedBB_reg.otf"
         self.boldFontPath = "/usr/local/share/fonts/VoiceActivatedBB_bold.otf"
         self.logFile = logFilename
@@ -101,6 +100,7 @@ class Display(object):
 
 
     def updateZone(self, zone, index, draws):
+        print("Updating zone '{:}'".format(zone.getName()))
         draw = draws[0]
         drawc = draws[1]
         lineHeight = self.fontSize + 1
@@ -176,6 +176,12 @@ class Display(object):
     def setToSleep(self):
         pass
 
+    def updateClock(self, draw):
+        font = ImageFont.truetype(self.fontPath, self.clockFontSize)
+        now = datetime.now()
+        current_time = now.strftime("%H:%M")
+        draw.text((self.getWidth()*0.1, self.clockFontSize), current_time, font=font, fill=self.BLACK)
+
     def update(self):
         if not self.lock:
             self.lock = True
@@ -211,6 +217,7 @@ class Display(object):
                 self.updateRequestedPower(self.boiler.getRequestedPower(),draw)
                 self.updateDeliveredPower(self.boiler.getDeliveredPower(),draw)
                 self.updateExteriorTemperature(self.exterior.getTemperature(),draw)
+                self.updateClock(draw)
                 self.display([image, imagec])
             self.log()
             self.lock = False
@@ -234,6 +241,7 @@ class Display(object):
 
     def createLayout(self, setup, mqtt):
         self.awayFontSize, dims = self.getFontSize([self.getWidth()*0.8, self.getHeight()*0.8], "AWAY")
+        self.clockFontSize = max(8,int(self.getHeight() * 0.03))
         self.home = Home(mqtt, self.update)
         for zone in setup["zones"]:
             self.zones += [Zone(zone, mqtt, self.update)]

@@ -38,15 +38,19 @@ class WaveshareDisplay(Display.Display):
         return self.epd.height
 
     def display(self, image):
+        print("display")
         if self.isSleeping:
             self.epd.init()
             self.isSleeping = False
 
         if self.fullUpdate:
+            print("Full update")
             self.epd.display(self.epd.getbuffer(image[0]), self.epd.getbuffer(image[1]))
             self.fullUpdate = False
+            print("Full update done")
 
     def updateZone(self, zone, index, draws):
+        print("Updating zone '{:}'".format(zone.getName()))
         draw = draws[0]
         drawc = draws[1]
         lineHeight = self.fontSize + 1
@@ -147,4 +151,4 @@ class WaveshareDisplay(Display.Display):
                 draw.text((tx-30, ty-5+fullSize[1]), batteryText, font=smallFont, fill=self.BLACK)
             else:
                 drawc.text((tx-30, ty-5+fullSize[1]), batteryText, font=smallFont, fill=self.BLACK)
-
+        print("Updating zone done")

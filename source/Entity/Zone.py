@@ -31,6 +31,7 @@ class Zone(object):
             print("Enabled status changed from  {:} to {:}".format(self.enabled, self.tempEnabled))
             self.enabled = self.tempEnabled
             self.update()
+        print("Checking {:} done".format(self.name))
 
     def on_message(self, client, userdata, message):
         changed = False
