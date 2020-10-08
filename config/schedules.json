@@ -41,8 +41,8 @@
         "living": 20.5,
         "badkamer": 26,
         "bureau": 18,
-        "kamer_ariane": 16,
-        "kamer_nathan": 16
+        "kamer_ariane": 20,
+        "kamer_nathan": 20
       }
     },
     "pre-evening": {
@@ -221,6 +221,10 @@
         "mode": "dayhome"
       },
       {
+        "start": "16:30",
+        "mode": "day"
+      },
+      {
         "start": "19:00",
         "mode": "pre-evening"
       },
@@ -242,6 +246,40 @@
         "start": "22:00",
         "mode": "away"
       }
+    ],
+    "test": [
+     {
+       "start": "15:58",
+       "mode": "dayhome"
+     },
+     {
+       "start": "16:00",
+       "mode": "morning"
+     },
+     {
+       "start": "16:02",
+       "mode": "dayhome"
+     },
+     {
+       "start": "16:04",
+       "mode": "morning"
+     },
+     {
+       "start": "16:06",
+       "mode": "dayhome"
+     },
+     {
+       "start": "16:08",
+       "mode": "morning"
+     },
+     {
+       "start": "16:10",
+       "mode": "dayhome"
+     },
+     {
+       "start": "16:12",
+       "mode": "morning"
+     }
     ]
   },
   "schedules" : {
@@ -263,14 +301,14 @@
       "weekend",
       "weekend"
     ],
-    "work-home": [
+    "homework": [
       "home",
       "home",
       "home",
       "home",
       "home",
-      "home",
-      "home"
+      "weekend",
+      "weekend"
     ],
     "away": [
       "away",
@@ -280,6 +318,15 @@
       "away",
       "away",
       "away"
+    ],
+    "test": [
+     "test",
+     "test",
+     "test",
+     "test",
+     "test",
+     "test",
+     "test"
     ]
   }
 }
