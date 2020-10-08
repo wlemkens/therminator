@@ -182,6 +182,15 @@ class Display(object):
         current_time = now.strftime("%H:%M")
         draw.text((self.getWidth()*0.1, self.clockFontSize), current_time, font=font, fill=self.BLACK)
 
+    def drawModeSmall(self, draws, mode):
+        if mode == None:
+            mode = "no mode"
+        draw = draws[0]
+        font = ImageFont.truetype(self.fontPath, self.modeFontSize)
+        x = self.getWidth()*0.1
+        y = self.clockFontSize+self.modeFontSize/2
+        draw.text((x, y), mode, font=font, fill=self.BLACK)
+
     def update(self):
         if not self.lock:
             self.lock = True
@@ -218,6 +227,7 @@ class Display(object):
                 self.updateDeliveredPower(self.boiler.getDeliveredPower(),draw)
                 self.updateExteriorTemperature(self.exterior.getTemperature(),draw)
                 self.updateClock(draw)
+                self.drawModeSmall([draw,drawc],self.mode)
                 self.display([image, imagec])
             self.log()
             self.lock = False
@@ -242,6 +252,7 @@ class Display(object):
     def createLayout(self, setup, mqtt):
         self.awayFontSize, dims = self.getFontSize([self.getWidth()*0.8, self.getHeight()*0.8], "AWAY")
         self.clockFontSize = max(8,int(self.getHeight() * 0.03))
+        self.modeFontSize = max(8,int(self.getHeight() * 0.07))
         self.home = Home(mqtt, self.update)
         for zone in setup["zones"]:
             self.zones += [Zone(zone, mqtt, self.update)]
@@ -286,4 +297,4 @@ class Display(object):
                     f.write("{:};{:};{:};{:};{:}\n".format(self.boiler.getRequestedPower(), self.boiler.getDeliveredPower(), self.boiler.getReturnTemperature(), self.boiler.getFlowTemperature(), self.exterior.getTemperature()))
 
 
-1
+
