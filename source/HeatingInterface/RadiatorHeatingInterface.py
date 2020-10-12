@@ -1,11 +1,9 @@
-import paho.mqtt.subscribe as subscribe
-import paho.mqtt.client as mqtt
-
 import datetime
 import time
 import threading
 
 from HeatingInterface.HeatingInterface import HeatingInterface
+from MQTT.MqttProvider import MqttProvider
 
 class RadiatorHeatingInterface(HeatingInterface):
     def __init__(self, name, config):
@@ -29,8 +27,8 @@ class RadiatorHeatingInterface(HeatingInterface):
         self.temperature = None
         self.setpoint = None
         self.enabled = True
-        self.client = mqtt.Client()
-        self.connect(self.address, self.port, self.username, self.password)
+        self.client = MqttProvider(self.address, self.port)
+        self.connect()
         self.statusChangedTime = datetime.datetime.now()
         self.statusChangeThread.start()
 
@@ -111,23 +109,13 @@ class RadiatorHeatingInterface(HeatingInterface):
         self.client.publish(topic, requestMessageSP)
         self.client.publish(topic, requestMessageEnabled)
 
-    def connect(self, address, port, username, password):
-        #self.client.connect(address, port, 60)
-        # Blocking call that processes network traffic, dispatches callbacks and
-        # handles reconnecting.
-        # Other loop*() functions are available that give a threaded interface and a
-        # manual interface.
+    def connect(self):
         self.topic_temp = "therminator/in/{:}_temperature".format(self.name)
         self.topic_sp = "therminator/in/{:}_setpoint".format(self.name)
         self.topic_enabled = "therminator/in/{:}_enabled".format(self.name)
         topics = [(self.topic_temp, 1), (self.topic_sp, 1),(self.topic_enabled,1)]
-        #print("Subscribing to topics '{:}'".format(topics))
-        self.client.on_message = self.on_message
-        self.client.connect(address, port, 60)
-        self.client.loop_start()
-        r = self.client.subscribe(topics)
+        self.client.subscribe(self, topics)
         self.requestValues()
-        #self.client.loop_forever()
 
     def isEnabled(self):
         return self.enabled

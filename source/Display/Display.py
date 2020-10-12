@@ -7,7 +7,7 @@ from datetime import datetime
 
 import json
 
-import paho.mqtt.client as mqtt
+#from MQTT.MqttProvider import MqttProvider
 
 from Entity.Zone import Zone
 from Entity.Boiler import Boiler
@@ -36,8 +36,7 @@ class Display(object):
                 for zone in self.zones:
                     f.write("{:}_{:};{:}_{:};{:}_{:};".format("setpoint",zone.getName(), "temperature",zone.getName(),"level",zone.getName(),"status",zone.getName()))
                 f.write("{:};{:};{:};{:};{:}\n".format("requestePower", "deliveredPower","returnTemperature","flowTemperature","exteriorTemperature"))
-        self.client = mqtt.Client()
-        self.client.connect(self.mqtt["address"], self.mqtt["port"], 60)
+        #self.client = MqttProvider(self.mqtt["address"], self.mqtt["port"])
         self.away = False
 
     def getFontSize(self, area, printstring):

@@ -1,4 +1,4 @@
-import paho.mqtt.client as mqtt
+from MQTT.MqttProvider import MqttProvider
 
 class Exterior(object):
 	def __init__(self, mqttConfig, on_update):
@@ -19,13 +19,9 @@ class Exterior(object):
 		self.client.publish(topic, requestMessage)
 
 	def connect(self, mqttConfig):
-		self.client = mqtt.Client()
-		self.client.on_message = self.on_message
-		self.client.connect(mqttConfig["address"], mqttConfig["port"], 60)
-		self.client.loop_start()
+		self.client = MqttProvider(mqttConfig["address"], mqttConfig["port"])
 		topics = [(self.topic,1)]
-		self.client.loop_start()
-		r = self.client.subscribe(topics)
+		self.client.subscribe(self, topics)
 		self.requestValues()
 
 	def getTemperature(self):

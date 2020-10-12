@@ -1,6 +1,4 @@
-import paho.mqtt.client as mqtt
-
-import time
+from MQTT.MqttProvider import MqttProvider
 
 class Home(object):
     def __init__(self, mqttConfig, on_update):
@@ -29,13 +27,9 @@ class Home(object):
         self.client.publish(topic, requestMessageMode)
 
     def connect(self, mqttConfig):
-        self.client = mqtt.Client()
-        self.client.on_message = self.on_message
-        self.client.connect(mqttConfig["address"], mqttConfig["port"], 60)
-        self.client.loop_start()
+        self.client = MqttProvider(mqttConfig["address"], mqttConfig["port"])
         topics = [(self.topicAway, 1), (self.topicMode, 1)]
-        self.client.loop_start()
-        r = self.client.subscribe(topics)
+        self.client.subscribe(self, topics)
         self.requestValues()
 
     def isAway(self):
