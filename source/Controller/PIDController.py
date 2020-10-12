@@ -13,7 +13,7 @@ class PIDController(Controller):
 
     def setSetpoint(self, setpoint):
         self.PID.setSetpoint(setpoint-0.1)
-        self.heatingInterface.setSetpoint(setpoint)
+        self.heatingInterface.storeSetpoint(setpoint)
 
     def getOutput(self):
         sp = self.heatingInterface.getSetpoint()

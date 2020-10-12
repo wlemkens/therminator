@@ -7,6 +7,7 @@ from MQTT.MqttProvider import MqttProvider
 
 class RadiatorHeatingInterface(HeatingInterface):
     def __init__(self, name, config):
+        print("Loading radiator heating interface '{:}'".format(name));
         self.setpointOFF = 10.0
         self.setpointDelay = 30
         self.address  = config["address"]
@@ -37,12 +38,14 @@ class RadiatorHeatingInterface(HeatingInterface):
             print(datetime.datetime.now())
             print("Storing setpoint {:} (was {:})".format(setpoint, self.stored_setpoint))
             topic = "therminator/out/{:}_stored_setpoint".format(self.name)
+            topicIn = "therminator/in/{:}_stored_setpoint".format(self.name)
             self.stored_setpoint = setpoint
             self.client.publish(topic, setpoint)
+            self.client.publish(topicIn, setpoint)
             if not self.enabled:
                 self.setSetpoint(self.setpointOFF)
-        #else:
-        #    print("Skipping setpoint {:}".format(setpoint))
+        else:
+            print("Skipping setpoint {:}".format(setpoint))
 
     def setStatus(self, status):
         if status:
@@ -74,6 +77,7 @@ class RadiatorHeatingInterface(HeatingInterface):
                 self.enabled = self.volotileStatus
                 self.setStatus(self.enabled)
             time.sleep(2)
+            print("Checking if status has change for {:}".format(self.name))
 
 
     def on_message(self, client, userdata, message):

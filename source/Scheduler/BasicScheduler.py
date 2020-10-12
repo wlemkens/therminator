@@ -69,39 +69,40 @@ class Schedule():
         return self.mode
 
 class BasicScheduler(Scheduler):
-    def __init__(self, filename):
+    def __init__(self, schedule, modes, dayttypes):
         super(BasicScheduler,self).__init__()
         self.schedule = None
         self.mode = None
         self.controller = {}
         self.boilerInterface = None
-        self.loadConfig(filename)
+        self.loadConfig(schedule, modes, dayttypes)
 
-    def loadConfig(self, filename):
-        with open(filename) as f:
-            self.schedule = Schedule(json.load(f))
-            daytypes = self.schedule.schedule["daytypes"]
+    def loadConfig(self, schedule, modes, daytypes):
+            self.schedule = Schedule({"weekschedule" : schedule,
+                             "modes": modes,
+                             "daytypes": daytypes})
+            daytypes = daytypes
             for typename, daytype in daytypes.items():
                 for period in daytype:
                     if ":" in str(period["start"]):
                         start = period["start"]
                         time = datetime.datetime.strptime(start, "%H:%M")
                         period["start"] = time.hour * 60 + time.minute
-#                        print("{:} -> {:}".format(start, period["start"]))
+            self.mode = None
 
     def run(self):
         while True:
             self.nextCallTime += self.interval
             rooms = self.schedule.getZoneNames()
             total = 0
+            mode = self.schedule.getMode()
+            if mode != self.mode:
+                self.mode = mode
+                self.boilerInterface.setMode(mode)
             for room in rooms:
                 for controller in self.controller[room]:
                     if (self.schedule.hasSetpointChanged(room)):
                         controller.setSetpoint(self.schedule.getCurrentSetpointTemperature(room) )
-                        mode = self.schedule.getMode()
-                        if mode != self.mode:
-                            self.mode = mode
-                            self.boilerInterface.setMode(mode)
                     if controller.isEnabled():
                         output = controller.getOutput()
                         total += max(0,output)

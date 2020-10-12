@@ -8,6 +8,7 @@ from Display import Display
 
 class WaveshareDisplay(Display.Display):
     def __init__(self, config, logFilename = None):
+        self.isSleeping = False
         self.epd = epd7in5bc.EPD()
         self.epd.init()
         self.epd.Clear()
@@ -22,6 +23,14 @@ class WaveshareDisplay(Display.Display):
             time.sleep(self.fullUpdateInterval)
             self.fullUpdate = True
 
+    def setToSleep(self):
+        try:
+#            time.sleep(2)
+            self.epd.sleep()
+            self.isSleeping = True
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+
     def getWidth(self):
         return self.epd.width
 
@@ -29,11 +38,19 @@ class WaveshareDisplay(Display.Display):
         return self.epd.height
 
     def display(self, image):
+        print("display")
+        if self.isSleeping:
+            self.epd.init()
+            self.isSleeping = False
+
         if self.fullUpdate:
+            print("Full update")
             self.epd.display(self.epd.getbuffer(image[0]), self.epd.getbuffer(image[1]))
             self.fullUpdate = False
+            print("Full update done")
 
     def updateZone(self, zone, index, draws):
+        print("Updating zone '{:}'".format(zone.getName()))
         draw = draws[0]
         drawc = draws[1]
         lineHeight = self.fontSize + 1
@@ -42,12 +59,21 @@ class WaveshareDisplay(Display.Display):
         freeSpace = self.getHeight() - totalHeight
         padding = freeSpace/5
         name = "{:}".format(zone.getLabel())
-        text = "{:}/{:} ".format(zone.getTemperature(), zone.getSetpoint())
-        sptext = "/{:} ".format(zone.getSetpoint())
+        sp = zone.getSetpoint()
+        text = "{:} ".format(zone.getTemperature())
+        sptext = " "
+        if sp:
+            text = "{:}/{:} ".format(zone.getTemperature(), zone.getSetpoint())
+            sptext = "/{:} ".format(zone.getSetpoint())
         tempText = "{:} ".format(zone.getTemperature())
         temp = zone.getTemperature()
         sp = zone.getSetpoint()
-        batteryText = "{:}%".format(zone.getBattery())
+        battery = zone.getBattery()
+        batteryText = ""
+        if battery:
+            batteryText = "{:}%".format(battery)
+        else:
+            print("No battery status for {:}".format(zone.getLabel()))
         tempTooLow = temp != None and sp != None and temp < sp
         textColor = self.BLACK
         if index == 0:
@@ -73,7 +99,7 @@ class WaveshareDisplay(Display.Display):
                     draw.rectangle(((x1,y1), (x2,y2)),fill=self.BLACK,outline=self.BLACK)
                     textColor = self.WHITE
                     draw.text((x, y), tempText, font=font, fill=textColor)
-                draw.text((x-20,y+10+fullSize[1]), batteryText, font=smallFont, fill=textColor)
+#                draw.text((x-20,y+10+fullSize[1]), batteryText, font=smallFont, fill=textColor)
             else:
                 x = self.getWidth() - lineWidth - self.fontSize * 3
                 y = padding*paddingMult
@@ -83,7 +109,10 @@ class WaveshareDisplay(Display.Display):
                     draw.text((size[0]*.9 + self.getWidth() - lineWidth - self.fontSize * 3, y), sptext, font=font, fill=self.BLACK)
                 else:
                     draw.text((x, y), text, font=font, fill=self.BLACK)
-                draw.text((x-20,y+5+fullSize[1]), batteryText, font=smallFont, fill=textColor)
+            if battery and battery > 5:
+                draw.text((x-20,y+5+fullSize[1]), batteryText, font=smallFont, fill=self.BLACK)
+            else:
+                drawc.text((x-20,y+5+fullSize[1]), batteryText, font=smallFont, fill=self.BLACK)
         else:
             paddingMult = 4
             font = ImageFont.truetype(self.fontPath, self.fontSize)
@@ -118,4 +147,8 @@ class WaveshareDisplay(Display.Display):
                     draw.text((size[0] * 0.9 + self.getWidth() - lineWidth , lineHeight * (index-1) + self.largeFontSize+1 + paddingMult*padding), sptext, font=font, fill=self.BLACK)
                 else:
                     draw.text((tx, ty), text, font=font, fill=self.BLACK)
-            draw.text((tx-30, ty-5+fullSize[1]), batteryText, font=smallFont, fill=self.BLACK)
+            if battery and battery > 5:
+                draw.text((tx-30, ty-5+fullSize[1]), batteryText, font=smallFont, fill=self.BLACK)
+            else:
+                drawc.text((tx-30, ty-5+fullSize[1]), batteryText, font=smallFont, fill=self.BLACK)
+        print("Updating zone done")

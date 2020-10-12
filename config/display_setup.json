@@ -16,9 +16,19 @@
       "label": "bur"
     },
     {
+      "id": "kamer_ariane",
+      "icon": "../icons/bedroom.png",
+      "label": "ari"
+    },
+    {
       "id": "kamer_nathan",
       "icon": "../icons/bedroom.png",
       "label": "nat"
+    },
+    {
+      "id": "slaapkamer",
+      "icon": "../icons/bedroom.png",
+      "label": "bed"
     }
   ]
 }

@@ -22,7 +22,6 @@ class Display(object):
         self.lock = False
         self.fullUpdate = True
         self.mode = None
-        self.fontPath = "/usr/local/share/fonts/Righteous-Regular.ttf"
         self.fontPath = "/usr/local/share/fonts/VoiceActivatedBB_reg.otf"
         self.boldFontPath = "/usr/local/share/fonts/VoiceActivatedBB_bold.otf"
         self.logFile = logFilename
@@ -100,6 +99,7 @@ class Display(object):
 
 
     def updateZone(self, zone, index, draws):
+        print("Updating zone '{:}'".format(zone.getName()))
         draw = draws[0]
         drawc = draws[1]
         lineHeight = self.fontSize + 1
@@ -172,6 +172,24 @@ class Display(object):
         font = ImageFont.truetype(self.boldFontPath, self.awayFontSize)
         draw.text((self.getWidth()*0.1, self.getHeight()*0.1), mode, font=font, fill=self.BLACK)
 
+    def setToSleep(self):
+        pass
+
+    def updateClock(self, draw):
+        font = ImageFont.truetype(self.fontPath, self.clockFontSize)
+        now = datetime.now()
+        current_time = now.strftime("%H:%M")
+        draw.text((self.getWidth()*0.1, self.clockFontSize), current_time, font=font, fill=self.BLACK)
+
+    def drawModeSmall(self, draws, mode):
+        if mode == None:
+            mode = "no mode"
+        draw = draws[0]
+        font = ImageFont.truetype(self.fontPath, self.modeFontSize)
+        x = self.getWidth()*0.1
+        y = self.clockFontSize+self.modeFontSize/2
+        draw.text((x, y), mode, font=font, fill=self.BLACK)
+
     def update(self):
         if not self.lock:
             self.lock = True
@@ -184,18 +202,21 @@ class Display(object):
             imagec = Image.new('1', size, self.WHITE)
             draw = ImageDraw.Draw(image)
             drawc = ImageDraw.Draw(imagec)
+            print("Mode = '{:}'".format(self.home.getMode()))
             if self.home.isAway() or self.home.getMode() == 'away':
                 if not self.mode == "away":
                     self.drawAway([draw,drawc])
                     self.mode = "away"
                     self.fullUpdate = True
                     self.display([image, imagec])
+                    self.setToSleep()
             elif self.home.getMode() ==  'night':
                 if not self.mode == "night":
                     self.drawMode([draw,drawc], "Night")
                     self.mode = "night"
                     self.fullUpdate = True
                     self.display([image, imagec])
+                    self.setToSleep()
             else:
                 self.mode = self.home.getMode()
                 for zone in self.zones:
@@ -204,6 +225,8 @@ class Display(object):
                 self.updateRequestedPower(self.boiler.getRequestedPower(),draw)
                 self.updateDeliveredPower(self.boiler.getDeliveredPower(),draw)
                 self.updateExteriorTemperature(self.exterior.getTemperature(),draw)
+                self.updateClock(draw)
+                self.drawModeSmall([draw,drawc],self.mode)
                 self.display([image, imagec])
             self.log()
             self.lock = False
@@ -227,6 +250,8 @@ class Display(object):
 
     def createLayout(self, setup, mqtt):
         self.awayFontSize, dims = self.getFontSize([self.getWidth()*0.8, self.getHeight()*0.8], "AWAY")
+        self.clockFontSize = max(8,int(self.getHeight() * 0.03))
+        self.modeFontSize = max(8,int(self.getHeight() * 0.07))
         self.home = Home(mqtt, self.update)
         for zone in setup["zones"]:
             self.zones += [Zone(zone, mqtt, self.update)]
@@ -271,4 +296,4 @@ class Display(object):
                     f.write("{:};{:};{:};{:};{:}\n".format(self.boiler.getRequestedPower(), self.boiler.getDeliveredPower(), self.boiler.getReturnTemperature(), self.boiler.getFlowTemperature(), self.exterior.getTemperature()))
 
 
-1
+

@@ -33,6 +33,7 @@ class MQTTBoilerInterface(BoilerInterface):
         self.client.publish("therminator/out/boiler_output", outputValue)
 
     def setMode(self, mode):
+        print("Switching to mode '{:}'".format(mode))
         self.client.publish("therminator/out/mode", mode)
         self.client.publish("therminator/in/mode", mode)
 
