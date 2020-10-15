@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import signal
 import time
 
-from source.MQTT.MqttProvider import MqttProvider
+from MQTT.MqttProvider import MqttProvider
 
 class Zone:
     def __init__(self, name, mqtt):

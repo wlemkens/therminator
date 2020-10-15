@@ -2,7 +2,7 @@ import json
 
 from Scheduler.SchedulerFactory import SchedulerFactory
 
-from source.MQTT.MqttProvider import MqttProvider
+from MQTT.MqttProvider import MqttProvider
 
 
 class ScheduleSwitcher(object):
