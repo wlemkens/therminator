@@ -1,0 +1,119 @@
+import sys
+import json
+import paho.mqtt.client as mqtt
+
+domoticzIn = "domoticz/in"
+therminatorIn = "therminator/in"
+
+domoticzOut = "domoticz/out"
+therminatorOut = "therminator/out"
+
+therminatorRequest = "therminator/request"
+
+ids = {
+    167 : "living_temperature",
+    180 : "badkamer_temperature",
+    256 : "kamer_ariane_temperature",
+    183 : "bureau_temperature",
+    235 : "exterior_temperature",
+    248 : "kamer_nathan_temperature",
+    265 : "slaapkamer_temperature",
+
+    136 : "living_setpoint",
+    208 : "badkamer_setpoint",
+    29 : "kamer_ariane_setpoint",
+    112 : "bureau_setpoint",
+    292 : "kamer_nathan_setpoint",
+
+    132 : "living_level",
+    204 : "badkamer_level",
+    18 : "kamer_ariane_level",
+    110 :  "bureau_level",
+    290 : "kamer_nathan_level",
+
+    189 : "living_enabled",
+    190 : "badkamer_enabled",
+    191 : "kamer_ariane_enabled",
+    192 : "bureau_enabled",
+    300 : "kamer_nathan_enabled",
+
+    199 : "living_stored_setpoint",
+    200 : "badkamer_stored_setpoint",
+    201 : "kamer_ariane_stored_setpoint",
+    202 : "bureau_stored_setpoint",
+    301 : "kamer_nathan_stored_setpoint",
+
+    216 : "away"
+}
+# Inverse lookup table
+topics = {}
+for key in ids.keys():
+    topic = ids[key]
+    topics[topic] = key
+
+def getDomoticzId(topic):
+    if topic in topics:
+        return topics[topic]
+    return None
+
+def getTherminatorTopic(id):
+    if id in ids:
+        return "therminator/in/"+ids[id]
+    return None
+
+def parseTherminatorTopic(wholeTopic):
+    parts = wholeTopic.split("/")
+    return parts[-1]
+
+def on_message(client, userdata, message):
+    if message.topic == domoticzOut:
+        msg = json.loads(message.payload);
+        id = msg["idx"]
+        value = msg["nvalue"]
+        if not value:
+            value = msg["svalue1"]
+        battery = msg["Battery"]
+        topic = getTherminatorTopic(id)
+        if topic:
+            client.publish(topic, value)
+    elif therminatorOut in message.topic:
+        topic = parseTherminatorTopic(message.topic)
+        id = getDomoticzId(topic)
+        if id:
+            value = message.value
+            struct = {
+                "idx" : id,
+                "nvalue" : 0,
+                "svalue1" : value
+            }
+            jsonMsg = json.dumps(struct)
+            client.publish(domoticzIn, jsonMsg)
+    elif message.topic == therminatorRequest:
+        topic = str(message.payload,'utf-8').strip('\"')
+        id = getDomoticzId(topic)
+        if id:
+            struct = {
+                "command" : "getdeviceinfo",
+                "idx" : id
+            }
+            jsonMsg = json.dumps(struct)
+            client.publish(domoticzIn, jsonMsg)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) == 2:
+        configFilename = sys.argv[1]
+
+        client = mqtt.Client()
+        with open(configFilename) as f:
+            config = json.load(f)
+
+        client.on_message = on_message
+        client.connect(config["address"], config["port"], 60)
+        client.subscribe(therminatorOut, 2)
+        client.subscribe(domoticzOut, 2)
+        client.subscribe(therminatorRequest, 2)
+        client.loop_forever()
+
+    else:
+        print("Usage {:} </path/to/mqtt.json>".format(sys.argv[0]))
