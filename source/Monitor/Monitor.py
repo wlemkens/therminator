@@ -13,6 +13,7 @@ class Zone:
         self.statusTopicIn = "therminator/in/{:}_enabled".format(name)
         self.spTopicOut = "therminator/out/{:}_setpoint".format(name)
         self.storedSpTopicOut = "therminator/out/{:}_stored_setpoint".format(name)
+        self.storedSpTopicIn = "therminator/in/{:}_stored_setpoint".format(name)
         self.statusChangeThread = threading.Thread(target=self.statusChangeFunction, daemon=True)
         self.enabled = None
         self.volatileStatus = None
@@ -53,6 +54,8 @@ class Zone:
             # when the order of messages is not kept
             self.storedSetpoint = setpoint
             self.mqtt.publish(self.storedSpTopicOut, setpoint)
+            # This device does not trigger an domoticz/out event, so we need to create it ourselves
+            self.mqtt.publish(self.storedSpTopicIn, setpoint)
 
     def setStatus(self, status):
         if status:
