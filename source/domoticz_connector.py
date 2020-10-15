@@ -53,7 +53,8 @@ schedules = {
     "10" : "standard",
     "20" : "holiday",
     "30" : "away",
-    "40" : "homework"
+    "40" : "homework",
+    "50" : "test"
 }
 # Inverse lookup table
 topics = {}
@@ -96,13 +97,16 @@ def on_message(client, userdata, message):
             schedule = schedules[value]
             client.publish(scheduleTopic, schedule)
         else:
-            battery = msg["Battery"]
+            battery = 255
+            if "Battery" in msg:
+                battery = msg["Battery"]
             topic = getTherminatorTopic(id)
             if topic:
                 client.publish(topic, value)
                 if battery <= 100 and isBatteryTopic(topic):
                     batteryTopic = parseBatteryTopic(topic)
                     client.publish(batteryTopic, battery)
+                print("Translating topic {:} -> Publishing on topic {:} : {:}".format(domoticzOut, topic, value))
     elif therminatorOut in message.topic:
         topic = parseTherminatorTopic(message.topic)
         id = getDomoticzId(topic)
@@ -111,8 +115,7 @@ def on_message(client, userdata, message):
             #value = float(message.payload)
             struct = {
                 "idx" : id,
-                "nvalue" : 0,
-                "svalue1" : value
+                "svalue" : value
             }
             jsonMsg = json.dumps(struct)
             client.publish(domoticzIn, jsonMsg)
