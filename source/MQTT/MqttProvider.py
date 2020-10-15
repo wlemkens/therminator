@@ -13,13 +13,20 @@ class MqttProvider:
             for subscriber in self.subscribers:
                 subscriber.on_message(client, userdata, message)
 
+        def subscribe(self, subscriber, topic, qos):
+            if not subscriber in self.subscribers:
+                self.subscribers += [subscriber]
+            self.client.subscribe(topic, qos)
+
         def subscribe(self, subscriber, topics):
+            # Note : Only subscribe(topic, qos) seems to take qos into account according to the documentation
             if not subscriber in self.subscribers:
                 self.subscribers += [subscriber]
             if isinstance(topics, list):
-                self.client.subscribe(topics)
+                for topic in topics:
+                    self.client.subscribe(topic[0], topic[1])
             else:
-                self.client.subscribe([topics])
+                self.client.subscribe(topics[0], topics[1])
 
         def publish(self, topic, message):
             self.client.publish(topic, message)
