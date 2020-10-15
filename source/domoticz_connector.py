@@ -89,7 +89,8 @@ def on_message(client, userdata, message):
         id = msg["idx"]
         value = msg["nvalue"]
         if not value:
-            value = msg["svalue1"]
+            if "svalue1" in msg:
+                value = msg["svalue1"]
         if id == scheduleId:
             value = msg["svalue1"]
             schedule = schedules[value]
@@ -106,7 +107,8 @@ def on_message(client, userdata, message):
         topic = parseTherminatorTopic(message.topic)
         id = getDomoticzId(topic)
         if id:
-            value = message.value
+            value = str(message.payload,'utf-8')
+            #value = float(message.payload)
             struct = {
                 "idx" : id,
                 "nvalue" : 0,
@@ -114,6 +116,7 @@ def on_message(client, userdata, message):
             }
             jsonMsg = json.dumps(struct)
             client.publish(domoticzIn, jsonMsg)
+            print("Translating topic {:} : {:} -> Publishing on topic {:} : {:}".format(topic, value, domoticzIn, jsonMsg))
     elif message.topic == therminatorRequest:
         topic = str(message.payload,'utf-8').strip('\"')
         id = getDomoticzId(topic)
@@ -136,7 +139,7 @@ if __name__ == "__main__":
 
         client.on_message = on_message
         client.connect(config["address"], config["port"], 60)
-        client.subscribe(therminatorOut, 2)
+        client.subscribe(therminatorOut+"/#", 2)
         client.subscribe(domoticzOut, 2)
         client.subscribe(therminatorRequest, 2)
         client.loop_forever()
