@@ -4,12 +4,14 @@ import paho.mqtt.client as mqtt
 
 domoticzIn = "domoticz/in"
 therminatorIn = "therminator/in"
+scheduleTopic = "therminator/in/schedule"
 
 domoticzOut = "domoticz/out"
 therminatorOut = "therminator/out"
 
 therminatorRequest = "therminator/request"
 
+scheduleId = 13
 ids = {
     167 : "living_temperature",
     180 : "badkamer_temperature",
@@ -43,7 +45,15 @@ ids = {
     202 : "bureau_stored_setpoint",
     301 : "kamer_nathan_stored_setpoint",
 
-    216 : "away"
+    216 : "away",
+    scheduleId : "schedule"
+}
+
+schedules = {
+    "10" : "standard",
+    "20" : "holiday",
+    "30" : "away",
+    "40" : "homework"
 }
 # Inverse lookup table
 topics = {}
@@ -65,6 +75,14 @@ def parseTherminatorTopic(wholeTopic):
     parts = wholeTopic.split("/")
     return parts[-1]
 
+def isBatteryTopic(topic):
+    return "_setpoint" in topic or "_level" in topic
+
+def parseBatteryTopic(wholeTopic):
+    res = wholeTopic.rpartition("/")
+    topic = res[2]
+    return "therminator/in/"+topic.replace("_setpoint","").replace("_level","")
+
 def on_message(client, userdata, message):
     if message.topic == domoticzOut:
         msg = json.loads(message.payload);
@@ -72,10 +90,18 @@ def on_message(client, userdata, message):
         value = msg["nvalue"]
         if not value:
             value = msg["svalue1"]
-        battery = msg["Battery"]
-        topic = getTherminatorTopic(id)
-        if topic:
-            client.publish(topic, value)
+        if id == scheduleId:
+            value = msg["svalue1"]
+            schedule = schedules[value]
+            client.publish(scheduleTopic, schedule)
+        else:
+            battery = msg["Battery"]
+            topic = getTherminatorTopic(id)
+            if topic:
+                client.publish(topic, value)
+                if battery <= 100 and isBatteryTopic(topic):
+                    batteryTopic = parseBatteryTopic(topic)
+                    client.publish(batteryTopic, battery)
     elif therminatorOut in message.topic:
         topic = parseTherminatorTopic(message.topic)
         id = getDomoticzId(topic)
