@@ -13,7 +13,7 @@ class PIDController(Controller):
 
     def setSetpoint(self, setpoint):
         self.PID.setSetpoint(setpoint-0.1)
-        self.heatingInterface.storeSetpoint(setpoint)
+        self.heatingInterface.setSetpoint(setpoint)
 
     def getOutput(self):
         sp = self.heatingInterface.getSetpoint()
@@ -25,11 +25,5 @@ class PIDController(Controller):
     def getSetpoint(self):
         return self.heatingInterface.getSetpoint()
 
-    def getStoredSetpoint(self):
-        return self.heatingInterface.getStoredSetpoint()
-
     def getTemperature(self):
         return self.heatingInterface.getTemperature()
-
-    def isEnabled(self):
-        return self.heatingInterface.isEnabled()

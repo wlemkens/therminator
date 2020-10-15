@@ -14,7 +14,9 @@ class Schedule():
 
     def hasSetpointChanged(self, room):
         if not room in self.setpoints.keys():
+            #print("Setpoint not present")
             return True
+        #print("Current setpoint {:}, should be {:}".format(self.setpoints[room], self._currentSetpointTemperature_(room)))
         return self.setpoints[room] != self._currentSetpointTemperature_(room)
 
     def getNextChange(self, room):
@@ -102,13 +104,11 @@ class BasicScheduler(Scheduler):
             for room in rooms:
                 for controller in self.controller[room]:
                     if (self.schedule.hasSetpointChanged(room)):
+                        print("Setpoint has changed for room '{:}' to {:}".format(room, self.schedule.getCurrentSetpointTemperature(room)))
                         controller.setSetpoint(self.schedule.getCurrentSetpointTemperature(room) )
-                    if controller.isEnabled():
-                        output = controller.getOutput()
-                        total += max(0,output)
-                        print ("Room '{:}' {:}/{:}°C output = {:}".format(room, controller.getTemperature(), controller.getSetpoint(), output))
-                    else:
-                        print ("Room '{:}' {:}/{:}°C disabled".format(room, controller.getTemperature(), controller.getSetpoint()))
+                    output = controller.getOutput()
+                    total += max(0,output)
+                    print ("Room '{:}' {:}/{:}°C output = {:}".format(room, controller.getTemperature(), controller.getSetpoint(), output))
 
             #            print(self.schedule.schedule)
             self.boilerInterface.setOutput(total)

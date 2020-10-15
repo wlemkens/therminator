@@ -1,7 +1,9 @@
 import json
 
 from Scheduler.SchedulerFactory import SchedulerFactory
-import paho.mqtt.client as mqtt
+
+from source.MQTT.MqttProvider import MqttProvider
+
 
 class ScheduleSwitcher(object):
     def __init__(self, config):
@@ -33,17 +35,16 @@ class ScheduleSwitcher(object):
         self.scheduler.loadConfig(self.schedules[scheduleName], self.modes, self.daytypes)
 
     def connect(self, mqttConfig):
-        self.client = mqtt.Client()
-        self.client.on_message = self.on_message
-        self.client.connect(mqttConfig["address"], mqttConfig["port"], 60)
+        self.client = MqttProvider(mqttConfig["address"], mqttConfig["port"])
 #        self.client.loop_start()
         topics = [(self.topicSchedule, 1)]
-        self.client.loop_start()
-        r = self.client.subscribe(topics)
+        r = self.client.subscribe(self, topics)
+        self.client.publish("therminator/request","schedule")
 
     def on_message(self, client, userdata, message):
         if message.topic == self.topicSchedule:
             if self.scheduleName != str(message.payload,'utf-8'):
                 self.scheduleName = str(message.payload,'utf-8')
+                print("Switching to schedule '{:}'".format(self.scheduleName))
                 self.selectSchedule(self.scheduleName)
 
