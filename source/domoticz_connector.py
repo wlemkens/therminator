@@ -88,7 +88,9 @@ def on_message(client, userdata, message):
     if message.topic == domoticzOut:
         msg = json.loads(message.payload);
         id = msg["idx"]
-        value = msg["nvalue"]
+        value = False
+        if "nvalue" in msg:
+            value = msg["nvalue"]
         if not value:
             if "svalue1" in msg:
                 value = msg["svalue1"]
