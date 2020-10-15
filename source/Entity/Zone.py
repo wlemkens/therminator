@@ -70,7 +70,7 @@ class Zone(object):
 
     def connect(self, mqttConfig):
         self.client = MqttProvider(mqttConfig["address"], mqttConfig["port"])
-        topics = [(self.topicTemp, 1), (self.topicSP, 1), (self.topicLvl, 1), (self.topicEnabled, 1), (self.topicBattery, 1)]
+        topics = [(self.topicTemp, 2), (self.topicSP, 2), (self.topicLvl, 2), (self.topicEnabled, 2), (self.topicBattery, 2)]
         self.client.subscribe(self, topics)
         self.requestValues()
 
