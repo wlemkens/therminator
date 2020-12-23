@@ -2,6 +2,9 @@ import sys
 import json
 import paho.mqtt.client as mqtt
 
+from Heartbeat.Modules import Modules
+from Heartbeat.Watchdog import Watchdog
+
 domoticzIn = "domoticz/in"
 therminatorIn = "therminator/in"
 scheduleTopic = "therminator/in/schedule"
@@ -147,6 +150,7 @@ if __name__ == "__main__":
         client.subscribe(therminatorOut+"/#", 2)
         client.subscribe(domoticzOut, 2)
         client.subscribe(therminatorRequest, 2)
+        watchdog = Watchdog(Modules.CONNECTOR, [], config)
         client.loop_forever()
 
     else:

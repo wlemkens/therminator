@@ -29,6 +29,7 @@ class ScheduleSwitcher(object):
         self.daytypes = schedulerConfig["daytypes"]
         self.scheduler = schedulerFactory.setupScheduler(schedulerType, controllerTypes, setupFile, schedule, self.modes, self.daytypes, boilerType, boilerConfig,mqttFile)
         self.connect(mqttConfig)
+        self.watchdog = Watchdog(Modules.THERMOSTAT, [Modules.CONNECTOR, Modules.MONITOR], config)
         self.scheduler.start()
 
     def selectSchedule(self, scheduleName):

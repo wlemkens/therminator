@@ -1,5 +1,4 @@
 # External imports
-import json
 import datetime
 import time
 
