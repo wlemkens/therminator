@@ -44,5 +44,5 @@ class Watchdog(threading.Thread):
         time.sleep(self.responseTimeout)
         if len(self.unconfirmedDependencies) > 0:
             self.brokenDependencies = self.unconfirmedDependencies
-            self.error = "{:} : Failed response from following depedencies {:}".format(self.type, self.brokenDependencies)
+            self.error = "{:} : Failed response from following depedencies {:}".format(self.moduleType, self.brokenDependencies)
             print(self.error)
