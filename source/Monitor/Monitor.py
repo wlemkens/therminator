@@ -28,8 +28,11 @@ class Zone:
         self.mqtt = mqtt
         self.statusChangedTime = datetime.now() - timedelta(0, 2*self.statusChangeDelay)
         self.subscribeToInputs()
-        self.requestValues(name)
-        self.statusChangeThread.start()
+        self.watchdog = Watchdog(Modules.MONITOR, [Modules.CONNECTOR], mqtt)
+        self.watchdog.onDependenciesComplete = self.onDependenciesComplete
+
+    def onDependenciesComplete(self):
+        print("Dependencies complete")
 
     def statusChangeFunction(self):
         while True:
@@ -112,7 +115,6 @@ class Monitor:
                 setup = json.load(f2)
         self.mqtt = MqttProvider(mqtt["address"], mqtt["port"])
         self.loadZones(self.zones, setup, self.mqtt)
-        self.watchdog = Watchdog(Modules.MONITOR, [Modules.CONNECTOR], mqtt)
         signal.pause()
 #        while True:
 #            sleep(0.1)

@@ -14,6 +14,7 @@ class Watchdog(threading.Thread):
         self.client.subscribe(self, [(self.heartbeatTopic,2)])
         self.responseTimeout = 20
         self.heartbeatInterval = 60
+        self.onDependenciesComplete = None
         self.heartbeatThread = threading.Thread(target=self.heartbeatLoop, daemon=True)
         self.heartbeatThread.start()
 
@@ -31,6 +32,8 @@ class Watchdog(threading.Thread):
                 self.client.publish(self.heartbeatTopic, self.moduleType)
             elif payload in self.unconfirmedDependencies:
                 self.unconfirmedDependencies.remove(payload)
+                if len(self.unconfirmedDependencies) == 0:
+                    self.onDependenciesComplete()
 
     def requestPulse(self):
         print("Requesting pulse")
