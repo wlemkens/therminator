@@ -37,6 +37,7 @@ class Display(object):
                 f.write("{:};{:};{:};{:};{:}\n".format("requestePower", "deliveredPower","returnTemperature","flowTemperature","exteriorTemperature"))
         #self.client = MqttProvider(self.mqtt["address"], self.mqtt["port"])
         self.away = False
+        self.watchdog = Watchdog(Modules.DISPLAY, [Modules.CONNECTOR, Modules.MONITOR, Modules.THERMOSTAT], config)
 
     def getFontSize(self, area, printstring):
         # returns (ideal fontsize, (length of text, height of text)) that maximally
