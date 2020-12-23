@@ -30,16 +30,23 @@ class Display(object):
         self.awayFontSize = 1
         self.delayedUpdateTimer = None
         self.setup, self.mqtt, self.fullUpdateInterval = self.loadConfig(config)
-        self.createLayout(self.setup, self.mqtt)
-        if self.logFile:
-            with open(self.logFile,"w+") as f:
-                f.write("datetime;")
-                for zone in self.zones:
-                    f.write("{:}_{:};{:}_{:};{:}_{:};".format("setpoint",zone.getName(), "temperature",zone.getName(),"level",zone.getName(),"status",zone.getName()))
-                f.write("{:};{:};{:};{:};{:}\n".format("requestePower", "deliveredPower","returnTemperature","flowTemperature","exteriorTemperature"))
         #self.client = MqttProvider(self.mqtt["address"], self.mqtt["port"])
         self.away = False
+        self.firstContact = True
         self.watchdog = Watchdog(Modules.DISPLAY, [Modules.CONNECTOR, Modules.MONITOR, Modules.THERMOSTAT], self.mqtt)
+        self.watchdog.onDependenciesComplete = self.onDependenciesComplete
+
+    def onDependenciesComplete(self):
+        if self.firstContact:
+            print("Loading display")
+            self.firstContact = False
+            self.createLayout(self.setup, self.mqtt)
+            if self.logFile:
+                with open(self.logFile,"w+") as f:
+                    f.write("datetime;")
+                    for zone in self.zones:
+                        f.write("{:}_{:};{:}_{:};{:}_{:};".format("setpoint",zone.getName(), "temperature",zone.getName(),"level",zone.getName(),"status",zone.getName()))
+                    f.write("{:};{:};{:};{:};{:}\n".format("requestePower", "deliveredPower","returnTemperature","flowTemperature","exteriorTemperature"))
 
     def getFontSize(self, area, printstring):
         # returns (ideal fontsize, (length of text, height of text)) that maximally
