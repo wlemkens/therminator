@@ -118,6 +118,7 @@ class Monitor:
 
     def onDependenciesComplete(self):
         if self.firstContact:
+            print("Loading monitor")
             self.firstContact = False
             self.loadZones(self.zones, self.setup, self.mqtt)
 
