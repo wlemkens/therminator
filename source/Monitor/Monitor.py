@@ -28,11 +28,6 @@ class Zone:
         self.mqtt = mqtt
         self.statusChangedTime = datetime.now() - timedelta(0, 2*self.statusChangeDelay)
         self.subscribeToInputs()
-        self.watchdog = Watchdog(Modules.MONITOR, [Modules.CONNECTOR], mqtt)
-        self.watchdog.onDependenciesComplete = self.onDependenciesComplete
-
-    def onDependenciesComplete(self):
-        print("Dependencies complete")
 
     def statusChangeFunction(self):
         while True:
@@ -105,19 +100,26 @@ class Monitor:
 
     def __init__(self, configFilename):
         mqtt = {}
-        setup = {}
+        self.setup = {}
         self.zones = []
         with open(configFilename) as f:
             config = json.load(f)
             with open(config["mqtt"]["configFile"]) as f2:
                 mqtt = json.load(f2)
             with open(config["setup"]["configFile"]) as f2:
-                setup = json.load(f2)
+                self.setup = json.load(f2)
         self.mqtt = MqttProvider(mqtt["address"], mqtt["port"])
-        self.loadZones(self.zones, setup, self.mqtt)
+        self.firstContact = True
+        self.watchdog = Watchdog(Modules.MONITOR, [Modules.CONNECTOR], mqtt)
+        self.watchdog.onDependenciesComplete = self.onDependenciesComplete
         signal.pause()
 #        while True:
 #            sleep(0.1)
+
+    def onDependenciesComplete(self):
+        if self.firstContact:
+            self.firstContact = False
+            self.loadZones(self.zones, self.setup, self.mqtt)
 
 
     def loadZones(self, zones, config, mqtt):

@@ -9,6 +9,7 @@ class Watchdog(threading.Thread):
         self.moduleType = moduleType
         self.dependencies = dependencies
         self.brokenDependencies = []
+        self.unconfirmedDependencies = dependencies
         self.client = MqttProvider(mqttConfig["address"], mqttConfig["port"])
         self.heartbeatTopic = "therminator/heartbeat"
         self.client.subscribe(self, [(self.heartbeatTopic,2)])
