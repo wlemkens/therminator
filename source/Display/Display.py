@@ -7,6 +7,8 @@ from datetime import datetime
 
 import json
 
+from Heartbeat.Modules import Modules
+from Heartbeat.Watchdog import Watchdog
 #from MQTT.MqttProvider import MqttProvider
 
 from Entity.Zone import Zone
@@ -37,7 +39,7 @@ class Display(object):
                 f.write("{:};{:};{:};{:};{:}\n".format("requestePower", "deliveredPower","returnTemperature","flowTemperature","exteriorTemperature"))
         #self.client = MqttProvider(self.mqtt["address"], self.mqtt["port"])
         self.away = False
-        self.watchdog = Watchdog(Modules.DISPLAY, [Modules.CONNECTOR, Modules.MONITOR, Modules.THERMOSTAT], config)
+        self.watchdog = Watchdog(Modules.DISPLAY, [Modules.CONNECTOR, Modules.MONITOR, Modules.THERMOSTAT], self.mqtt)
 
     def getFontSize(self, area, printstring):
         # returns (ideal fontsize, (length of text, height of text)) that maximally

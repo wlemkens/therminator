@@ -18,8 +18,6 @@ class Zone:
         self.spTopicOut = "therminator/out/{:}_setpoint".format(name)
         self.storedSpTopicOut = "therminator/out/{:}_stored_setpoint".format(name)
         self.storedSpTopicIn = "therminator/in/{:}_stored_setpoint".format(name)
-        self.heartbeatTopic = "therminator/heartbeat"
-        self.heartbeatDependencies = []
         self.statusChangeThread = threading.Thread(target=self.statusChangeFunction, daemon=True)
         self.enabled = None
         self.volatileStatus = None
@@ -114,7 +112,7 @@ class Monitor:
                 setup = json.load(f2)
         self.mqtt = MqttProvider(mqtt["address"], mqtt["port"])
         self.loadZones(self.zones, setup, self.mqtt)
-        self.watchdog = Watchdog(Modules.MONITOR, [Modules.CONNECTOR], config)
+        self.watchdog = Watchdog(Modules.MONITOR, [Modules.CONNECTOR], mqtt)
         signal.pause()
 #        while True:
 #            sleep(0.1)

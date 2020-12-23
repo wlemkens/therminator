@@ -2,6 +2,8 @@ import json
 
 from Scheduler.SchedulerFactory import SchedulerFactory
 
+from Heartbeat.Modules import Modules
+from Heartbeat.Watchdog import Watchdog
 from MQTT.MqttProvider import MqttProvider
 
 
@@ -29,7 +31,7 @@ class ScheduleSwitcher(object):
         self.daytypes = schedulerConfig["daytypes"]
         self.scheduler = schedulerFactory.setupScheduler(schedulerType, controllerTypes, setupFile, schedule, self.modes, self.daytypes, boilerType, boilerConfig,mqttFile)
         self.connect(mqttConfig)
-        self.watchdog = Watchdog(Modules.THERMOSTAT, [Modules.CONNECTOR, Modules.MONITOR], config)
+        self.watchdog = Watchdog(Modules.THERMOSTAT, [Modules.CONNECTOR, Modules.MONITOR], mqttConfig)
         self.scheduler.start()
 
     def selectSchedule(self, scheduleName):

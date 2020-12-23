@@ -1,6 +1,4 @@
-from enum import Enum
-
-class Modules(Enum):
+class Modules(object):
     CONNECTOR = "CONNECTOR"
     MONITOR = "MONITOR"
     THERMOSTAT = "THERMOSTAT"
