@@ -29,6 +29,7 @@ class Zone:
 
     def statusChangeFunction(self):
         while True:
+            #print("statusChangeFunction({:})".format(self.name))
             if self.enabled == None or ((datetime.now() - self.statusChangedTime).total_seconds() > self.statusChangeDelay and self.volatileStatus != self.enabled):
                 self.enabled = self.volatileStatus
                 self.setStatus(self.enabled)
@@ -39,6 +40,7 @@ class Zone:
         self.mqtt.subscribe(self, (self.statusTopicIn, 2))
 
     def requestValues(self, name):
+        print("requestValues({:})".format(name))
         topic = "therminator/request"
         requestMessageSP = "\"{:}_setpoint\"".format(name)
         requestMessageEnabled = "\"{:}_enabled\"".format(name)
@@ -46,40 +48,47 @@ class Zone:
         self.mqtt.publish(topic, requestMessageSP)
 
     def publishSetpoint(self, setpoint):
+        print("publishSetpoint({:}) : {:}".format(setpoint, self.name))
         self.mqtt.publish(self.spTopicOut, setpoint)
 
     def storeSetpoint(self, setpoint):
+        print("storeSetpoint({:}) : {:}".format(setpoint, self.name))
         if setpoint != self.setpointOFF:
             # Never store the off setpoint value since it might cause problems
             # when the order of messages is not kept
             self.storedSetpoint = setpoint
+            print("Publishing store on in and out")
             self.mqtt.publish(self.storedSpTopicOut, setpoint)
             # This device does not trigger an domoticz/out event, so we need to create it ourselves
             self.mqtt.publish(self.storedSpTopicIn, setpoint)
 
     def setStatus(self, status):
+        print("setStatus({:}) : {:}".format(status, self.name))
         if status:
             self.setAndPublishSetpoint(self.storedSetpoint)
         else:
             self.setAndPublishSetpoint(self.setpointOFF)
 
     def setAndPublishSetpoint(self, setpoint):
-        self.setpoint = setpoint
-        self.publishSetpoint(setpoint)
+        print("setAndPublishSetpoint({:}) : {:}".format(setpoint, self.name))
+        if self.setpoint != setpoint:
+            self.setpoint = setpoint
+            self.publishSetpoint(setpoint)
 
     def on_message(self, client, userdata, message):
         if (message.topic == self.spTopicIn):
             setpoint = float(message.payload)
-            if self.enabled:
-                print("Received setpoint {:} for enabled {:}".format(setpoint, self.name))
-                # If enabled, register the setpoint and forward it to the stored setpoint
-                self.setpoint = setpoint
-                self.storeSetpoint(setpoint)
-            else:
-                print("Received setpoint {:} for disabled {:}".format(setpoint, self.name))
-                # If not enabled, only forward it to the stored setpoint and reset the setpoint to the off setpoint
-                self.storeSetpoint(setpoint)
-                self.publishSetpoint(self.setpointOFF)
+            if setpoint != self.setpoint:
+                if self.enabled:
+                    print("Received setpoint {:} for enabled {:}".format(setpoint, self.name))
+                    # If enabled, register the setpoint and forward it to the stored setpoint
+                    self.setpoint = setpoint
+                    self.storeSetpoint(setpoint)
+                else:
+                    print("Received setpoint {:} for disabled {:}".format(setpoint, self.name))
+                    # If not enabled, only forward it to the stored setpoint and reset the setpoint to the off setpoint
+                    self.storeSetpoint(setpoint)
+                    self.publishSetpoint(self.setpointOFF)
         if (message.topic == self.statusTopicIn):
             self.statusChangedTime = datetime.now()
             self.volatileStatus = int(message.payload) == 1

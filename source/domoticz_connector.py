@@ -35,7 +35,7 @@ ids = {
 
     189 : "living_enabled",
     190 : "badkamer_enabled",
-    191 : "kamer_ariane_enabled",
+    257 : "kamer_ariane_enabled",
     192 : "bureau_enabled",
     300 : "kamer_nathan_enabled",
 
@@ -54,7 +54,7 @@ schedules = {
     "20" : "holiday",
     "30" : "away",
     "40" : "homework",
-    "50" : "test"
+    "50" : "homework2"
 }
 # Inverse lookup table
 topics = {}
@@ -82,7 +82,7 @@ def isBatteryTopic(topic):
 def parseBatteryTopic(wholeTopic):
     res = wholeTopic.rpartition("/")
     topic = res[2]
-    return "therminator/in/"+topic.replace("_setpoint","").replace("_level","")
+    return "therminator/in/"+topic.replace("_setpoint","").replace("_level","")+"_battery"
 
 def on_message(client, userdata, message):
     if message.topic == domoticzOut:

@@ -44,13 +44,13 @@ class RadiatorHeatingInterface(HeatingInterface):
     def requestValues(self):
         topic = "therminator/request"
         requestMessageTemp = "\"{:}_temperature\"".format(self.name)
-        requestMessageSP = "\"{:}_setpoint\"".format(self.name)
+        requestMessageSP = "\"{:}_stored_setpoint\"".format(self.name)
         self.client.publish(topic, requestMessageTemp)
         self.client.publish(topic, requestMessageSP)
 
     def connect(self):
         self.topic_temp = "therminator/in/{:}_temperature".format(self.name)
-        self.topic_sp = "therminator/in/{:}_setpoint".format(self.name)
+        self.topic_sp = "therminator/in/{:}_stored_setpoint".format(self.name)
         topics = [(self.topic_temp, 2), (self.topic_sp, 2)]
         self.client.subscribe(self, topics)
         self.requestValues()

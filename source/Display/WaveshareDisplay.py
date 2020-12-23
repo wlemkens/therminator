@@ -70,7 +70,7 @@ class WaveshareDisplay(Display.Display):
         sp = zone.getSetpoint()
         battery = zone.getBattery()
         batteryText = ""
-        if battery:
+        if battery != None:
             batteryText = "{:}%".format(battery)
         else:
             print("No battery status for {:}".format(zone.getLabel()))
