@@ -89,6 +89,7 @@ class Zone:
                 else:
                     print("Received setpoint {:} for disabled {:}".format(setpoint, self.name))
                     # If not enabled, only forward it to the stored setpoint and reset the setpoint to the off setpoint
+                    self.setpoint = setpoint
                     self.storeSetpoint(setpoint)
                     self.publishSetpoint(self.setpointOFF)
         if (message.topic == self.statusTopicIn):
