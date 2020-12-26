@@ -81,7 +81,7 @@ class Zone:
         if (message.topic == self.spTopicIn):
             setpoint = float(message.payload)
             if setpoint != self.setpoint:
-                if self.enabled:
+                if self.enabled or self.enabled == None:
                     print("Received setpoint {:} for enabled {:}".format(setpoint, self.name))
                     # If enabled, register the setpoint and forward it to the stored setpoint
                     self.setpoint = setpoint
