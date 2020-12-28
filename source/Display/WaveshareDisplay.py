@@ -29,7 +29,7 @@ class WaveshareDisplay(Display.Display):
             self.epd.sleep()
             self.isSleeping = True
         except:
-            print("Unexpected error:", sys.exc_info()[0])
+            logging.error("Unexpected error:", sys.exc_info()[0])
 
     def getWidth(self):
         return self.epd.width
@@ -38,19 +38,19 @@ class WaveshareDisplay(Display.Display):
         return self.epd.height
 
     def display(self, image):
-        print("display")
+        logging.debug("display")
         if self.isSleeping:
             self.epd.init()
             self.isSleeping = False
 
         if self.fullUpdate:
-            print("Full update")
+            logging.debug("Full update")
             self.epd.display(self.epd.getbuffer(image[0]), self.epd.getbuffer(image[1]))
             self.fullUpdate = False
-            print("Full update done")
+            logging.debug("Full update done")
 
     def updateZone(self, zone, index, draws):
-        print("Updating zone '{:}'".format(zone.getName()))
+        logging.debug("Updating zone '{:}'".format(zone.getName()))
         draw = draws[0]
         drawc = draws[1]
         lineHeight = self.fontSize + 1
@@ -73,7 +73,7 @@ class WaveshareDisplay(Display.Display):
         if battery != None:
             batteryText = "{:}%".format(battery)
         else:
-            print("No battery status for {:}".format(zone.getLabel()))
+            logging.debug("No battery status for {:}".format(zone.getLabel()))
         tempTooLow = temp != None and sp != None and temp < sp
         textColor = self.BLACK
         if index == 0:
@@ -151,4 +151,4 @@ class WaveshareDisplay(Display.Display):
                 draw.text((tx-30, ty-5+fullSize[1]), batteryText, font=smallFont, fill=self.BLACK)
             else:
                 drawc.text((tx-30, ty-5+fullSize[1]), batteryText, font=smallFont, fill=self.BLACK)
-        print("Updating zone done")
+        logging.debug("Updating zone done")

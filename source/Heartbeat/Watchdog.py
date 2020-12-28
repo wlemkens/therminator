@@ -1,11 +1,13 @@
 import threading
 import time
+import logging
 
 from MQTT.MqttProvider import MqttProvider
 
 class Watchdog(threading.Thread):
 
-    def __init__(self, moduleType, dependencies, mqttConfig):
+    def __init__(self, moduleType, dependencies, mqttConfig, logFile):
+        logging.basicConfig(filename=logFile, level=logging.DEBUG)
         self.moduleType = moduleType
         self.dependencies = dependencies
         self.brokenDependencies = []
@@ -28,8 +30,8 @@ class Watchdog(threading.Thread):
         if message.topic == self.heartbeatTopic:
             payload = str(message.payload, "utf-8")
             if payload == "ping":
-                print("Sending pulse")
-                print(self.moduleType)
+                logging.debug("Sending pulse")
+                logging.debug(self.moduleType)
                 self.client.publish(self.heartbeatTopic, self.moduleType)
             elif payload in self.unconfirmedDependencies:
                 self.unconfirmedDependencies.remove(payload)
@@ -37,7 +39,7 @@ class Watchdog(threading.Thread):
                     self.onDependenciesComplete()
 
     def requestPulse(self):
-        print("Requesting pulse")
+        logging.debug("Requesting pulse")
         self.brokenDependencies = []
         self.unconfirmedDependencies = self.dependencies
         self.client.publish(self.heartbeatTopic, "ping")
@@ -45,4 +47,4 @@ class Watchdog(threading.Thread):
         if len(self.unconfirmedDependencies) > 0:
             self.brokenDependencies = self.unconfirmedDependencies
             self.error = "{:} : Failed response from following depedencies {:}".format(self.moduleType, self.brokenDependencies)
-            print(self.error)
+            logging.error(self.error)

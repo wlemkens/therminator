@@ -7,6 +7,7 @@ import time
 from Scheduler.Scheduler import Scheduler
 from Scheduler.BasicScheduler import Schedule
 from Scheduler.heating_coefficient import *
+import logging
 
 class PredictiveScheduler(Scheduler):
     def __init__(self, filename):
@@ -20,7 +21,7 @@ class PredictiveScheduler(Scheduler):
         self.h_loss = None
         self.loadLog(self.logDirectory)
         self.nbSimSteps = 10
-        print("Using predictive scheduler")
+        logging.debug("Using predictive scheduler")
 
     def loadLog(self, directory):
         self.h, self.h_loss = calculateCoefficientsFromBestLog(directory)
@@ -54,7 +55,7 @@ class PredictiveScheduler(Scheduler):
                     externalTemperature = self.exterior.getTemperature()
                     if externalTemperature != None and temperature != None:
                         futureTemp = simulateFutureTemperature(spTime, nextSetpointTemperature, temperature, externalTemperature, self.h_loss[room], self.h[room], self.nbSimSteps)
-                        print(">Future temperature for {:} is {:}°C".format(room, futureTemp))
+                        logging.debug(">Future temperature for {:} is {:}°C".format(room, futureTemp))
 
                     if ((currentSP != None and nextSetpointTemperature > currentSP and temperature != None) or hasChanged):
                         if hasChanged:
@@ -63,7 +64,7 @@ class PredictiveScheduler(Scheduler):
                             externalTemperature = self.exterior.getTemperature()
                             if externalTemperature != None:
                                 forFutureSP = calculateSetpoint(spTime, nextSetpointTemperature, temperature, externalTemperature, self.h_loss[room], self.h[room])
-                                print("Minimum required temperature for {:} is {:}°C".format(room, forFutureSP))
+                                logging.debug("Minimum required temperature for {:} is {:}°C".format(room, forFutureSP))
                                 if (forFutureSP > currentSP and currentSP < nextSetpointTemperature):
                                     controller.setSetpoint(nextSetpointTemperature)
                         mode = self.schedule.getMode()
@@ -74,9 +75,9 @@ class PredictiveScheduler(Scheduler):
                     if controller.isEnabled():
                         output = controller.getOutput()
                         total += max(0,output)
-                        print ("Room '{:}' {:}/{:}°C output = {:}".format(room, controller.getTemperature(), controller.getSetpoint(), output))
+                        logging.debug ("Room '{:}' {:}/{:}°C output = {:}".format(room, controller.getTemperature(), controller.getSetpoint(), output))
                     else:
-                        print ("Room '{:}' {:}/{:}°C disabled".format(room, controller.getTemperature(), controller.getSetpoint()))
+                        logging.debug ("Room '{:}' {:}/{:}°C disabled".format(room, controller.getTemperature(), controller.getSetpoint()))
 
             #            print(self.schedule.schedule)
             self.boilerInterface.setOutput(total)

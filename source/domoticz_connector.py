@@ -1,6 +1,7 @@
 import sys
 import json
 import paho.mqtt.client as mqtt
+import logging
 
 from Heartbeat.Modules import Modules
 from Heartbeat.Watchdog import Watchdog
@@ -111,7 +112,7 @@ def on_message(client, userdata, message):
                 if battery <= 100 and isBatteryTopic(topic):
                     batteryTopic = parseBatteryTopic(topic)
                     client.publish(batteryTopic, battery)
-                print("Translating topic {:} -> Publishing on topic {:} : {:}".format(domoticzOut, topic, value))
+                logging.debug("Translating topic {:} -> Publishing on topic {:} : {:}".format(domoticzOut, topic, value))
     elif therminatorOut in message.topic:
         topic = parseTherminatorTopic(message.topic)
         id = getDomoticzId(topic)
@@ -124,7 +125,7 @@ def on_message(client, userdata, message):
             }
             jsonMsg = json.dumps(struct)
             client.publish(domoticzIn, jsonMsg)
-            print("Translating topic {:} : {:} -> Publishing on topic {:} : {:}".format(topic, value, domoticzIn, jsonMsg))
+            logging.debug("Translating topic {:} : {:} -> Publishing on topic {:} : {:}".format(topic, value, domoticzIn, jsonMsg))
     elif message.topic == therminatorRequest:
         topic = str(message.payload,'utf-8').strip('\"')
         id = getDomoticzId(topic)
@@ -139,6 +140,7 @@ def on_message(client, userdata, message):
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
+        logging.basicConfig(filename='/var/log/domoticz_connector.log', level=logging.DEBUG)
         configFilename = sys.argv[1]
 
         client = mqtt.Client()
@@ -150,8 +152,8 @@ if __name__ == "__main__":
         client.subscribe(therminatorOut+"/#", 2)
         client.subscribe(domoticzOut, 2)
         client.subscribe(therminatorRequest, 2)
-        watchdog = Watchdog(Modules.CONNECTOR, [], config)
+        watchdog = Watchdog(Modules.CONNECTOR, [], config, "/var/log/domoticz_connector.log")
         client.loop_forever()
 
     else:
-        print("Usage {:} </path/to/mqtt.json>".format(sys.argv[0]))
+        logging.debug("Usage {:} </path/to/mqtt.json>".format(sys.argv[0]))

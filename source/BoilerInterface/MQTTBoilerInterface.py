@@ -3,7 +3,7 @@ from Controller.PID import PID
 from MQTT.MqttProvider import MqttProvider
 
 import json
-
+import logging
 
 class MQTTBoilerInterface(BoilerInterface):
 
@@ -11,7 +11,7 @@ class MQTTBoilerInterface(BoilerInterface):
         config = None
         with open(configFilename) as f:
             config = json.load(f)
-        print(config)
+        logging.debug(config)
         self.address  = config["address"]
         self.port = config["port"]
         if "username" in config.keys() and "password" in config.keys():
@@ -33,7 +33,7 @@ class MQTTBoilerInterface(BoilerInterface):
         self.client.publish("therminator/out/boiler_output", outputValue)
 
     def setMode(self, mode):
-        print("Switching to mode '{:}'".format(mode))
+        logging.debug("Switching to mode '{:}'".format(mode))
         self.client.publish("therminator/out/mode", mode)
         self.client.publish("therminator/in/mode", mode)
 

@@ -9,9 +9,12 @@ from MQTT.MqttProvider import MqttProvider
 from Heartbeat.Modules import Modules
 from Heartbeat.Watchdog import Watchdog
 
+import logging
+
 
 class Zone:
     def __init__(self, name, mqtt):
+        logging.basicConfig(filename='/var/log/setpoint_monitor.log', level=logging.DEBUG)
         self.name = name
         self.spTopicIn = "therminator/in/{:}_setpoint".format(name)
         self.statusTopicIn = "therminator/in/{:}_enabled".format(name)
@@ -31,7 +34,7 @@ class Zone:
 
     def statusChangeFunction(self):
         while True:
-            #print("statusChangeFunction({:})".format(self.name))
+            #logging.debug("statusChangeFunction({:})".format(self.name))
             if self.enabled == None or ((datetime.now() - self.statusChangedTime).total_seconds() > self.statusChangeDelay and self.volatileStatus != self.enabled):
                 self.enabled = self.volatileStatus
                 self.setStatus(self.enabled)
@@ -42,7 +45,7 @@ class Zone:
         self.mqtt.subscribe(self, (self.statusTopicIn, 2))
 
     def requestValues(self, name):
-        print("requestValues({:})".format(name))
+        logging.debug("requestValues({:})".format(name))
         topic = "therminator/request"
         requestMessageSP = "\"{:}_setpoint\"".format(name)
         requestMessageEnabled = "\"{:}_enabled\"".format(name)
@@ -50,29 +53,29 @@ class Zone:
         self.mqtt.publish(topic, requestMessageSP)
 
     def publishSetpoint(self, setpoint):
-        print("publishSetpoint({:}) : {:}".format(setpoint, self.name))
+        logging.debug("publishSetpoint({:}) : {:}".format(setpoint, self.name))
         self.mqtt.publish(self.spTopicOut, setpoint)
 
     def storeSetpoint(self, setpoint):
-        print("storeSetpoint({:}) : {:}".format(setpoint, self.name))
+        logging.debug("storeSetpoint({:}) : {:}".format(setpoint, self.name))
         if setpoint != self.setpointOFF:
             # Never store the off setpoint value since it might cause problems
             # when the order of messages is not kept
             self.storedSetpoint = setpoint
-            print("Publishing store on in and out")
+            logging.debug("Publishing store on in and out")
             self.mqtt.publish(self.storedSpTopicOut, setpoint)
             # This device does not trigger an domoticz/out event, so we need to create it ourselves
             self.mqtt.publish(self.storedSpTopicIn, setpoint)
 
     def setStatus(self, status):
-        print("setStatus({:}) : {:}".format(status, self.name))
+        logging.debug("setStatus({:}) : {:}".format(status, self.name))
         if status:
             self.setAndPublishSetpoint(self.storedSetpoint)
         else:
             self.setAndPublishSetpoint(self.setpointOFF)
 
     def setAndPublishSetpoint(self, setpoint):
-        print("setAndPublishSetpoint({:}) : {:}".format(setpoint, self.name))
+        logging.debug("setAndPublishSetpoint({:}) : {:}".format(setpoint, self.name))
         if self.setpoint != setpoint:
             self.setpoint = setpoint
             self.publishSetpoint(setpoint)
@@ -82,12 +85,12 @@ class Zone:
             setpoint = float(message.payload)
             if setpoint != self.setpoint:
                 if self.enabled or self.enabled == None:
-                    print("Received setpoint {:} for enabled {:}".format(setpoint, self.name))
+                    logging.debug("Received setpoint {:} for enabled {:}".format(setpoint, self.name))
                     # If enabled, register the setpoint and forward it to the stored setpoint
                     self.setpoint = setpoint
                     self.storeSetpoint(setpoint)
                 else:
-                    print("Received setpoint {:} for disabled {:}".format(setpoint, self.name))
+                    logging.debug("Received setpoint {:} for disabled {:}".format(setpoint, self.name))
                     # If not enabled, only forward it to the stored setpoint and reset the setpoint to the off setpoint
                     self.setpoint = setpoint
                     self.storeSetpoint(setpoint)
@@ -95,7 +98,7 @@ class Zone:
         if (message.topic == self.statusTopicIn):
             self.statusChangedTime = datetime.now()
             self.volatileStatus = int(message.payload) == 1
-            print("Received status change {:} for {:}".format(self.volatileStatus, self.name))
+            logging.debug("Received status change {:} for {:}".format(self.volatileStatus, self.name))
 
 class Monitor:
 
@@ -111,7 +114,7 @@ class Monitor:
                 self.setup = json.load(f2)
         self.mqtt = MqttProvider(mqtt["address"], mqtt["port"])
         self.firstContact = True
-        self.watchdog = Watchdog(Modules.MONITOR, [Modules.CONNECTOR], mqtt)
+        self.watchdog = Watchdog(Modules.MONITOR, [Modules.CONNECTOR], mqtt, "/var/log/setpoint_monitor.log")
         self.watchdog.onDependenciesComplete = self.onDependenciesComplete
         signal.pause()
 #        while True:
@@ -119,7 +122,7 @@ class Monitor:
 
     def onDependenciesComplete(self):
         if self.firstContact:
-            print("Loading monitor")
+            logging.debug("Loading monitor")
             self.firstContact = False
             self.loadZones(self.zones, self.setup, self.mqtt)
 

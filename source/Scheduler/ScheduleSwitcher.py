@@ -7,9 +7,11 @@ from Heartbeat.Modules import Modules
 from Heartbeat.Watchdog import Watchdog
 from MQTT.MqttProvider import MqttProvider
 
+import logging
 
 class ScheduleSwitcher(object):
     def __init__(self, config):
+        logging.basicConfig(filename='/var/log/thermostat.log', level=logging.DEBUG)
         self.topicSchedule = "therminator/in/schedule"
         self.schedulerType = config["scheduler"]["type"]
         self.controllerTypes = config["controllers"]
@@ -31,14 +33,14 @@ class ScheduleSwitcher(object):
         self.daytypes = schedulerConfig["daytypes"]
         self.connect(mqttConfig)
         self.firstContact = True
-        self.watchdog = Watchdog(Modules.THERMOSTAT, [Modules.CONNECTOR, Modules.MONITOR], mqttConfig)
+        self.watchdog = Watchdog(Modules.THERMOSTAT, [Modules.CONNECTOR, Modules.MONITOR], mqttConfig, "/var/log/thermostat.log")
         self.watchdog.onDependenciesComplete = self.onDependenciesComplete
         while True:
             time.sleep(1000)
 
     def onDependenciesComplete(self):
         if self.firstContact:
-            print("Loading scheduler")
+            logging.debug("Loading scheduler")
             self.firstContact = False
             schedulerFactory = SchedulerFactory()
             self.scheduler = schedulerFactory.setupScheduler(self.schedulerType, self.controllerTypes, self.setupFile, self.schedule, self.modes, self.daytypes, self.boilerType, self.boilerConfig, self.mqttFile)
@@ -58,6 +60,6 @@ class ScheduleSwitcher(object):
         if message.topic == self.topicSchedule:
             if self.scheduleName != str(message.payload,'utf-8'):
                 self.scheduleName = str(message.payload,'utf-8')
-                print("Switching to schedule '{:}'".format(self.scheduleName))
+                logging.debug("Switching to schedule '{:}'".format(self.scheduleName))
                 self.selectSchedule(self.scheduleName)
 

@@ -4,9 +4,11 @@ import time
 
 # Project imports
 from Scheduler.Scheduler import Scheduler
+import logging
 
 class Schedule():
     def __init__(self, schedule):
+        logging.basicConfig(filename='/var/log/thermostat.log', level=logging.DEBUG)
         self.schedule = schedule
         self.setpoints = {}
         self.mode = None
@@ -103,11 +105,11 @@ class BasicScheduler(Scheduler):
             for room in rooms:
                 for controller in self.controller[room]:
                     if (self.schedule.hasSetpointChanged(room)):
-                        print("Setpoint has changed for room '{:}' to {:}".format(room, self.schedule.getCurrentSetpointTemperature(room)))
+                        logging.debug("Setpoint has changed for room '{:}' to {:}".format(room, self.schedule.getCurrentSetpointTemperature(room)))
                         controller.setSetpoint(self.schedule.getCurrentSetpointTemperature(room) )
                     output = controller.getOutput()
                     total += max(0,output)
-                    print ("Room '{:}' {:}/{:}°C output = {:}".format(room, controller.getTemperature(), controller.getSetpoint(), output))
+                    logging.debug ("Room '{:}' {:}/{:}°C output = {:}".format(room, controller.getTemperature(), controller.getSetpoint(), output))
 
             #            print(self.schedule.schedule)
             self.boilerInterface.setOutput(total)

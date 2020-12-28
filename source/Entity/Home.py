@@ -1,7 +1,9 @@
 from MQTT.MqttProvider import MqttProvider
+import logging
 
 class Home(object):
-    def __init__(self, mqttConfig, on_update):
+    def __init__(self, mqttConfig, on_update, logFile):
+        logging.basicConfig(filename=logFile, level=logging.DEBUG)
         self.away = False
         self.mode = None
         self.topicAway = "therminator/in/away"
@@ -15,9 +17,9 @@ class Home(object):
                 self.away = int(message.payload)
                 self.update()
         if message.topic == self.topicMode:
-            print("Received mode '{:}'".format(str(message.payload, 'utf-8')))
+            logging.debug("Received mode '{:}'".format(str(message.payload, 'utf-8')))
             if self.mode != str(message.payload, 'utf-8'):
-                print("Switching to mode '{:}'".format(str(message.payload, 'utf-8')))
+                logging.debug("Switching to mode '{:}'".format(str(message.payload, 'utf-8')))
                 self.mode = str(message.payload, 'utf-8')
                 self.update()
 

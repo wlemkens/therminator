@@ -33,12 +33,12 @@ class Display(object):
         #self.client = MqttProvider(self.mqtt["address"], self.mqtt["port"])
         self.away = False
         self.firstContact = True
-        self.watchdog = Watchdog(Modules.DISPLAY, [Modules.CONNECTOR, Modules.MONITOR, Modules.THERMOSTAT], self.mqtt)
+        self.watchdog = Watchdog(Modules.DISPLAY, [Modules.CONNECTOR, Modules.MONITOR, Modules.THERMOSTAT], self.mqtt, "/var/log/display.log")
         self.watchdog.onDependenciesComplete = self.onDependenciesComplete
 
     def onDependenciesComplete(self):
         if self.firstContact:
-            print("Loading display")
+            logging.debug("Loading display")
             self.firstContact = False
             self.createLayout(self.setup, self.mqtt)
             if self.logFile:
@@ -109,7 +109,7 @@ class Display(object):
 
 
     def updateZone(self, zone, index, draws):
-        print("Updating zone '{:}'".format(zone.getName()))
+        logging.debug("Updating zone '{:}'".format(zone.getName()))
         draw = draws[0]
         drawc = draws[1]
         lineHeight = self.fontSize + 1
@@ -212,7 +212,7 @@ class Display(object):
             imagec = Image.new('1', size, self.WHITE)
             draw = ImageDraw.Draw(image)
             drawc = ImageDraw.Draw(imagec)
-            print("Mode = '{:}'".format(self.home.getMode()))
+            logging.debug("Mode = '{:}'".format(self.home.getMode()))
             if self.home.isAway() or self.home.getMode() == 'away':
                 if not self.mode == "away":
                     self.drawAway([draw,drawc])
@@ -262,9 +262,9 @@ class Display(object):
         self.awayFontSize, dims = self.getFontSize([self.getWidth()*0.8, self.getHeight()*0.8], "AWAY")
         self.clockFontSize = max(8,int(self.getHeight() * 0.03))
         self.modeFontSize = max(8,int(self.getHeight() * 0.07))
-        self.home = Home(mqtt, self.update)
+        self.home = Home(mqtt, self.update, "/var/log/display.log")
         for zone in setup["zones"]:
-            self.zones += [Zone(zone, mqtt, self.update)]
+            self.zones += [Zone(zone, mqtt, self.update, "/var/log/display.log")]
         self.boiler = Boiler(mqtt, self.update)
         self.exterior = Exterior(mqtt, self.update)
         lineHeight = 1.0 * self.getHeight() / len(self.zones)

@@ -1,9 +1,11 @@
 import threading
 
 from MQTT.MqttProvider import MqttProvider
+import logging
 
 class Zone(object):
-    def __init__(self, config, mqttConfig, on_update):
+    def __init__(self, config, mqttConfig, on_update, logFile):
+        logging.basicConfig(filename=logFile, level=logging.DEBUG)
         self.offTemperature = 10
         self.offDelay = 10
         self.temperature = None
@@ -25,12 +27,12 @@ class Zone(object):
         self.enabledCheckThread = None
 
     def enabledCheck(self):
-        print("Checking if {:} is enabled".format(self.name))
+        logging.debug("Checking if {:} is enabled".format(self.name))
         if self.enabled != self.tempEnabled:
-            print("Enabled status changed from  {:} to {:}".format(self.enabled, self.tempEnabled))
+            logging.debug("Enabled status changed from  {:} to {:}".format(self.enabled, self.tempEnabled))
             self.enabled = self.tempEnabled
             self.update()
-        print("Checking {:} done".format(self.name))
+        logging.debug("Checking {:} done".format(self.name))
 
     def on_message(self, client, userdata, message):
         changed = False

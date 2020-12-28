@@ -4,10 +4,12 @@ import threading
 
 from HeatingInterface.HeatingInterface import HeatingInterface
 from MQTT.MqttProvider import MqttProvider
+import logging
 
 class RadiatorHeatingInterface(HeatingInterface):
     def __init__(self, name, config):
-        print("Loading radiator heating interface '{:}'".format(name));
+        logging.basicConfig(filename='/var/log/thermostat.log', level=logging.DEBUG)
+        logging.debug("Loading radiator heating interface '{:}'".format(name));
         self.address  = config["address"]
         self.port = config["port"]
         self.name = name
