@@ -30,12 +30,14 @@ class Zone:
         self.statusChangeDelay = 60
         self.mqtt = mqtt
         self.statusChangedTime = datetime.now() - timedelta(0, 2*self.statusChangeDelay)
+        self.statusChangeThread.start()
         self.subscribeToInputs()
 
     def statusChangeFunction(self):
         while True:
             #logging.debug("statusChangeFunction({:})".format(self.name))
-            if self.enabled == None or ((datetime.now() - self.statusChangedTime).total_seconds() > self.statusChangeDelay and self.volatileStatus != self.enabled):
+            if (self.enabled == None and self.volatileStatus != None) or ((datetime.now() - self.statusChangedTime).total_seconds() > self.statusChangeDelay and self.volatileStatus != self.enabled):
+                logging.debug("Changin status for {:} to '{:}'".format(self.name, self.volatileStatus))
                 self.enabled = self.volatileStatus
                 self.setStatus(self.enabled)
             time.sleep(2)
@@ -125,6 +127,7 @@ class Monitor:
             logging.debug("Loading monitor")
             self.firstContact = False
             self.loadZones(self.zones, self.setup, self.mqtt)
+            logging.debug("Monitor running")
 
 
     def loadZones(self, zones, config, mqtt):

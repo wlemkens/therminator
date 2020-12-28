@@ -30,8 +30,6 @@ class Watchdog(threading.Thread):
         if message.topic == self.heartbeatTopic:
             payload = str(message.payload, "utf-8")
             if payload == "ping":
-                logging.debug("Sending pulse")
-                logging.debug(self.moduleType)
                 self.client.publish(self.heartbeatTopic, self.moduleType)
             elif payload in self.unconfirmedDependencies:
                 self.unconfirmedDependencies.remove(payload)
@@ -39,7 +37,6 @@ class Watchdog(threading.Thread):
                     self.onDependenciesComplete()
 
     def requestPulse(self):
-        logging.debug("Requesting pulse")
         self.brokenDependencies = []
         self.unconfirmedDependencies = self.dependencies
         self.client.publish(self.heartbeatTopic, "ping")
