@@ -72,7 +72,9 @@ class Zone:
     def setStatus(self, status):
         logging.debug("setStatus({:}) : {:}".format(status, self.name))
         if status:
-            self.setAndPublishSetpoint(self.storedSetpoint)
+            if self.storedSetpoint:
+                logging.debug("No stored setpoint yet, so not publishing")
+                self.setAndPublishSetpoint(self.storedSetpoint)
         else:
             self.setAndPublishSetpoint(self.setpointOFF)
 
