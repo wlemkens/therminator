@@ -4,6 +4,7 @@ from PIL import ImageFont, ImageDraw, Image
 import time
 import threading
 from datetime import datetime
+import logging
 
 import json
 
