@@ -18,12 +18,21 @@ therminatorRequest = "therminator/request"
 scheduleId = 13
 ids = {
     167 : "living_temperature",
-    180 : "badkamer_temperature",
-    256 : "kamer_ariane_temperature",
-    183 : "bureau_temperature",
+    #180 : "badkamer_temperature",
+    215 : "badkamer_temperature",
+    33 : "kamer_ariane_temperature",
+    #256 : "kamer_ariane_temperature",
+    117 : "bureau_temperature",
+    #183 : "bureau_temperature",
     235 : "exterior_temperature",
     248 : "kamer_nathan_temperature",
     265 : "slaapkamer_temperature",
+
+    # : "living_temperature-radiator",
+    #215 : "badkamer_temperature-radiator",
+    #33 : "kamer_ariane_temperature-radiator",
+    #117 : "bureau_temperature-radiator",
+    # : "kamer_nathan_temperature-radiator",
 
     136 : "living_setpoint",
     208 : "badkamer_setpoint",
@@ -81,7 +90,7 @@ def parseTherminatorTopic(wholeTopic):
     return parts[-1]
 
 def isBatteryTopic(topic):
-    return "_setpoint" in topic or "_level" in topic
+    return "_setpoint" in topic or "_level" in topic or "_temperature-radiator" in topic
 
 def parseBatteryTopic(wholeTopic):
     res = wholeTopic.rpartition("/")
