@@ -37,7 +37,7 @@ class Zone:
         while True:
             #logging.debug("statusChangeFunction({:})".format(self.name))
             if (self.enabled == None and self.volatileStatus != None) or ((datetime.now() - self.statusChangedTime).total_seconds() > self.statusChangeDelay and self.volatileStatus != self.enabled):
-                logging.debug("Changin status for {:} to '{:}'".format(self.name, self.volatileStatus))
+                logging.debug("{:} : Changing status for {:} to '{:}'".format(datetime.now().strftime("%H:%M:%S"), self.name, self.volatileStatus))
                 self.enabled = self.volatileStatus
                 self.setStatus(self.enabled)
             time.sleep(2)
@@ -47,7 +47,7 @@ class Zone:
         self.mqtt.subscribe(self, (self.statusTopicIn, 2))
 
     def requestValues(self, name):
-        logging.debug("requestValues({:})".format(name))
+        logging.debug("{:} : requestValues({:})".format(datetime.now().strftime("%H:%M:%S"), name))
         topic = "therminator/request"
         requestMessageSP = "\"{:}_setpoint\"".format(name)
         requestMessageEnabled = "\"{:}_enabled\"".format(name)
@@ -55,31 +55,31 @@ class Zone:
         self.mqtt.publish(topic, requestMessageSP)
 
     def publishSetpoint(self, setpoint):
-        logging.debug("publishSetpoint({:}) : {:}".format(setpoint, self.name))
+        logging.debug("{:} : publishSetpoint({:}) : {:}".format(datetime.now().strftime("%H:%M:%S"), setpoint, self.name))
         self.mqtt.publish(self.spTopicOut, setpoint)
 
     def storeSetpoint(self, setpoint):
-        logging.debug("storeSetpoint({:}) : {:}".format(setpoint, self.name))
+        logging.debug("{:} : storeSetpoint({:}) : {:}".format(datetime.now().strftime("%H:%M:%S"), setpoint, self.name))
         if setpoint != self.setpointOFF:
             # Never store the off setpoint value since it might cause problems
             # when the order of messages is not kept
             self.storedSetpoint = setpoint
-            logging.debug("Publishing store on in and out")
+            logging.debug("{:} : Publishing store on in and out".format(datetime.now().strftime("%H:%M:%S")))
             self.mqtt.publish(self.storedSpTopicOut, setpoint)
             # This device does not trigger an domoticz/out event, so we need to create it ourselves
             self.mqtt.publish(self.storedSpTopicIn, setpoint)
 
     def setStatus(self, status):
-        logging.debug("setStatus({:}) : {:}".format(status, self.name))
+        logging.debug("{:} : setStatus({:}) : {:}".format(datetime.now().strftime("%H:%M:%S"), status, self.name))
         if status:
             if self.storedSetpoint:
-                logging.debug("No stored setpoint yet, so not publishing")
+                logging.debug("{:} : No stored setpoint yet, so not publishing")
                 self.setAndPublishSetpoint(self.storedSetpoint)
         else:
             self.setAndPublishSetpoint(self.setpointOFF)
 
     def setAndPublishSetpoint(self, setpoint):
-        logging.debug("setAndPublishSetpoint({:}) : {:}".format(setpoint, self.name))
+        logging.debug("{:} : setAndPublishSetpoint({:}) : {:}".format(datetime.now().strftime("%H:%M:%S"), setpoint, self.name))
         if self.setpoint != setpoint:
             self.setpoint = setpoint
             self.publishSetpoint(setpoint)
@@ -89,12 +89,12 @@ class Zone:
             setpoint = float(message.payload)
             if setpoint != self.setpoint:
                 if self.enabled or self.enabled == None:
-                    logging.debug("Received setpoint {:} for enabled {:}".format(setpoint, self.name))
+                    logging.debug("{:} : Received setpoint {:} for enabled {:}".format(datetime.now().strftime("%H:%M:%S"), setpoint, self.name))
                     # If enabled, register the setpoint and forward it to the stored setpoint
                     self.setpoint = setpoint
                     self.storeSetpoint(setpoint)
                 else:
-                    logging.debug("Received setpoint {:} for disabled {:}".format(setpoint, self.name))
+                    logging.debug("{:} : Received setpoint {:} for disabled {:}".format(datetime.now().strftime("%H:%M:%S"), setpoint, self.name))
                     # If not enabled, only forward it to the stored setpoint and reset the setpoint to the off setpoint
                     self.setpoint = setpoint
                     self.storeSetpoint(setpoint)
@@ -102,7 +102,7 @@ class Zone:
         if (message.topic == self.statusTopicIn):
             self.statusChangedTime = datetime.now()
             self.volatileStatus = int(message.payload) == 1
-            logging.debug("Received status change {:} for {:}".format(self.volatileStatus, self.name))
+            logging.debug("{:} : Received status change {:} for {:}".format(datetime.now().strftime("%H:%M:%S"), self.volatileStatus, self.name))
 
 class Monitor:
 
@@ -126,10 +126,10 @@ class Monitor:
 
     def onDependenciesComplete(self):
         if self.firstContact:
-            logging.debug("Loading monitor")
+            logging.debug("{:} : Loading monitor")
             self.firstContact = False
             self.loadZones(self.zones, self.setup, self.mqtt)
-            logging.debug("Monitor running")
+            logging.debug("{:} : Monitor running")
 
 
     def loadZones(self, zones, config, mqtt):
