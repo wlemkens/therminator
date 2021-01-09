@@ -105,11 +105,11 @@ class BasicScheduler(Scheduler):
             for room in rooms:
                 for controller in self.controller[room]:
                     if (self.schedule.hasSetpointChanged(room)):
-                        logging.debug("{:} : Setpoint has changed for room '{:}' to {:}".format(datetime.now().strftime("%H:%M:%S"), room, self.schedule.getCurrentSetpointTemperature(room)))
+                        logging.debug("{:} : Setpoint has changed for room '{:}' to {:}".format(datetime.datetime.now().strftime("%H:%M:%S"), room, self.schedule.getCurrentSetpointTemperature(room)))
                         controller.setSetpoint(self.schedule.getCurrentSetpointTemperature(room) )
                     output = controller.getOutput()
                     total += max(0,output)
-                    logging.debug ("{:} : Room '{:}' {:}/{:}°C output = {:}".format(datetime.now().strftime("%H:%M:%S"), room, controller.getTemperature(), controller.getSetpoint(), output))
+                    logging.debug ("{:} : Room '{:}' {:}/{:}°C output = {:}".format(datetime.datetime.now().strftime("%H:%M:%S"), room, controller.getTemperature(), controller.getSetpoint(), output))
 
             #            print(self.schedule.schedule)
             self.boilerInterface.setOutput(total)

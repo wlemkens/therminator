@@ -39,7 +39,7 @@ class RadiatorHeatingInterface(HeatingInterface):
         pass
 
     def on_message(self, client, userdata, message):
-        logging.debug("{:} : Received message {:} on topic {:}".format(datetime.now().strftime("%H:%M:%S"), message.topic, message.payload))
+        logging.debug("{:} : Received message {:} on topic {:}".format(datetime.datetime.now().strftime("%H:%M:%S"), message.topic, message.payload))
         if message.topic == self.topic_temp:
             self.temperature = float(message.payload)
         elif message.topic == self.topic_sp:

@@ -122,7 +122,7 @@ def on_message(client, userdata, message):
                 if battery <= 100 and isBatteryTopic(topic):
                     batteryTopic = parseBatteryTopic(topic)
                     client.publish(batteryTopic, battery)
-                logging.debug("{:} : Translating topic {:} -> Publishing on topic {:} : {:}".format(datetime.now().strftime("%H:%M:%S"), domoticzOut, topic, value))
+                logging.debug("{:} : Translating topic {:} -> Publishing on topic {:} : {:}".format(datetime.datetime.now().strftime("%H:%M:%S"), domoticzOut, topic, value))
     elif therminatorOut in message.topic:
         topic = parseTherminatorTopic(message.topic)
         id = getDomoticzId(topic)
@@ -135,7 +135,7 @@ def on_message(client, userdata, message):
             }
             jsonMsg = json.dumps(struct)
             client.publish(domoticzIn, jsonMsg)
-            logging.debug("{:} : Translating topic {:} : {:} -> Publishing on topic {:} : {:}".format(datetime.now().strftime("%H:%M:%S"), topic, value, domoticzIn, jsonMsg))
+            logging.debug("{:} : Translating topic {:} : {:} -> Publishing on topic {:} : {:}".format(datetime.datetime.now().strftime("%H:%M:%S"), topic, value, domoticzIn, jsonMsg))
     elif message.topic == therminatorRequest:
         topic = str(message.payload,'utf-8').strip('\"')
         id = getDomoticzId(topic)
