@@ -116,9 +116,10 @@ class Monitor:
                 mqtt = json.load(f2)
             with open(config["setup"]["configFile"]) as f2:
                 self.setup = json.load(f2)
-        self.mqtt = MqttProvider(mqtt["address"], mqtt["port"])
+        logFile = "/var/log/setpoint_monitor.log"
+        self.mqtt = MqttProvider(mqtt["address"], mqtt["port"], logFile)
         self.firstContact = True
-        self.watchdog = Watchdog(Modules.MONITOR, [Modules.CONNECTOR], mqtt, "/var/log/setpoint_monitor.log")
+        self.watchdog = Watchdog(Modules.MONITOR, [Modules.CONNECTOR], mqtt, logFile)
         self.watchdog.onDependenciesComplete = self.onDependenciesComplete
         signal.pause()
 #        while True:

@@ -1,10 +1,10 @@
 from MQTT.MqttProvider import MqttProvider
 
 class Exterior(object):
-	def __init__(self, mqttConfig, on_update):
+	def __init__(self, mqttConfig, on_update, logFile):
 		self.temperature = None
 		self.topic = "therminator/in/exterior_temperature"
-		self.connect(mqttConfig)
+		self.connect(mqttConfig, logFile)
 		self.on_update = on_update
 
 	def on_message(self, client, userdata, message):
@@ -18,8 +18,8 @@ class Exterior(object):
 		requestMessage = "\"exterior_temperature\""
 		self.client.publish(topic, requestMessage)
 
-	def connect(self, mqttConfig):
-		self.client = MqttProvider(mqttConfig["address"], mqttConfig["port"])
+	def connect(self, mqttConfig, logFile):
+		self.client = MqttProvider(mqttConfig["address"], mqttConfig["port"], logFile)
 		topics = [(self.topic,1)]
 		self.client.subscribe(self, topics)
 		self.requestValues()

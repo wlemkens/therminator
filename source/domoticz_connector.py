@@ -3,6 +3,7 @@ import json
 import paho.mqtt.client as mqtt
 import logging
 import datetime
+import time
 
 from Heartbeat.Modules import Modules
 from Heartbeat.Watchdog import Watchdog
@@ -19,21 +20,18 @@ therminatorRequest = "therminator/request"
 scheduleId = 13
 ids = {
     167 : "living_temperature",
-    #180 : "badkamer_temperature",
-    215 : "badkamer_temperature",
-    33 : "kamer_ariane_temperature",
-    #256 : "kamer_ariane_temperature",
-    117 : "bureau_temperature",
-    #183 : "bureau_temperature",
+    180 : "badkamer_temperature",
+    256 : "kamer_ariane_temperature",
+    183 : "bureau_temperature",
     235 : "exterior_temperature",
     248 : "kamer_nathan_temperature",
     265 : "slaapkamer_temperature",
 
-    # : "living_temperature-radiator",
-    #215 : "badkamer_temperature-radiator",
-    #33 : "kamer_ariane_temperature-radiator",
-    #117 : "bureau_temperature-radiator",
-    # : "kamer_nathan_temperature-radiator",
+    12 : "living_temperature-radiator",
+    215 : "badkamer_temperature-radiator",
+    33 : "kamer_ariane_temperature-radiator",
+    117 : "bureau_temperature-radiator",
+    304 : "kamer_nathan_temperature-radiator",
 
     136 : "living_setpoint",
     208 : "badkamer_setpoint",
@@ -157,13 +155,18 @@ if __name__ == "__main__":
         with open(configFilename) as f:
             config = json.load(f)
 
-        client.on_message = on_message
-        client.connect(config["address"], config["port"], 60)
-        client.subscribe(therminatorOut+"/#", 2)
-        client.subscribe(domoticzOut, 2)
-        client.subscribe(therminatorRequest, 2)
-        watchdog = Watchdog(Modules.CONNECTOR, [], config, "/var/log/domoticz_connector.log")
-        client.loop_forever()
+        while(True):
+            try:
+                client.on_message = on_message
+                client.connect(config["address"], config["port"], 60)
+                client.subscribe(therminatorOut+"/#", 2)
+                client.subscribe(domoticzOut, 2)
+                client.subscribe(therminatorRequest, 2)
+                watchdog = Watchdog(Modules.CONNECTOR, [], config, "/var/log/domoticz_connector.log")
+                client.loop_forever()
+            except:
+                print("Failled connecting to mqtt")
+                time.sleep(10)
 
     else:
         logging.debug("Usage {:} </path/to/mqtt.json>".format(sys.argv[0]))

@@ -8,7 +8,8 @@ import logging
 
 class RadiatorHeatingInterface(HeatingInterface):
     def __init__(self, name, config):
-        logging.basicConfig(filename='/var/log/thermostat.log', level=logging.DEBUG)
+        logFile = '/var/log/thermostat.log'
+        logging.basicConfig(filename=logFile, level=logging.DEBUG)
         logging.debug("Loading radiator heating interface '{:}'".format(name));
         self.address  = config["address"]
         self.port = config["port"]
@@ -21,7 +22,7 @@ class RadiatorHeatingInterface(HeatingInterface):
             self.password = None
         self.temperature = None
         self.setpoint = None
-        self.client = MqttProvider(self.address, self.port)
+        self.client = MqttProvider(self.address, self.port, logFile)
         self.connect()
 
     def getTemperature(self):
@@ -39,10 +40,11 @@ class RadiatorHeatingInterface(HeatingInterface):
         pass
 
     def on_message(self, client, userdata, message):
-        logging.debug("{:} : Received message {:} on topic {:}".format(datetime.datetime.now().strftime("%H:%M:%S"), message.topic, message.payload))
         if message.topic == self.topic_temp:
+            logging.debug("{:} : Received message {:} on topic {:}".format(datetime.datetime.now().strftime("%H:%M:%S"), message.topic, message.payload))
             self.temperature = float(message.payload)
         elif message.topic == self.topic_sp:
+            logging.debug("{:} : Received message {:} on topic {:}".format(datetime.datetime.now().strftime("%H:%M:%S"), message.topic, message.payload))
             self.setpoint = float(message.payload)
 
     def requestValues(self):

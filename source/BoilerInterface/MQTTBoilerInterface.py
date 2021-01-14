@@ -25,7 +25,8 @@ class MQTTBoilerInterface(BoilerInterface):
         self.gain = config["gain"]
         pidParmaeters = config["pid"]
         self.PID = PID(pidParmaeters["p"], pidParmaeters["i"], pidParmaeters["d"],pidParmaeters["errorSumLimit"],pidParmaeters["historyRange"])
-        self.client = MqttProvider(self.address, self.port)
+        logFile = "/var/log/thermostat.log"
+        self.client = MqttProvider(self.address, self.port, logFile)
 
     def setOutput(self, outputValue):
         outputValue *= self.gain

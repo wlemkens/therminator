@@ -31,9 +31,10 @@ class ScheduleSwitcher(object):
         self.schedule = self.schedules[self.scheduleName]
         self.modes = schedulerConfig["modes"]
         self.daytypes = schedulerConfig["daytypes"]
-        self.connect(mqttConfig)
+        logFile = "/var/log/thermostat.log"
+        self.connect(mqttConfig, logFile)
         self.firstContact = True
-        self.watchdog = Watchdog(Modules.THERMOSTAT, [Modules.CONNECTOR, Modules.MONITOR], mqttConfig, "/var/log/thermostat.log")
+        self.watchdog = Watchdog(Modules.THERMOSTAT, [Modules.CONNECTOR, Modules.MONITOR], mqttConfig, logFile)
         self.watchdog.onDependenciesComplete = self.onDependenciesComplete
         while True:
             time.sleep(1000)
@@ -52,8 +53,8 @@ class ScheduleSwitcher(object):
     def selectSchedule(self, scheduleName):
         self.scheduler.loadConfig(self.schedules[scheduleName], self.modes, self.daytypes)
 
-    def connect(self, mqttConfig):
-        self.client = MqttProvider(mqttConfig["address"], mqttConfig["port"])
+    def connect(self, mqttConfig, logFile):
+        self.client = MqttProvider(mqttConfig["address"], mqttConfig["port"], logFile)
 #        self.client.loop_start()
 
     def on_message(self, client, userdata, message):

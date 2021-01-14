@@ -1,7 +1,7 @@
 from MQTT.MqttProvider import MqttProvider
 
 class Boiler(object):
-	def __init__(self, mqttConfig, on_update):
+	def __init__(self, mqttConfig, on_update, logFile):
 		self.requestedPower = 0
 		self.deliveredPower = 0
 		self.returnTemperature = 0
@@ -10,7 +10,7 @@ class Boiler(object):
 		self.topicDel = "therminator/in/boiler_output"
 		self.topicRet = "therminator/in/return_temperature"
 		self.topicFlow = "therminator/in/flow_temperature"
-		self.connect(mqttConfig)
+		self.connect(mqttConfig, logFile)
 		self.on_update = on_update
 
 	def on_message(self, client, userdata, message):
@@ -40,8 +40,8 @@ class Boiler(object):
 		self.client.publish(topic, requestMessageRet)
 		self.client.publish(topic, requestMessageFlow)
 
-	def connect(self, mqttConfig):
-		self.client = MqttProvider(mqttConfig["address"], mqttConfig["port"])
+	def connect(self, mqttConfig, logFile):
+		self.client = MqttProvider(mqttConfig["address"], mqttConfig["port"], logFile)
 		topics = [(self.topicReq,1),(self.topicDel,1),(self.topicRet,1),(self.topicFlow,1)]
 		self.client.subscribe(self, topics)
 

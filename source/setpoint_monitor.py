@@ -4,7 +4,6 @@
 import sys
 import json
 
-from MQTT.MqttProvider import MqttProvider
 from Monitor.Monitor import Monitor
 
 zones = []

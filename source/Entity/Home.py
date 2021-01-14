@@ -8,7 +8,7 @@ class Home(object):
         self.mode = None
         self.topicAway = "therminator/in/away"
         self.topicMode = "therminator/in/mode"
-        self.connect(mqttConfig)
+        self.connect(mqttConfig, logFile)
         self.on_update = on_update
 
     def on_message(self, client, userdata, message):
@@ -30,8 +30,8 @@ class Home(object):
         self.client.publish(topic, requestMessageAway)
         self.client.publish(topic, requestMessageMode)
 
-    def connect(self, mqttConfig):
-        self.client = MqttProvider(mqttConfig["address"], mqttConfig["port"])
+    def connect(self, mqttConfig, logFile):
+        self.client = MqttProvider(mqttConfig["address"], mqttConfig["port"], logFile)
         topics = [(self.topicAway, 1), (self.topicMode, 1)]
         self.client.subscribe(self, topics)
         self.requestValues()

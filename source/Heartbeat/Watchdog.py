@@ -12,7 +12,7 @@ class Watchdog(threading.Thread):
         self.dependencies = dependencies
         self.brokenDependencies = []
         self.unconfirmedDependencies = dependencies
-        self.client = MqttProvider(mqttConfig["address"], mqttConfig["port"])
+        self.client = MqttProvider(mqttConfig["address"], mqttConfig["port"], logFile)
         self.heartbeatTopic = "therminator/heartbeat"
         self.client.subscribe(self, [(self.heartbeatTopic,2)])
         self.responseTimeout = 20

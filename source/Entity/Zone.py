@@ -21,7 +21,7 @@ class Zone(object):
         self.topicEnabled = "therminator/in/{:}_enabled".format(self.name)
         self.topicBattery = "therminator/in/{:}_battery".format(self.name)
         self.icon = config["icon"]
-        self.connect(mqttConfig)
+        self.connect(mqttConfig, logFile)
         self.on_update = on_update
         self.tempEnabled = True
         self.enabledCheckThread = None
@@ -70,8 +70,8 @@ class Zone(object):
         self.client.publish(topic, requestMessageLvl)
         self.client.publish(topic, requestMessageEnabled)
 
-    def connect(self, mqttConfig):
-        self.client = MqttProvider(mqttConfig["address"], mqttConfig["port"])
+    def connect(self, mqttConfig, logFile):
+        self.client = MqttProvider(mqttConfig["address"], mqttConfig["port"], logFile)
         topics = [(self.topicTemp, 2), (self.topicSP, 2), (self.topicLvl, 2), (self.topicEnabled, 2), (self.topicBattery, 2)]
         self.client.subscribe(self, topics)
         self.requestValues()
