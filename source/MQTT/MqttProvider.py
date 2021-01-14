@@ -9,10 +9,12 @@ class MqttProvider:
             self.subscribers = []
             self.client = mqtt.Client()
             self.client.on_message = self.on_message
-            while(True):
+            connecting = True
+            while(connecting):
                 try:
                     self.client.connect(address, port, 60)
                     self.client.loop_start()
+                    connecting = False
                 except:
                     logging.warning("{:} Failed to connect to mqtt".format(datetime.now().strftime("%H:%M:%S")))
                     time.sleep(10)
@@ -44,6 +46,7 @@ class MqttProvider:
 
     def __init__(self, address, port, logFile):
         if not MqttProvider.instance:
+            logging.debug("Creating MQTT instance")
             MqttProvider.instance = MqttProvider.__MqttProvider(address, port, logFile)
 
     def __getattr__(self, name):

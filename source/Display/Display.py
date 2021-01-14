@@ -263,11 +263,12 @@ class Display(object):
         self.awayFontSize, dims = self.getFontSize([self.getWidth()*0.8, self.getHeight()*0.8], "AWAY")
         self.clockFontSize = max(8,int(self.getHeight() * 0.03))
         self.modeFontSize = max(8,int(self.getHeight() * 0.07))
-        self.home = Home(mqtt, self.update, "/var/log/display.log")
+        logFile = "/var/log/display.log"
+        self.home = Home(mqtt, self.update, logFile)
         for zone in setup["zones"]:
-            self.zones += [Zone(zone, mqtt, self.update, "/var/log/display.log")]
-        self.boiler = Boiler(mqtt, self.update)
-        self.exterior = Exterior(mqtt, self.update)
+            self.zones += [Zone(zone, mqtt, self.update, logFile)]
+        self.boiler = Boiler(mqtt, self.update, logFile)
+        self.exterior = Exterior(mqtt, self.update, logFile)
         lineHeight = 1.0 * self.getHeight() / len(self.zones)
         lineWidth = self.getWidth() / 3
 #        self.fontSize, dims = self.getFontSize([lineWidth, lineHeight], "44.4/44.4")

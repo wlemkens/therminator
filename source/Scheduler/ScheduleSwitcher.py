@@ -26,7 +26,6 @@ class ScheduleSwitcher(object):
 
         with open(schedulerConfigFilename) as f:
             schedulerConfig = json.load(f)
-
         self.schedules = schedulerConfig["schedules"]
         self.schedule = self.schedules[self.scheduleName]
         self.modes = schedulerConfig["modes"]

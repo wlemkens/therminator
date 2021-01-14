@@ -15,6 +15,7 @@ import logging
 class Zone:
     def __init__(self, name, mqtt):
         logging.basicConfig(filename='/var/log/setpoint_monitor.log', level=logging.DEBUG)
+        logging.debug("{:} Loading setpoint monitor zone".format(datetime.now().strftime("%H:%M:%S")))
         self.name = name
         self.spTopicIn = "therminator/in/{:}_setpoint".format(name)
         self.statusTopicIn = "therminator/in/{:}_enabled".format(name)
@@ -30,8 +31,10 @@ class Zone:
         self.statusChangeDelay = 60
         self.mqtt = mqtt
         self.statusChangedTime = datetime.now() - timedelta(0, 2*self.statusChangeDelay)
+        logging.debug("{:} Starting zone thread".format(datetime.now().strftime("%H:%M:%S")))
         self.statusChangeThread.start()
         self.subscribeToInputs()
+        logging.debug("{:} Setpoint monitor zone loaded".format(datetime.now().strftime("%H:%M:%S")))
 
     def statusChangeFunction(self):
         while True:
@@ -107,6 +110,8 @@ class Zone:
 class Monitor:
 
     def __init__(self, configFilename):
+        logging.basicConfig(filename='/var/log/setpoint_monitor.log', level=logging.DEBUG)
+        logging.debug("{:} Loading setpoint monitor".format(datetime.now().strftime("%H:%M:%S")))
         mqtt = {}
         self.setup = {}
         self.zones = []
