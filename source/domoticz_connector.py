@@ -95,7 +95,10 @@ def parseTherminatorTopic(wholeTopic):
     return parts[-1]
 
 def isBatteryTopic(topic):
-    return "_setpoint" in topic or "_level" in topic or "_temperature-radiator" in topic
+    return "_setpoint" in topic \
+           or "_level" in topic \
+           or "_heating" in topic \
+           or "_temperature-radiator" in topic
 
 def parseBatteryTopic(wholeTopic):
     res = wholeTopic.rpartition("/")
