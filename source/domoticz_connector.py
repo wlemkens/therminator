@@ -51,6 +51,12 @@ ids = {
     192 : "bureau_enabled",
     300 : "kamer_nathan_enabled",
 
+    135 : "living_heating",
+    207 : "badkamer_heating",
+    24 : "kamer_ariane_heating",
+    111 : "bureau_heating",
+    291 : "kamer_nathan_heating",
+
     199 : "living_stored_setpoint",
     200 : "badkamer_stored_setpoint",
     201 : "kamer_ariane_stored_setpoint",
