@@ -64,6 +64,7 @@ ids = {
     301 : "kamer_nathan_stored_setpoint",
 
     216 : "away",
+    346 : "ping",
     scheduleId : "schedule"
 }
 
