@@ -138,8 +138,13 @@ def on_message(client, userdata, message):
             #value = float(message.payload)
             struct = {
                 "idx" : id,
-                "svalue" : value
+                "svalue" : value,
             }
+            try:
+                nval = float(value)
+                struct["nvalue"] = nval
+            except:
+                pass
             jsonMsg = json.dumps(struct)
             client.publish(domoticzIn, jsonMsg)
             logging.debug("{:} : Translating topic {:} : {:} -> Publishing on topic {:} : {:}".format(datetime.datetime.now().strftime("%H:%M:%S"), topic, value, domoticzIn, jsonMsg))
