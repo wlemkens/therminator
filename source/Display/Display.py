@@ -1,7 +1,6 @@
 from __future__ import print_function
 
-import platform    # For getting the operating system name
-import subprocess  # For executing a shell command
+import os
 from PIL import ImageFont, ImageDraw, Image
 import time
 import threading
@@ -12,7 +11,7 @@ import json
 
 from Heartbeat.Modules import Modules
 from Heartbeat.Watchdog import Watchdog
-#from MQTT.MqttProvider import MqttProvider
+from MQTT.MqttProvider import MqttProvider
 
 from Entity.Zone import Zone
 from Entity.Boiler import Boiler
@@ -33,7 +32,7 @@ class Display(object):
         self.awayFontSize = 1
         self.delayedUpdateTimer = None
         self.setup, self.mqtt, self.fullUpdateInterval = self.loadConfig(config)
-        #self.client = MqttProvider(self.mqtt["address"], self.mqtt["port"])
+        self.client = MqttProvider(self.mqtt["address"], self.mqtt["port"], logFilename)
         self.away = False
         self.firstContact = True
         self.watchdog = Watchdog(Modules.DISPLAY, [Modules.CONNECTOR, Modules.MONITOR, Modules.THERMOSTAT], self.mqtt, "/var/log/display.log")
@@ -327,5 +326,6 @@ class Display(object):
             return True
         else:
             return False
+
 
 
