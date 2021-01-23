@@ -1,17 +1,20 @@
 import paho.mqtt.client as mqtt
 import logging
 import time
+from datetime import datetime, timedelta
 
 class MqttProvider:
     class __MqttProvider:
         def __init__(self, address, port, logFile):
             logging.basicConfig(filename=logFile, level=logging.DEBUG)
+            logging.debug("{:} : Instance...".format(datetime.now().strftime("%H:%M:%S")))
             self.subscribers = []
             self.client = mqtt.Client()
             self.client.on_message = self.on_message
             connecting = True
             while(connecting):
                 try:
+                    logging.debug("{:} : Connecting...".format(datetime.now().strftime("%H:%M:%S")))
                     self.client.connect(address, port, 60)
                     self.client.loop_start()
                     connecting = False
@@ -46,7 +49,7 @@ class MqttProvider:
 
     def __init__(self, address, port, logFile):
         if not MqttProvider.instance:
-            logging.debug("Creating MQTT instance")
+            logging.debug("{:} : Creating MQTT instance".format(datetime.now().strftime("%H:%M:%S")))
             MqttProvider.instance = MqttProvider.__MqttProvider(address, port, logFile)
 
     def __getattr__(self, name):

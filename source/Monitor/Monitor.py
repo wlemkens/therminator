@@ -110,7 +110,8 @@ class Zone:
 class Monitor:
 
     def __init__(self, configFilename):
-        logging.basicConfig(filename='/var/log/setpoint_monitor.log', level=logging.DEBUG)
+        logFile = "/var/log/setpoint_monitor.log"
+        logging.basicConfig(filename=logFile, level=logging.DEBUG)
         logging.debug("{:} Loading setpoint monitor".format(datetime.now().strftime("%H:%M:%S")))
         mqtt = {}
         self.setup = {}
@@ -121,7 +122,6 @@ class Monitor:
                 mqtt = json.load(f2)
             with open(config["setup"]["configFile"]) as f2:
                 self.setup = json.load(f2)
-        logFile = "/var/log/setpoint_monitor.log"
         self.mqtt = MqttProvider(mqtt["address"], mqtt["port"], logFile)
         self.firstContact = True
         self.watchdog = Watchdog(Modules.MONITOR, [Modules.CONNECTOR], mqtt, logFile)
