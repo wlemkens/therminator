@@ -18,6 +18,7 @@ class MqttProvider:
                     self.client.connect(address, port, 60)
                     self.client.loop_start()
                     connecting = False
+                    logging.debug("{:} : Connected".format(datetime.now().strftime("%H:%M:%S")))
                 except:
                     logging.warning("{:} Failed to connect to mqtt".format(datetime.now().strftime("%H:%M:%S")))
                     time.sleep(10)
