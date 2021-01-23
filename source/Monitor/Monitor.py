@@ -20,14 +20,11 @@ class Zone:
         self.spTopicIn = "therminator/in/{:}_setpoint".format(name)
         self.statusTopicIn = "therminator/in/{:}_enabled".format(name)
         self.spTopicOut = "therminator/out/{:}_setpoint".format(name)
-        self.storedSpTopicOut = "therminator/out/{:}_stored_setpoint".format(name)
-        self.storedSpTopicIn = "therminator/in/{:}_stored_setpoint".format(name)
+        self.heatingTopicOut = "therminator/out/{:}_heating".format(name)
         self.statusChangeThread = threading.Thread(target=self.statusChangeFunction, daemon=True)
         self.enabled = None
         self.volatileStatus = None
         self.setpoint = 0
-        self.storedSetpoint = 0
-        self.setpointOFF = 10
         self.statusChangeDelay = 60
         self.mqtt = mqtt
         self.statusChangedTime = datetime.now() - timedelta(0, 2*self.statusChangeDelay)
@@ -61,25 +58,12 @@ class Zone:
         logging.debug("{:} : publishSetpoint({:}) : {:}".format(datetime.now().strftime("%H:%M:%S"), setpoint, self.name))
         self.mqtt.publish(self.spTopicOut, setpoint)
 
-    def storeSetpoint(self, setpoint):
-        logging.debug("{:} : storeSetpoint({:}) : {:}".format(datetime.now().strftime("%H:%M:%S"), setpoint, self.name))
-        if setpoint != self.setpointOFF:
-            # Never store the off setpoint value since it might cause problems
-            # when the order of messages is not kept
-            self.storedSetpoint = setpoint
-            logging.debug("{:} : Publishing store on in and out".format(datetime.now().strftime("%H:%M:%S")))
-            self.mqtt.publish(self.storedSpTopicOut, setpoint)
-            # This device does not trigger an domoticz/out event, so we need to create it ourselves
-            self.mqtt.publish(self.storedSpTopicIn, setpoint)
-
     def setStatus(self, status):
         logging.debug("{:} : setStatus({:}) : {:}".format(datetime.now().strftime("%H:%M:%S"), status, self.name))
-        if status:
-            if self.storedSetpoint:
-                logging.debug("{:} : No stored setpoint yet, so not publishing")
-                self.setAndPublishSetpoint(self.storedSetpoint)
+        if status == "True" or status == 1 or status == True:
+            self.mqtt.publish(self.heatingTopicOut, 1)
         else:
-            self.setAndPublishSetpoint(self.setpointOFF)
+            self.mqtt.publish(self.heatingTopicOut, 0)
 
     def setAndPublishSetpoint(self, setpoint):
         logging.debug("{:} : setAndPublishSetpoint({:}) : {:}".format(datetime.now().strftime("%H:%M:%S"), setpoint, self.name))
@@ -90,18 +74,7 @@ class Zone:
     def on_message(self, client, userdata, message):
         if (message.topic == self.spTopicIn):
             setpoint = float(message.payload)
-            if setpoint != self.setpoint:
-                if self.enabled or self.enabled == None:
-                    logging.debug("{:} : Received setpoint {:} for enabled {:}".format(datetime.now().strftime("%H:%M:%S"), setpoint, self.name))
-                    # If enabled, register the setpoint and forward it to the stored setpoint
-                    self.setpoint = setpoint
-                    self.storeSetpoint(setpoint)
-                else:
-                    logging.debug("{:} : Received setpoint {:} for disabled {:}".format(datetime.now().strftime("%H:%M:%S"), setpoint, self.name))
-                    # If not enabled, only forward it to the stored setpoint and reset the setpoint to the off setpoint
-                    self.setpoint = setpoint
-                    self.storeSetpoint(setpoint)
-                    self.publishSetpoint(self.setpointOFF)
+            self.setAndPublishSetpoint(setpoint)
         if (message.topic == self.statusTopicIn):
             self.statusChangedTime = datetime.now()
             self.volatileStatus = int(message.payload) == 1
