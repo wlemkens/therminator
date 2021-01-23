@@ -1,5 +1,7 @@
 from __future__ import print_function
 
+import platform    # For getting the operating system name
+import subprocess  # For executing a shell command
 from PIL import ImageFont, ImageDraw, Image
 import time
 import threading
@@ -313,6 +315,17 @@ class Display(object):
                         f.write("{:};{:};{:};{:};".format(zone.getSetpoint(), zone.getTemperature(), zone.getLevel(), zone.isEnabled()))
                     f.write("{:};{:};{:};{:};{:}\n".format(self.boiler.getRequestedPower(), self.boiler.getDeliveredPower(), self.boiler.getReturnTemperature(), self.boiler.getFlowTemperature(), self.exterior.getTemperature()))
 
+    def ping(self, host):
+        """
+        Returns True if host (str) responds to a ping request.
+        Remember that a host may not respond to a ping (ICMP) request even if the host name is valid.
+        """
+        response = os.system("ping -c 1 " + host)
 
+        #and then check the response...
+        if response == 0:
+            return True
+        else:
+            return False
 
 

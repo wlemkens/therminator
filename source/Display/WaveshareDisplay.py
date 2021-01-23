@@ -10,6 +10,9 @@ from Display import Display
 
 class WaveshareDisplay(Display.Display):
     def __init__(self, config, logFilename = None):
+        self.lastNetworkFailure = True
+        self.lastDomoticzFailure = True
+        self.lastBrokenDependencies = []
         self.networkFailure = True
         self.domoticzFailure = True
         self.iconSize = 20
@@ -32,6 +35,19 @@ class WaveshareDisplay(Display.Display):
         while True:
             time.sleep(self.fullUpdateInterval)
             self.fullUpdate = True
+            doUpdate = False
+            if self.lastNetworkFailure != self.networkFailure:
+                doUpdate = True
+                self.lastNetworkFailure = self.networkFailure
+            if self.lastDomoticzFailure != self.domoticzFailure:
+                doUpdate = True
+                self.lastDomoticzFailure = self.domoticzFailure
+            if self.lastBrokenDependencies != self.watchdog.brokenDependencies:
+                doUpdate = True
+                self.lastBrokenDependencies = self.watchdog.brokenDependencies
+            if doUpdate:
+                self.update()
+            self.networkFailure = not self.ping("192.168.0.183")
 
     def setToSleep(self):
         try:
@@ -177,4 +193,5 @@ class WaveshareDisplay(Display.Display):
             image.paste(self.monitorIcon, (horizontalOffset + 3 * iconWidth, verticalOffset, horizontalOffset + 4 * iconWidth,  verticalOffset + iconWidth))
         if Modules.THERMOSTAT in self.watchdog.brokenDependencies:
             image.paste(self.thermostatIcon, (horizontalOffset + 4 * iconWidth, verticalOffset, horizontalOffset + 5 * iconWidth,  verticalOffset + iconWidth))
+
 
