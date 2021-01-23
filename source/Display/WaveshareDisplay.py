@@ -5,10 +5,19 @@ from waveshare_epd import epd7in5bc
 import time
 import logging
 
+from Heartbeat.Modules import Modules
 from Display import Display
 
 class WaveshareDisplay(Display.Display):
     def __init__(self, config, logFilename = None):
+        self.networkFailure = True
+        self.domoticzFailure = True
+        self.iconSize = 20
+        self.networkIcon = Image.open("/home/wim/projects/therminator/images/network.png").resize((self.iconSize, self.iconSize))
+        self.domoticzIcon = Image.open("/home/wim/projects/therminator/images/domoticz.png").resize((self.iconSize, self.iconSize))
+        self.connectorIcon = Image.open("/home/wim/projects/therminator/images/connector.png").resize((self.iconSize, self.iconSize))
+        self.monitorIcon = Image.open("/home/wim/projects/therminator/images/monitor.png").resize((self.iconSize, self.iconSize))
+        self.thermostatIcon = Image.open("/home/wim/projects/therminator/images/thermostat.png").resize((self.iconSize, self.iconSize))
         self.isSleeping = False
         self.epd = epd7in5bc.EPD()
         self.epd.init()
@@ -50,7 +59,7 @@ class WaveshareDisplay(Display.Display):
             self.fullUpdate = False
             logging.debug("Full update done")
 
-    def updateZone(self, zone, index, draws):
+    def updateZone(self, zone, index, draws, images):
         logging.debug("Updating zone '{:}'".format(zone.getName()))
         draw = draws[0]
         drawc = draws[1]
@@ -153,3 +162,19 @@ class WaveshareDisplay(Display.Display):
             else:
                 drawc.text((tx-30, ty-5+fullSize[1]), batteryText, font=smallFont, fill=self.BLACK)
         logging.debug("Updating zone done")
+
+    def drawDependencies(self, image):
+        iconWidth = 20
+        verticalOffset = 60
+        horizontalOffset = iconWidth
+        if self.networkFailure:
+            image.paste(self.networkIcon, (horizontalOffset + 0 * iconWidth, verticalOffset, horizontalOffset + 1 * iconWidth,  verticalOffset + iconWidth))
+        if self.domoticzFailure:
+            image.paste(self.domoticzIcon, (horizontalOffset + 1 * iconWidth, verticalOffset, horizontalOffset + 2 * iconWidth,  verticalOffset + iconWidth))
+        if Modules.CONNECTOR in self.watchdog.brokenDependencies:
+            image.paste(self.connectorIcon, (horizontalOffset + 2 * iconWidth, verticalOffset, horizontalOffset + 3 * iconWidth,  verticalOffset + iconWidth))
+        if Modules.MONITOR in self.watchdog.brokenDependencies:
+            image.paste(self.monitorIcon, (horizontalOffset + 3 * iconWidth, verticalOffset, horizontalOffset + 4 * iconWidth,  verticalOffset + iconWidth))
+        if Modules.THERMOSTAT in self.watchdog.brokenDependencies:
+            image.paste(self.thermostatIcon, (horizontalOffset + 4 * iconWidth, verticalOffset, horizontalOffset + 5 * iconWidth,  verticalOffset + iconWidth))
+

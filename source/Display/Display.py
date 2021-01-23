@@ -109,7 +109,7 @@ class Display(object):
         draw.pieslice([10 + offset + 2, heightPadding + offset - heighOffset, fullSize + 10 - offset + 2, heightPadding + fullSize - offset - heighOffset], -90, 90, fill=self.BLACK)
 
 
-    def updateZone(self, zone, index, draws):
+    def updateZone(self, zone, index, draws, images):
         logging.debug("Updating zone '{:}'".format(zone.getName()))
         draw = draws[0]
         drawc = draws[1]
@@ -219,6 +219,7 @@ class Display(object):
                     self.drawAway([draw,drawc])
                     self.mode = "away"
                     self.fullUpdate = True
+                    self.drawDependencies(imagec)
                     self.display([image, imagec])
                     self.setToSleep()
             elif self.home.getMode() ==  'night':
@@ -226,18 +227,20 @@ class Display(object):
                     self.drawMode([draw,drawc], "Night")
                     self.mode = "night"
                     self.fullUpdate = True
+                    self.drawDependencies(imagec)
                     self.display([image, imagec])
                     self.setToSleep()
             else:
                 self.mode = self.home.getMode()
                 for zone in self.zones:
-                    self.updateZone(zone, i, [draw,drawc])
+                    self.updateZone(zone, i, [draw,drawc], [image, imagec])
                     i += 1
                 self.updateRequestedPower(self.boiler.getRequestedPower(),draw)
                 self.updateDeliveredPower(self.boiler.getDeliveredPower(),draw)
                 self.updateExteriorTemperature(self.exterior.getTemperature(),draw)
                 self.updateClock(draw)
                 self.drawModeSmall([draw,drawc],self.mode)
+                self.drawDependencies(imagec)
                 self.display([image, imagec])
             self.log()
             self.lock = False
@@ -257,6 +260,9 @@ class Display(object):
         pass
 
     def getHeight(self):
+        pass
+
+    def drawDependencies(self, image):
         pass
 
     def createLayout(self, setup, mqtt):
@@ -306,6 +312,7 @@ class Display(object):
                     for zone in self.zones:
                         f.write("{:};{:};{:};{:};".format(zone.getSetpoint(), zone.getTemperature(), zone.getLevel(), zone.isEnabled()))
                     f.write("{:};{:};{:};{:};{:}\n".format(self.boiler.getRequestedPower(), self.boiler.getDeliveredPower(), self.boiler.getReturnTemperature(), self.boiler.getFlowTemperature(), self.exterior.getTemperature()))
+
 
 
 
