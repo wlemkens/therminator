@@ -1,3 +1,4 @@
+from datetime import datetime
 import threading
 import time
 import logging
@@ -43,5 +44,5 @@ class Watchdog(threading.Thread):
         time.sleep(self.responseTimeout)
         if len(self.unconfirmedDependencies) > 0:
             self.brokenDependencies = self.unconfirmedDependencies
-            self.error = "{:} : Failed response from following depedencies {:}".format(self.moduleType, self.brokenDependencies)
+            self.error = "{:} : Failed response from following depedencies {:} for module {:}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), self.moduleType, self.brokenDependencies)
             logging.error(self.error)

@@ -41,10 +41,10 @@ class RadiatorHeatingInterface(HeatingInterface):
 
     def on_message(self, client, userdata, message):
         if message.topic == self.topic_temp:
-            logging.debug("{:} : Received message {:} on topic {:}".format(datetime.datetime.now().strftime("%H:%M:%S"), message.topic, message.payload))
+            logging.debug("{:} : Received message {:} on topic {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message.topic, message.payload))
             self.temperature = float(message.payload)
         elif message.topic == self.topic_sp:
-            logging.debug("{:} : Received message {:} on topic {:}".format(datetime.datetime.now().strftime("%H:%M:%S"), message.topic, message.payload))
+            logging.debug("{:} : Received message {:} on topic {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message.topic, message.payload))
             self.setpoint = float(message.payload)
 
     def requestValues(self):

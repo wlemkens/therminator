@@ -4,7 +4,7 @@ from PIL import ImageFont, ImageDraw, Image
 from waveshare_epd import epd7in5bc
 import time
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from Heartbeat.Modules import Modules
 from Display import Display
