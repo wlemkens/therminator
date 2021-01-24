@@ -2,6 +2,7 @@ import threading
 
 from MQTT.MqttProvider import MqttProvider
 import logging
+from datetime import datetime
 
 class Zone(object):
     def __init__(self, config, mqttConfig, on_update, logFile):
@@ -29,31 +30,36 @@ class Zone(object):
     def enabledCheck(self):
         logging.debug("Checking if {:} is enabled".format(self.name))
         if self.enabled != self.tempEnabled:
-            logging.debug("Enabled status changed from  {:} to {:}".format(self.enabled, self.tempEnabled))
+            logging.debug("{:} : Enabled status changed from  {:} to {:}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), self.enabled, self.tempEnabled))
             self.enabled = self.tempEnabled
             self.update()
-        logging.debug("Checking {:} done".format(self.name))
+        logging.debug("{:} : Checking {:} done".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), self.name))
 
     def on_message(self, client, userdata, message):
         changed = False
         if message.topic == self.topicTemp:
             if self.temperature != float(message.payload):
                 self.temperature = float(message.payload)
+                logging.debug("{:} : Temperature change detected {:}°C for {:}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), self.temperature, self.name))
                 self.update()
         elif message.topic == self.topicSP:
             if self.setpoint != float(message.payload):
                 self.setpoint = float(message.payload)
+                logging.debug("{:} : Setpoint change detected {:}°C for {:}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), self.setpoint, self.name))
                 self.update()
         elif message.topic == self.topicBattery:
             if self.battery != int(message.payload):
                 self.battery = int(message.payload)
+                logging.debug("{:} : Battery change detected {:}\% for {:}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), self.battery, self.name))
                 self.update()
         elif message.topic == self.topicLvl:
             if self.level != float(message.payload):
                 self.level = float(message.payload)
+                logging.debug("{:} : Level change detected {:}\% for {:}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), self.level, self.name))
                 #self.update()
         elif message.topic == self.topicEnabled:
             self.tempEnabled = int((message.payload))
+            logging.debug("{:} : Status detected {:}\% for {:}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), self.tempEnabled, self.name))
             if self.enabledCheckThread:
                 self.enabledCheckThread.cancel()
             self.enabledCheckThread = threading.Timer(self.offDelay, self.enabledCheck)
