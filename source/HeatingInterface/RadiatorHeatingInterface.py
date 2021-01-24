@@ -60,6 +60,7 @@ class RadiatorHeatingInterface(HeatingInterface):
         requestMessageEnabled = "\"{:}_enabled\"".format(self.name)
         requestMessageSP = "\"{:}_setpoint\"".format(self.name)
         self.client.publish(topic, requestMessageTemp)
+        self.client.publish(topic, requestMessageEnabled)
         self.client.publish(topic, requestMessageSP)
 
     def connect(self):
