@@ -20,8 +20,8 @@ from Entity.Home import Home
 
 class Display(object):
 
-    def __init__(self, config, logFilename):
-        logging.basicConfig(filename=logFilename, level=logging.DEBUG)
+    def __init__(self, config, logFilename, syslog):
+        logging.basicConfig(filename=syslog, level=logging.DEBUG)
         self.zones = []
         self.boiler = None
         self.lock = False
@@ -33,10 +33,10 @@ class Display(object):
         self.awayFontSize = 1
         self.delayedUpdateTimer = None
         self.setup, self.mqtt, self.fullUpdateInterval = self.loadConfig(config)
-        self.client = MqttProvider(self.mqtt["address"], self.mqtt["port"], logFilename)
+        self.client = MqttProvider(self.mqtt["address"], self.mqtt["port"], syslog)
         self.away = False
         self.firstContact = True
-        self.watchdog = Watchdog(Modules.DISPLAY, [Modules.CONNECTOR, Modules.MONITOR, Modules.THERMOSTAT], self.mqtt, logFilename)
+        self.watchdog = Watchdog(Modules.DISPLAY, [Modules.CONNECTOR, Modules.MONITOR, Modules.THERMOSTAT], self.mqtt, syslog)
         self.watchdog.onDependenciesComplete = self.onDependenciesComplete
 
     def onDependenciesComplete(self):

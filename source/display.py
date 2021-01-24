@@ -17,9 +17,9 @@ from Display.WaveshareDisplay import WaveshareDisplay
 if __name__ == "__main__":
     if len(sys.argv) >= 2:
         filename = sys.argv[1]
-        log = "/var/log/display.log"
+        log = None
         if len(sys.argv) >= 3:
             log = sys.argv[2]
-        display = WaveshareDisplay(filename, log)
+        display = WaveshareDisplay(filename, log, "/var/log/display.log")
 #        display = PapirusDisplay(filename, log)
 #        display = PapirusTechnicalDisplay(filename, log)

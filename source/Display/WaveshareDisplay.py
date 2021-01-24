@@ -10,7 +10,7 @@ from Heartbeat.Modules import Modules
 from Display import Display
 
 class WaveshareDisplay(Display.Display):
-    def __init__(self, config, logFilename = None):
+    def __init__(self, config, logFilename = None, syslog = None):
         self.lastNetworkFailure = True
         self.lastDomoticzFailure = True
         self.lastBrokenDependencies = []
@@ -28,7 +28,7 @@ class WaveshareDisplay(Display.Display):
         self.epd.Clear()
         self.WHITE = 1
         self.BLACK = 0
-        super().__init__(config, logFilename)
+        super().__init__(config, logFilename, syslog)
         time.sleep(30)
         self.fullUpdate = True
         self.update()
