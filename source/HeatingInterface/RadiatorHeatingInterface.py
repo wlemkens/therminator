@@ -22,6 +22,7 @@ class RadiatorHeatingInterface(HeatingInterface):
             self.password = None
         self.temperature = None
         self.setpoint = None
+        self.enabled = False
         self.client = MqttProvider(self.address, self.port, logFile)
         self.connect()
 
@@ -30,6 +31,9 @@ class RadiatorHeatingInterface(HeatingInterface):
 
     def getSetpoint(self):
         return self.setpoint
+
+    def getEnabled(self):
+        return self.enabled
 
     def setSetpoint(self, setpoint):
         if self.setpoint != setpoint:
@@ -46,17 +50,22 @@ class RadiatorHeatingInterface(HeatingInterface):
         elif message.topic == self.topic_sp:
             logging.debug("{:} : Received message {:} on topic {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message.topic, message.payload))
             self.setpoint = float(message.payload)
+        elif message.topic == self.topic_enabled:
+            logging.debug("{:} : Received message {:} on topic {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message.topic, message.payload))
+            self.enabled = int(message.payload)
 
     def requestValues(self):
         topic = "therminator/request"
         requestMessageTemp = "\"{:}_temperature\"".format(self.name)
+        requestMessageEnabled = "\"{:}_enabled\"".format(self.name)
         requestMessageSP = "\"{:}_setpoint\"".format(self.name)
         self.client.publish(topic, requestMessageTemp)
         self.client.publish(topic, requestMessageSP)
 
     def connect(self):
         self.topic_temp = "therminator/in/{:}_temperature".format(self.name)
+        self.topic_enabled = "therminator/in/{:}_enabled".format(self.name)
         self.topic_sp = "therminator/in/{:}_setpoint".format(self.name)
-        topics = [(self.topic_temp, 2), (self.topic_sp, 2)]
+        topics = [(self.topic_temp, 2), (self.topic_sp, 2), (self.topic_enabled, 2)]
         self.client.subscribe(self, topics)
         self.requestValues()
