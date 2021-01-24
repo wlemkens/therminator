@@ -32,7 +32,10 @@ class WaveshareDisplay(Display.Display):
         self.fullUpdate = True
         self.update()
         initCount = 0
-        self.client.subscribe(self, [("therminator/in/ping", 2)])
+        self.pingTopic = "therminator/in/ping"
+        self.client.subscribe(self, [(self.pingTopic, 2)])
+        self.networkFailure = not self.ping("192.168.0.183")
+        self.client.publish("therminator/request", "ping")
         while True:
             time.sleep(self.fullUpdateInterval)
             self.fullUpdate = True
@@ -48,6 +51,7 @@ class WaveshareDisplay(Display.Display):
                 self.lastBrokenDependencies = self.watchdog.brokenDependencies
             if doUpdate:
                 self.update()
+            time.sleep(10)
             self.networkFailure = not self.ping("192.168.0.183")
             self.domoticzFailure = True
             self.client.publish("therminator/request", "ping")
@@ -198,5 +202,5 @@ class WaveshareDisplay(Display.Display):
             image.paste(self.thermostatIcon, (horizontalOffset + 4 * iconWidth, verticalOffset, horizontalOffset + 5 * iconWidth,  verticalOffset + iconWidth))
 
     def on_message(self, client, userdata, message):
-        if message.topic == "therminator/in/ping":
+        if message.topic == self.pingTopic:
             self.domoticzFailure = False
