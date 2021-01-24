@@ -4,6 +4,7 @@ from PIL import ImageFont, ImageDraw, Image
 from waveshare_epd import epd7in5bc
 import time
 import logging
+from datetime import datetime, timedelta
 
 from Heartbeat.Modules import Modules
 from Display import Display
@@ -41,12 +42,15 @@ class WaveshareDisplay(Display.Display):
             self.fullUpdate = True
             doUpdate = False
             if self.lastNetworkFailure != self.networkFailure:
+                logging.debug("{:} Network status changed to {:}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), self.networkFailure))
                 doUpdate = True
                 self.lastNetworkFailure = self.networkFailure
             if self.lastDomoticzFailure != self.domoticzFailure:
+                logging.debug("{:} Domoticz status changed to {:}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), self.domoticzFailure))
                 doUpdate = True
                 self.lastDomoticzFailure = self.domoticzFailure
             if self.lastBrokenDependencies != self.watchdog.brokenDependencies:
+                logging.debug("{:} Dependency status changed to {:}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), self.watchdog.brokenDependencies))
                 doUpdate = True
                 self.lastBrokenDependencies = self.watchdog.brokenDependencies
             if doUpdate:
@@ -54,6 +58,7 @@ class WaveshareDisplay(Display.Display):
             time.sleep(10)
             self.networkFailure = not self.ping("192.168.0.183")
             self.domoticzFailure = True
+            logging.debug("{:} Requesting ping".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
             self.client.publish("therminator/request", "ping")
 
     def setToSleep(self):

@@ -17,7 +17,7 @@ from Display.WaveshareDisplay import WaveshareDisplay
 if __name__ == "__main__":
     if len(sys.argv) >= 2:
         filename = sys.argv[1]
-        log = None
+        log = "/var/log/display.log"
         if len(sys.argv) >= 3:
             log = sys.argv[2]
         display = WaveshareDisplay(filename, log)

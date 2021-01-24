@@ -21,6 +21,7 @@ from Entity.Home import Home
 class Display(object):
 
     def __init__(self, config, logFilename):
+        logging.basicConfig(filename=logFilename, level=logging.DEBUG)
         self.zones = []
         self.boiler = None
         self.lock = False
@@ -35,7 +36,7 @@ class Display(object):
         self.client = MqttProvider(self.mqtt["address"], self.mqtt["port"], logFilename)
         self.away = False
         self.firstContact = True
-        self.watchdog = Watchdog(Modules.DISPLAY, [Modules.CONNECTOR, Modules.MONITOR, Modules.THERMOSTAT], self.mqtt, "/var/log/display.log")
+        self.watchdog = Watchdog(Modules.DISPLAY, [Modules.CONNECTOR, Modules.MONITOR, Modules.THERMOSTAT], self.mqtt, logFilename)
         self.watchdog.onDependenciesComplete = self.onDependenciesComplete
 
     def onDependenciesComplete(self):
