@@ -107,6 +107,7 @@ class BasicScheduler(Scheduler):
                     if (self.schedule.hasSetpointChanged(room)):
                         logging.debug("{:} : Setpoint has changed for room '{:}' to {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), room, self.schedule.getCurrentSetpointTemperature(room)))
                         controller.setSetpoint(self.schedule.getCurrentSetpointTemperature(room) )
+                        time.sleep(0.1)
                     output = controller.getOutput()
                     total += max(0,output)
                     logging.debug ("{:} : Room '{:}' {:}/{:}°C output = {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), room, controller.getTemperature(), controller.getSetpoint(), output))

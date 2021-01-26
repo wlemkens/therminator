@@ -11,6 +11,7 @@ from Display import Display
 
 class WaveshareDisplay(Display.Display):
     def __init__(self, config, logFilename = None, syslog = None):
+        logging.basicConfig(filename=syslog, level=logging.DEBUG)
         self.lastNetworkFailure = True
         self.lastDomoticzFailure = True
         self.lastBrokenDependencies = []
@@ -29,14 +30,14 @@ class WaveshareDisplay(Display.Display):
         self.WHITE = 1
         self.BLACK = 0
         super().__init__(config, logFilename, syslog)
-        time.sleep(30)
-        self.fullUpdate = True
-        self.update()
-        initCount = 0
         self.pingTopic = "therminator/in/ping"
         self.client.subscribe(self, [(self.pingTopic, 2)])
         self.networkFailure = not self.ping("192.168.0.183")
         self.client.publish("therminator/request", "ping")
+        time.sleep(30)
+        self.fullUpdate = True
+        self.update()
+        initCount = 0
         while True:
             time.sleep(self.fullUpdateInterval)
             self.fullUpdate = True
@@ -57,6 +58,7 @@ class WaveshareDisplay(Display.Display):
                 self.update()
             time.sleep(10)
             self.networkFailure = not self.ping("192.168.0.183")
+            logging.debug("{:} Network status : {:}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), not self.networkFailure))
             self.domoticzFailure = True
             logging.debug("{:} Requesting ping".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
             self.client.publish("therminator/request", "ping")
@@ -67,7 +69,7 @@ class WaveshareDisplay(Display.Display):
             self.epd.sleep()
             self.isSleeping = True
         except:
-            logging.error("Unexpected error:", sys.exc_info()[0])
+            logging.error("{:} : Unexpected error:".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")), sys.exc_info()[0])
 
     def getWidth(self):
         return self.epd.width
@@ -76,19 +78,19 @@ class WaveshareDisplay(Display.Display):
         return self.epd.height
 
     def display(self, image):
-        logging.debug("display")
+        logging.debug("{:} : display".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         if self.isSleeping:
             self.epd.init()
             self.isSleeping = False
 
         if self.fullUpdate:
-            logging.debug("Full update")
+            logging.debug("{:} : Full update".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
             self.epd.display(self.epd.getbuffer(image[0]), self.epd.getbuffer(image[1]))
             self.fullUpdate = False
-            logging.debug("Full update done")
+            logging.debug("{:} : Full update done".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 
     def updateZone(self, zone, index, draws, images):
-        logging.debug("Updating zone '{:}'".format(zone.getName()))
+        logging.debug("{:} : Updating zone '{:}'".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), zone.getName()))
         draw = draws[0]
         drawc = draws[1]
         lineHeight = self.fontSize + 1
@@ -111,7 +113,7 @@ class WaveshareDisplay(Display.Display):
         if battery != None:
             batteryText = "{:}%".format(battery)
         else:
-            logging.debug("No battery status for {:}".format(zone.getLabel()))
+            logging.debug("{:} : No battery status for {:}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), zone.getLabel()))
         tempTooLow = temp != None and sp != None and temp < sp
         textColor = self.BLACK
         if index == 0:
@@ -189,7 +191,7 @@ class WaveshareDisplay(Display.Display):
                 draw.text((tx-30, ty-5+fullSize[1]), batteryText, font=smallFont, fill=self.BLACK)
             else:
                 drawc.text((tx-30, ty-5+fullSize[1]), batteryText, font=smallFont, fill=self.BLACK)
-        logging.debug("Updating zone done")
+        logging.debug("{:} : Updating zone done".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 
     def drawDependencies(self, image):
         iconWidth = 20

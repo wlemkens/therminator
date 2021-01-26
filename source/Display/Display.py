@@ -21,6 +21,7 @@ from Entity.Home import Home
 class Display(object):
 
     def __init__(self, config, logFilename, syslog):
+        print("Logging to {:}".format(syslog))
         logging.basicConfig(filename=syslog, level=logging.DEBUG)
         self.zones = []
         self.boiler = None
@@ -41,7 +42,7 @@ class Display(object):
 
     def onDependenciesComplete(self):
         if self.firstContact:
-            logging.debug("Loading display")
+            logging.debug("{:} : Loading display".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
             self.firstContact = False
             self.createLayout(self.setup, self.mqtt)
             if self.logFile:
@@ -112,7 +113,7 @@ class Display(object):
 
 
     def updateZone(self, zone, index, draws, images):
-        logging.debug("Updating zone '{:}'".format(zone.getName()))
+        logging.debug("{:} : Updating zone '{:}'".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), zone.getName()))
         draw = draws[0]
         drawc = draws[1]
         lineHeight = self.fontSize + 1
@@ -215,7 +216,7 @@ class Display(object):
             imagec = Image.new('1', size, self.WHITE)
             draw = ImageDraw.Draw(image)
             drawc = ImageDraw.Draw(imagec)
-            logging.debug("Mode = '{:}'".format(self.home.getMode()))
+            logging.debug("{:} : Mode = '{:}'".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), self.home.getMode()))
             if self.home.isAway() or self.home.getMode() == 'away':
                 if not self.mode == "away":
                     self.drawAway([draw,drawc])
