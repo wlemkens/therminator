@@ -322,7 +322,7 @@
     ]
   },
   "schedules" : {
-    "standard": [
+    "Standaard": [
       "workday",
       "workday",
       "halfday",
@@ -331,7 +331,7 @@
       "weekend",
       "weekend"
     ],
-    "holiday": [
+    "Vakantie": [
       "weekend",
       "weekend",
       "weekend",
@@ -340,7 +340,7 @@
       "weekend",
       "weekend"
     ],
-    "homework": [
+    "Thuiswerk": [
       "home",
       "home",
       "home",
@@ -349,7 +349,7 @@
       "weekend",
       "weekend"
     ],
-    "homework2": [
+    "Thuiswerk + vakantie": [
       "home2",
       "home2",
       "home2",
@@ -358,7 +358,7 @@
       "weekend",
       "weekend"
     ],
-    "away": [
+    "Weg": [
       "away",
       "away",
       "away",

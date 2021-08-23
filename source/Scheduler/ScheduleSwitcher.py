@@ -33,7 +33,7 @@ class ScheduleSwitcher(object):
         logFile = "/var/log/thermostat.log"
         self.connect(mqttConfig, logFile)
         self.firstContact = True
-        self.watchdog = Watchdog(Modules.THERMOSTAT, [Modules.CONNECTOR, Modules.MONITOR], mqttConfig, logFile)
+        self.watchdog = Watchdog(Modules.THERMOSTAT, [Modules.CONNECTOR], mqttConfig, logFile)
         self.watchdog.onDependenciesComplete = self.onDependenciesComplete
         while True:
             time.sleep(1000)
