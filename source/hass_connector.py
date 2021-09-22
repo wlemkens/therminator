@@ -13,7 +13,7 @@ therminatorIn = "therminator/in"
 scheduleTopic = "therminator/in/schedule"
 
 zwaveIn = "OpenZWave/1/node/"
-zigbeeIn = "zigbee2mqtt/"
+zigbeeIn = "homeassistant/sensor/"
 hassIn = "home-assistant/"
 therminatorOut = "therminator/out"
 boilerOut = "home/ems-esp/boiler_cmd_burnerpower"
@@ -22,13 +22,13 @@ therminatorRequest = "therminator/request"
 
 scheduleId = 13
 ids = {
-    "Living thermometer" : "living_temperature",
-    "Badkamer thermomete" : "badkamer_temperature",
-    "Ariane thermometer" : "kamer_ariane_temperature",
-    "Bureau thermometer" : "bureau_temperature",
-    "Buiten thermometer" : "exterior_temperature",
-    "Nathan thermometer" : "kamer_nathan_temperature",
-    "Slaapkamer thermometer" : "slaapkamer_temperature",
+    "living_temperature" : "living_temperature",
+    "badkamer_temperature" : "badkamer_temperature",
+    "kamer_ariane_temperature" : "kamer_ariane_temperature",
+    "bureau_temperature" : "bureau_temperature",
+    "exterior_temperature" : "exterior_temperature",
+    "kamer_nathan_temperature" : "kamer_nathan_temperature",
+    "slaapkamer_temperature" : "slaapkamer_temperature",
 
     12 : "living_temperature-radiator",
     215 : "badkamer_temperature-radiator",
@@ -132,11 +132,14 @@ def on_message(client, userdata, message):
         # We got a message from zigbee
         # - door status change (ignored)
         # - temperatures
+        logging.debug("Received {:} : {:}".format(message.topic, message.payload))
+
         parts = message.topic.split("/")
-        topic = getTherminatorTopic(parts[1])
+        logging.debug(parts)
+        topic = getTherminatorTopic(parts[-2])
+        logging.debug(topic)
         if topic:
-            msg = json.loads(message.payload);
-            value = msg["temperature"]
+            value = json.loads(message.payload);
             client.publish(topic, value)
             logging.debug("{:} : Translating topic {:} -> Publishing on topic {:} : {:}".format(
                 datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message.topic, topic, value))
@@ -154,15 +157,18 @@ def on_message(client, userdata, message):
                 datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message.topic, scheduleTopic, value))
 
     elif therminatorOut in message.topic:
+        logging.debug("Received {:} : {:}".format(message.topic, message.payload))
         # We got a message from the thermostat
         # - scheduled setpoint change
         topic = parseTherminatorTopic(message.topic)
         id = getHassId(topic)
-        if id:
-            if id == "boiler_output":
+        logging.debug("Topic id {:} : {:}".format(topic, id))
+        if topic:
+            if topic == "boiler_output":
                 value = str(message.payload, 'utf-8')
                 client.publish(boilerOut, value)
-            else:
+                logging.debug("{:} : Translating topic {:} : {:} -> Publishing on topic {:} : {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), topic, value, boilerOut, value))
+            elif id:
                 value = str(message.payload,'utf-8')
                 client.publish(zwaveOut, value)
                 logging.debug("{:} : Translating topic {:} : {:} -> Publishing on topic {:} : {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), topic, value, zwaveOut, value))
