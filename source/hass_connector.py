@@ -60,6 +60,8 @@ ids = {
     543162385 : "kamer_ariane_battery",
     559939601 : "badkamer_battery",
 
+    "boiler_output" : "input_number.boiler_output",
+
     216 : "away",
     346 : "ping",
     scheduleId : "schedule"
@@ -117,14 +119,20 @@ def getValue(message):
         return None
 
 def on_message(client, userdata, message):
+#    logging.debug("Received {:}".format(message))
     if zwaveIn in message.topic:
+        #logging.debug("Received {:} : {:}".format(message.topic, message.payload))
         # We got a setpoint change
         msg = json.loads(message.payload);
         if "ValueIDKey" in msg:
+            #logging.debug("Received {:} : {:}".format(message.topic, message.payload))
+            logging.debug("ZWI Received {:} : {:}".format(message.topic, message.payload))
+
             id = msg["ValueIDKey"]
             value = getValue(msg)
 
             topic = getTherminatorTopic(id)
+            #logging.debug("Topic {:} value {:}".format(topic, value))
             if topic:
                 client.publish(topic, value)
                 logging.debug("{:} : Translating topic {:} -> Publishing on topic {:} : {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message.topic, topic, value))
@@ -132,18 +140,18 @@ def on_message(client, userdata, message):
         # We got a message from zigbee
         # - door status change (ignored)
         # - temperatures
-        logging.debug("Received {:} : {:}".format(message.topic, message.payload))
+        logging.debug("ZI Received {:} : {:}".format(message.topic, message.payload))
 
         parts = message.topic.split("/")
-        logging.debug(parts)
         topic = getTherminatorTopic(parts[-2])
-        logging.debug(topic)
         if topic:
             value = json.loads(message.payload);
             client.publish(topic, value)
             logging.debug("{:} : Translating topic {:} -> Publishing on topic {:} : {:}".format(
                 datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message.topic, topic, value))
     elif hassIn in message.topic:
+        logging.debug("HI Received {:} : {:}".format(message.topic, message.payload))
+
         # We got a message from Home Assistant
         # - zone status change
         # - schedule type change
@@ -157,7 +165,7 @@ def on_message(client, userdata, message):
                 datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message.topic, scheduleTopic, value))
 
     elif therminatorOut in message.topic:
-        logging.debug("Received {:} : {:}".format(message.topic, message.payload))
+        logging.debug("TO Received {:} : {:}".format(message.topic, message.payload))
         # We got a message from the thermostat
         # - scheduled setpoint change
         topic = parseTherminatorTopic(message.topic)
@@ -176,7 +184,7 @@ def on_message(client, userdata, message):
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
-        logging.basicConfig(filename='/var/log/domoticz_connector.log', level=logging.DEBUG)
+        logging.basicConfig(filename='/var/log/connector.log', level=logging.DEBUG)
         configFilename = sys.argv[1]
 
         client = mqtt.Client()
@@ -191,7 +199,7 @@ if __name__ == "__main__":
                 client.subscribe(zwaveIn+"#", 2)
                 client.subscribe(zigbeeIn+"#", 2)
                 client.subscribe(hassIn+"#", 2)
-                watchdog = Watchdog(Modules.CONNECTOR, [], config, "/var/log/domoticz_connector.log")
+                watchdog = Watchdog(Modules.CONNECTOR, [], config, "/var/log/connector.log")
                 client.loop_forever()
             except Exception as e:
                 print("Failled connecting to mqtt : {:}".format(e))
