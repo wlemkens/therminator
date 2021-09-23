@@ -144,7 +144,8 @@ def on_message(client, userdata, message):
 
         parts = message.topic.split("/")
         topic = getTherminatorTopic(parts[-2])
-        if topic:
+        type = parts[-1]
+        if topic and type == "state":
             value = json.loads(message.payload);
             client.publish(topic, value)
             logging.debug("{:} : Translating topic {:} -> Publishing on topic {:} : {:}".format(
@@ -184,7 +185,7 @@ def on_message(client, userdata, message):
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
-        logging.basicConfig(filename='/var/log/connector.log', level=logging.DEBUG)
+        logging.basicConfig(filename='/var/log/connector.log', level=logging.INFO)
         configFilename = sys.argv[1]
 
         client = mqtt.Client()
