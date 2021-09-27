@@ -124,7 +124,7 @@ def on_message(client, userdata, message):
         #logging.debug("Received {:} : {:}".format(message.topic, message.payload))
         # We got a setpoint change
         msg = json.loads(message.payload);
-        if "ValueIDKey" in msg:
+        if "ValueIDKey" in msg.keys():
             #logging.debug("Received {:} : {:}".format(message.topic, message.payload))
             logging.debug("ZWI Received {:} : {:}".format(message.topic, message.payload))
 
@@ -146,7 +146,7 @@ def on_message(client, userdata, message):
         topic = getTherminatorTopic(parts[-2])
         type = parts[-1]
         if topic and type == "state":
-            value = json.loads(message.payload);
+            value = message.payload
             client.publish(topic, value)
             logging.debug("{:} : Translating topic {:} -> Publishing on topic {:} : {:}".format(
                 datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message.topic, topic, value))
