@@ -24,10 +24,10 @@ scheduleId = 13
 ids = {
     "living_temperature" : "living_temperature",
     "badkamer_temperature" : "badkamer_temperature",
-    "kamer_ariane_temperature" : "kamer_ariane_temperature",
+    "ariane_temperature" : "kamer_ariane_temperature",
     "bureau_temperature" : "bureau_temperature",
     "exterior_temperature" : "exterior_temperature",
-    "kamer_nathan_temperature" : "kamer_nathan_temperature",
+    "nathan_temperature" : "kamer_nathan_temperature",
     "slaapkamer_temperature" : "slaapkamer_temperature",
 
     12 : "living_temperature-radiator",
@@ -185,7 +185,7 @@ def on_message(client, userdata, message):
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
-        logging.basicConfig(filename='/var/log/connector.log', level=logging.INFO)
+        logging.basicConfig(filename='/var/log/connector.log', level=logging.DEBUG)
         configFilename = sys.argv[1]
 
         client = mqtt.Client()
