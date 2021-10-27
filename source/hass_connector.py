@@ -9,10 +9,10 @@ from Heartbeat.Modules import Modules
 from Heartbeat.Watchdog import Watchdog
 
 zwaveOut = "OpenZWave/1/command/setvalue/"
-therminatorIn = "therminator/in"
+therminatorIn = "therminator/in/"
 scheduleTopic = "therminator/in/schedule"
 
-zwaveIn = "OpenZWave/1/node/"
+zwaveIn = "zwave/"
 zigbeeIn = "homeassistant/sensor/"
 hassIn = "home-assistant/"
 therminatorOut = "therminator/out"
@@ -36,11 +36,11 @@ ids = {
     117 : "bureau_temperature-radiator",
     304 : "kamer_nathan_temperature-radiator",
 
-    281475485319186 : "living_setpoint",
-    281475535650834 : "badkamer_setpoint",
-    281475518873618 : "kamer_ariane_setpoint",
-    281475300769810 : "bureau_setpoint",
-    281475502096402 : "kamer_nathan_setpoint",
+    "nodeID_30/67/0/setpoint/1" : "living_setpoint",
+    "nodeID_47/67/0/setpoint/1" : "badkamer_setpoint",
+    "nodeID_32/67/0/setpoint/1" : "kamer_ariane_setpoint",
+    "nodeID_19/67/0/setpoint/1" : "bureau_setpoint",
+    "nodeID_31/67/0/setpoint/1" : "kamer_nathan_setpoint",
 
     # 189 : "living_enabled",
     # 190 : "badkamer_enabled",
@@ -48,11 +48,11 @@ ids = {
     # 192 : "bureau_enabled",
     # 300 : "kamer_nathan_enabled",
 
-    508559380 : "living_enabled",
-    558891028 : "badkamer_enabled",
-    542113812 : "kamer_ariane_enabled",
-    324010004 : "bureau_enabled",
-    525336596 : "kamer_nathan_enabled",
+    "nodeID_30/64/0/mode" : "living_enabled",
+    "nodeID_57/64/0/mode" : "badkamer_enabled",
+    "nodeID_32/64/0/mode" : "kamer_ariane_enabled",
+    "nodeID_19/64/0/mode" : "bureau_enabled",
+    "nodeID_31/64/0/mode" : "kamer_nathan_enabled",
 
     509607953 : "living_battery",
     325058577 : "bureau_battery",
@@ -124,17 +124,16 @@ def on_message(client, userdata, message):
         #logging.debug("Received {:} : {:}".format(message.topic, message.payload))
         # We got a setpoint change
         msg = json.loads(message.payload);
-        if "ValueIDKey" in msg.keys():
+        parts = message.topic.split("/")
+        topic = getTherminatorTopic("/".join(parts[1:]))
+        if topic:
             #logging.debug("Received {:} : {:}".format(message.topic, message.payload))
             logging.debug("ZWI Received {:} : {:}".format(message.topic, message.payload))
 
-            id = msg["ValueIDKey"]
-            value = getValue(msg)
-
-            topic = getTherminatorTopic(id)
+            value = msg["value"]
             #logging.debug("Topic {:} value {:}".format(topic, value))
             if topic:
-                client.publish(topic, value)
+                client.publish(topic, value, retain=True)
                 logging.debug("{:} : Translating topic {:} -> Publishing on topic {:} : {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message.topic, topic, value))
     elif zigbeeIn in message.topic:
         # We got a message from zigbee
@@ -147,7 +146,7 @@ def on_message(client, userdata, message):
         type = parts[-1]
         if topic and type == "state":
             value = message.payload
-            client.publish(topic, value)
+            client.publish(topic, value, retain=True)
             logging.debug("{:} : Translating topic {:} -> Publishing on topic {:} : {:}".format(
                 datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message.topic, topic, value))
     elif hassIn in message.topic:
@@ -161,7 +160,7 @@ def on_message(client, userdata, message):
         value = message.payload
         # topic = parts[2]
         if type == "schedule":
-            client.publish(scheduleTopic, value)
+            client.publish(scheduleTopic, value, retain=True)
             logging.debug("{:} : Translating topic {:} -> Publishing on topic {:} : {:}".format(
                 datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message.topic, scheduleTopic, value))
 
@@ -175,11 +174,11 @@ def on_message(client, userdata, message):
         if topic:
             if topic == "boiler_output":
                 value = str(message.payload, 'utf-8')
-                client.publish(boilerOut, value)
+                client.publish(boilerOut, value, retain=True)
                 logging.debug("{:} : Translating topic {:} : {:} -> Publishing on topic {:} : {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), topic, value, boilerOut, value))
             elif id:
                 value = str(message.payload,'utf-8')
-                client.publish(zwaveOut, value)
+                client.publish(zwaveOut, value, retain=True)
                 logging.debug("{:} : Translating topic {:} : {:} -> Publishing on topic {:} : {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), topic, value, zwaveOut, value))
 
 
