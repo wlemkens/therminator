@@ -2,7 +2,7 @@ import datetime
 import time
 import threading
 
-from HeatingInterface.HeatingInterface import HeatingInterface
+from .HeatingInterface import HeatingInterface
 from MQTT.MqttProvider import MqttProvider
 import logging
 
@@ -44,15 +44,18 @@ class RadiatorHeatingInterface(HeatingInterface):
         pass
 
     def on_message(self, client, userdata, message):
-        if message.topic == self.topic_temp:
-            logging.debug("{:} : Received message {:} on topic {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message.topic, message.payload))
-            self.temperature = float(message.payload)
-        elif message.topic == self.topic_sp:
-            logging.debug("{:} : Received message {:} on topic {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message.topic, message.payload))
-            self.setpoint = float(message.payload)
-        elif message.topic == self.topic_enabled:
-            logging.debug("{:} : Received message {:} on topic {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message.topic, message.payload))
-            self.enabled = int(message.payload)
+        try:
+            if message.topic == self.topic_temp:
+                logging.debug("{:} : Received message {:} on topic {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message.topic, message.payload))
+                self.temperature = float(message.payload)
+            elif message.topic == self.topic_sp:
+                logging.debug("{:} : Received message {:} on topic {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message.topic, message.payload))
+                self.setpoint = float(message.payload)
+            elif message.topic == self.topic_enabled:
+                logging.debug("{:} : Received message {:} on topic {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message.topic, message.payload))
+                self.enabled = int(message.payload)
+        except Exception as e:
+            logging.error("{:} : Error {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), e))
 
     def requestValues(self):
         topic = "therminator/request"
