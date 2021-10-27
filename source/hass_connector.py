@@ -8,7 +8,7 @@ import time
 from Heartbeat.Modules import Modules
 from Heartbeat.Watchdog import Watchdog
 
-zwaveOut = "OpenZWave/1/command/setvalue/"
+zwaveOut = "zwave/"
 therminatorIn = "therminator/in/"
 scheduleTopic = "therminator/in/schedule"
 
@@ -178,8 +178,8 @@ def on_message(client, userdata, message):
                 logging.debug("{:} : Translating topic {:} : {:} -> Publishing on topic {:} : {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), topic, value, boilerOut, value))
             elif id:
                 value = str(message.payload,'utf-8')
-                client.publish(zwaveOut, value, retain=True)
-                logging.debug("{:} : Translating topic {:} : {:} -> Publishing on topic {:} : {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), topic, value, zwaveOut, value))
+                client.publish(zwaveOut+id+"/set", value, retain=True)
+                logging.debug("{:} : Translating topic {:} : {:} -> Publishing on topic {:} : {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), topic, value, zwaveOut+id+"/set", value))
 
 
 if __name__ == "__main__":
