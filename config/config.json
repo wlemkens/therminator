@@ -2,22 +2,22 @@
   "scheduler":{
     "type":"basic",
     "default": "Standaard",
-    "configFile":"/home/wim/projects/therminator/config/schedules.json"
+    "configFile":"/home/pi/projects/therminator/config/schedules.json"
   },
   "setup":{
-    "configFile":"/home/wim/projects/therminator/config/setup.json"
+    "configFile":"/home/pi/projects/therminator/config/setup.json"
   },
   "controllers":{
     "default":{
       "type": "pid",
-      "configFile":"/home/wim/projects/therminator/config/pid config.json"
+      "configFile":"/home/pi/projects/therminator/config/pid config.json"
     }
   },
   "mqtt":{
-    "configFile":"/home/wim/projects/therminator/config/mqtt.json"
+    "configFile":"/home/pi/projects/therminator/config/mqtt.json"
   },
   "boiler_controller":{
       "type": "mqtt",
-      "configFile":"/home/wim/projects/therminator/config/boiler_config.json"
+      "configFile":"/home/pi/projects/therminator/config/boiler_config.json"
   }
 }
