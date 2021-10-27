@@ -1,5 +1,5 @@
-from Scheduler.BasicScheduler import BasicScheduler
-from Scheduler.PredictiveScheduler import PredictiveScheduler
+from .BasicScheduler import BasicScheduler
+from .PredictiveScheduler import PredictiveScheduler
 from Controller.ControllerFactory import ControllerFactory
 from BoilerInterface.BoilerInterfaceFactory import BoilerInterfaceFactory
 from Entity.Exterior import Exterior

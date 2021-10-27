@@ -1,7 +1,7 @@
 import json
 import time
 
-from Scheduler.SchedulerFactory import SchedulerFactory
+from .SchedulerFactory import SchedulerFactory
 
 from Heartbeat.Modules import Modules
 from Heartbeat.Watchdog import Watchdog

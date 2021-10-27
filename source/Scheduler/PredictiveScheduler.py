@@ -1,12 +1,15 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
 # External imports
 import json
 import datetime
 import time
 
 # Project imports
-from Scheduler.Scheduler import Scheduler
-from Scheduler.BasicScheduler import Schedule
-from Scheduler.heating_coefficient import *
+from .Scheduler import Scheduler
+from .BasicScheduler import Schedule
+from .heating_coefficient import *
 import logging
 
 class PredictiveScheduler(Scheduler):

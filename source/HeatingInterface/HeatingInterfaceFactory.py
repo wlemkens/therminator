@@ -1,5 +1,5 @@
-from HeatingInterface.CentralHeatingInterface import CentralHeatingInterface
-from HeatingInterface.RadiatorHeatingInterface import RadiatorHeatingInterface
+from .CentralHeatingInterface import CentralHeatingInterface
+from .RadiatorHeatingInterface import RadiatorHeatingInterface
 
 from enum import Enum
 

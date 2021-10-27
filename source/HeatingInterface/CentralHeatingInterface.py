@@ -1,4 +1,4 @@
-from HeatingInterface.HeatingInterface import HeatingInterface
+from .HeatingInterface import HeatingInterface
 
 class CentralHeatingInterface(HeatingInterface):
     def __init__(self, name, config):

@@ -1,9 +1,12 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
 # External imports
 import datetime
 import time
 
 # Project imports
-from Scheduler.Scheduler import Scheduler
+from .Scheduler import Scheduler
 import logging
 
 class Schedule():
@@ -110,9 +113,10 @@ class BasicScheduler(Scheduler):
                         time.sleep(0.1)
                     output = controller.getOutput()
                     total += max(0,output)
-                    logging.debug ("{:} : Room '{:}' {:}/{:}°C output = {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), room, controller.getTemperature(), controller.getSetpoint(), output))
+                    logging.debug (u"{:} : Room '{:}' {:}/{:}°C output = {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), room, controller.getTemperature(), controller.getSetpoint(), output))
 
             #            print(self.schedule.schedule)
+            logging.debug (u"{:} : output = {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), total))
             self.boilerInterface.setOutput(total)
             sleepTime = self.nextCallTime - time.time()
             if (sleepTime > 0):

@@ -1,8 +1,8 @@
 import numpy as np
 import datetime
 
-from Controller.Controller import Controller
-from Controller.PID import PID
+from .Controller import Controller
+from .PID import PID
 
 class PIDController(Controller):
     def __init__(self, heatingInterface, config, zone):

@@ -1,4 +1,4 @@
-from Controller.PIDController import PIDController
+from .PIDController import PIDController
 from HeatingInterface.HeatingInterfaceFactory import HeatingInterfaceFactory
 
 import json
