@@ -5,8 +5,8 @@
         "living": 15,
         "badkamer": 15,
         "bureau": 18,
-        "kamer_ariane": 19,
-        "kamer_nathan": 19
+        "kamer_ariane": 16,
+        "kamer_nathan": 15
       }
     },
     "night": {
@@ -14,8 +14,8 @@
         "living": 15,
         "badkamer": 15,
         "bureau": 19,
-        "kamer_ariane": 19,
-        "kamer_nathan": 18.5
+        "kamer_ariane": 16,
+        "kamer_nathan": 15
       }
     },
     "semi-away": {
@@ -39,28 +39,28 @@
     "morning": {
       "zones": {
         "living": 20.5,
-        "badkamer": 26,
+        "badkamer": 23,
         "bureau": 18,
-        "kamer_ariane": 19,
-        "kamer_nathan": 19
+        "kamer_ariane": 16,
+        "kamer_nathan": 15
       }
     },
     "pre-evening": {
       "zones": {
         "living": 20.5,
-        "badkamer": 22,
+        "badkamer": 20,
         "bureau": 18.5,
-        "kamer_ariane": 18.5,
-        "kamer_nathan": 19
+        "kamer_ariane": 16,
+        "kamer_nathan": 15
       }
     },
     "evening": {
       "zones": {
         "living": 20.5,
-        "badkamer": 22,
+        "badkamer": 21,
         "bureau": 18,
-        "kamer_ariane": 18.5,
-        "kamer_nathan": 19
+        "kamer_ariane": 15,
+        "kamer_nathan": 15
       }
     },
     "day": {
@@ -76,7 +76,7 @@
       "zones": {
         "living": 19,
         "badkamer": 15,
-        "bureau": 21,
+        "bureau": 20,
         "kamer_ariane": 15,
         "kamer_nathan": 15
       }
@@ -85,7 +85,7 @@
       "zones": {
         "living": 20.5,
         "badkamer": 15,
-        "bureau": 21,
+        "bureau": 20,
         "kamer_ariane": 15,
         "kamer_nathan": 15
       }
@@ -222,7 +222,7 @@
     ],
     "home": [
       {
-        "start": "05:00",
+        "start": "04:00",
         "mode": "morning"
       },
       {
@@ -252,7 +252,7 @@
     ],
     "home2": [
       {
-        "start": "05:00",
+        "start": "04:00",
         "mode": "morning"
       },
       {
@@ -327,6 +327,15 @@
       "workday",
       "halfday",
       "shortday",
+      "home",
+      "weekend",
+      "weekend"
+    ],
+    "Standaard2": [
+      "workday",
+      "workday",
+      "halfday",
+      "workday",
       "home",
       "weekend",
       "weekend"

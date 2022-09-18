@@ -26,12 +26,16 @@ class MQTTBoilerInterface(BoilerInterface):
         pidParmaeters = config["pid"]
         self.PID = PID(pidParmaeters["p"], pidParmaeters["i"], pidParmaeters["d"],pidParmaeters["errorSumLimit"],pidParmaeters["historyRange"])
         logFile = "/var/log/thermostat.log"
-        self.client = MqttProvider(self.address, self.port, logFile)
+        self.client = MqttProvider(self.address, self.port, logFile, "Boiler")
+        self.client.publish("therminator/out/boiler_output", 1)
+        logging.debug("Boiler connected to MQTT at '{:}'".format(self.address))
+
 
     def setOutput(self, outputValue):
         outputValue *= self.gain
         outputValue = min(100,max(0, outputValue))
-        self.client.publish("therminator/out/boiler_output", outputValue)
+        logging.debug("Outputing '{:}'".format(outputValue))
+        self.client.publish("therminator/out/boiler_output", float(outputValue))
 
     def setMode(self, mode):
         logging.debug("Switching to mode '{:}'".format(mode))

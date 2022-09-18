@@ -108,7 +108,7 @@ class BasicScheduler(Scheduler):
             for room in rooms:
                 for controller in self.controller[room]:
                     if (self.schedule.hasSetpointChanged(room)):
-                        logging.debug("{:} : Setpoint has changed for room '{:}' to {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), room, self.schedule.getCurrentSetpointTemperature(room)))
+                        logging.info("{:} : Setpoint has changed for room '{:}' to {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), room, self.schedule.getCurrentSetpointTemperature(room)))
                         controller.setSetpoint(self.schedule.getCurrentSetpointTemperature(room) )
                         time.sleep(0.1)
                     output = controller.getOutput()

@@ -12,6 +12,7 @@ import logging
 class ScheduleSwitcher(object):
     def __init__(self, config):
         logging.basicConfig(filename='/var/log/thermostat.log', level=logging.DEBUG)
+        #logging.basicConfig(filename='/var/log/thermostat.log', level=logging.INFO)
         self.topicSchedule = "therminator/in/schedule"
         self.schedulerType = config["scheduler"]["type"]
         self.controllerTypes = config["controllers"]
@@ -60,6 +61,6 @@ class ScheduleSwitcher(object):
         if message.topic == self.topicSchedule:
             if self.scheduleName != str(message.payload,'utf-8'):
                 self.scheduleName = str(message.payload,'utf-8')
-                logging.debug("Switching to schedule '{:}'".format(self.scheduleName))
+                logging.info("Switching to schedule '{:}'".format(self.scheduleName))
                 self.selectSchedule(self.scheduleName)
 

@@ -37,7 +37,7 @@ ids = {
     304 : "kamer_nathan_temperature-radiator",
 
     "nodeID_30/67/0/setpoint/1" : "living_setpoint",
-    "nodeID_47/67/0/setpoint/1" : "badkamer_setpoint",
+    "nodeID_48/67/0/setpoint/1" : "badkamer_setpoint",
     "nodeID_32/67/0/setpoint/1" : "kamer_ariane_setpoint",
     "nodeID_19/67/0/setpoint/1" : "bureau_setpoint",
     "nodeID_31/67/0/setpoint/1" : "kamer_nathan_setpoint",
@@ -49,7 +49,7 @@ ids = {
     # 300 : "kamer_nathan_enabled",
 
     "nodeID_30/64/0/mode" : "living_enabled",
-    "nodeID_57/64/0/mode" : "badkamer_enabled",
+    "nodeID_48/64/0/mode" : "badkamer_enabled",
     "nodeID_32/64/0/mode" : "kamer_ariane_enabled",
     "nodeID_19/64/0/mode" : "bureau_enabled",
     "nodeID_31/64/0/mode" : "kamer_nathan_enabled",
@@ -69,6 +69,7 @@ ids = {
 
 schedules = {
     "10" : "standard",
+    "60" : "standard2",
     "20" : "holiday",
     "30" : "away",
     "40" : "homework",
@@ -185,6 +186,7 @@ def on_message(client, userdata, message):
 if __name__ == "__main__":
     if len(sys.argv) == 2:
         logging.basicConfig(filename='/var/log/connector.log', level=logging.DEBUG)
+        #logging.basicConfig(filename='/var/log/connector.log', level=logging.WARN)
         configFilename = sys.argv[1]
 
         client = mqtt.Client()

@@ -33,6 +33,7 @@ class RadiatorHeatingInterface(HeatingInterface):
         return self.setpoint
 
     def getEnabled(self):
+        #logging.debug("Radiator heating interface '{:}' enabled = {:}".format(self.name, self.enabled));
         return self.enabled
 
     def setSetpoint(self, setpoint):
@@ -44,7 +45,11 @@ class RadiatorHeatingInterface(HeatingInterface):
         pass
 
     def on_message(self, client, userdata, message):
+        topic = "Invalid"
+        value = "Invalid"
         try:
+            topic = message.topic
+            value = message.payload
             if message.topic == self.topic_temp:
                 logging.debug("{:} : Received message {:} on topic {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message.topic, message.payload))
                 self.temperature = float(message.payload)
@@ -55,7 +60,7 @@ class RadiatorHeatingInterface(HeatingInterface):
                 logging.debug("{:} : Received message {:} on topic {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message.topic, message.payload))
                 self.enabled = int(message.payload)
         except Exception as e:
-            logging.error("{:} : Error {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), e))
+            logging.error("{:} : topic : {:}, value = {:}, Error {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), topic, value, e))
 
     def requestValues(self):
         topic = "therminator/request"

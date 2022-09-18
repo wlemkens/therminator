@@ -18,7 +18,7 @@ class MqttProvider:
                     self.client.connect(address, port, 60)
                     self.client.loop_start()
                     connecting = False
-                    logging.debug("{:} : Connected".format(datetime.now().strftime("%H:%M:%S")))
+                    logging.info("{:} : MQTT Connected".format(datetime.now().strftime("%H:%M:%S")))
                 except:
                     logging.warning("{:} Failed to connect to mqtt".format(datetime.now().strftime("%H:%M:%S")))
                     time.sleep(10)
@@ -44,11 +44,14 @@ class MqttProvider:
                 self.client.subscribe(topics[0], topics[1])
 
         def publish(self, topic, message):
+            logging.debug("{:} : Publishing on topic {:} value {:}".format(datetime.now().strftime("%H:%M:%S"), topic, message))
             self.client.publish(topic, message)
 
     instance = None
 
-    def __init__(self, address, port, logFile):
+    def __init__(self, address, port, logFile, name = None):
+        if name:
+            logging.debug("{:} : Getting MQTT instance for {:}".format(datetime.now().strftime("%H:%M:%S"), name))
         if not MqttProvider.instance:
             logging.debug("{:} : Creating MQTT instance".format(datetime.now().strftime("%H:%M:%S")))
             MqttProvider.instance = MqttProvider.__MqttProvider(address, port, logFile)
