@@ -51,7 +51,10 @@ class ScheduleSwitcher(object):
             self.scheduler.start()
 
     def selectSchedule(self, scheduleName):
-        self.scheduler.loadConfig(self.schedules[scheduleName], self.modes, self.daytypes)
+        try:
+            self.scheduler.loadConfig(self.schedules[scheduleName], self.modes, self.daytypes)
+        except:
+            logging.error(f"Failed to load schedule {scheduleName}")
 
     def connect(self, mqttConfig, logFile):
         self.client = MqttProvider(mqttConfig["address"], mqttConfig["port"], logFile)
