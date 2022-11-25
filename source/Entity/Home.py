@@ -2,8 +2,8 @@ from MQTT.MqttProvider import MqttProvider
 import logging
 
 class Home(object):
-    def __init__(self, mqttConfig, on_update, logFile):
-        logging.basicConfig(filename=logFile, level=logging.DEBUG)
+    def __init__(self, mqttConfig, on_update, logFile, log_level = logging.WARNING):
+        logging.basicConfig(filename=logFile, level=log_level)
         self.away = False
         self.mode = None
         self.topicAway = "therminator/in/away"

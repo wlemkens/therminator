@@ -7,9 +7,9 @@ from MQTT.MqttProvider import MqttProvider
 import logging
 
 class RadiatorHeatingInterface(HeatingInterface):
-    def __init__(self, name, config):
+    def __init__(self, name, config, log_level = logging.WARNING):
         logFile = '/var/log/thermostat.log'
-        logging.basicConfig(filename=logFile, level=logging.DEBUG)
+        logging.basicConfig(filename=logFile, level=log_level)
         logging.debug("Loading radiator heating interface '{:}'".format(name));
         self.address  = config["address"]
         self.port = config["port"]

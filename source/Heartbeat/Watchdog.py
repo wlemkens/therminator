@@ -7,8 +7,8 @@ from MQTT.MqttProvider import MqttProvider
 
 class Watchdog(threading.Thread):
 
-    def __init__(self, moduleType, dependencies, mqttConfig, logFile):
-        logging.basicConfig(filename=logFile, level=logging.DEBUG)
+    def __init__(self, moduleType, dependencies, mqttConfig, logFile, log_level = logging.WARNING):
+        logging.basicConfig(filename=logFile, level=log_level)
         self.moduleType = moduleType
         self.dependencies = dependencies
         self.brokenDependencies = []

@@ -5,8 +5,8 @@ from datetime import datetime, timedelta
 
 class MqttProvider:
     class __MqttProvider:
-        def __init__(self, address, port, logFile):
-            logging.basicConfig(filename=logFile, level=logging.DEBUG)
+        def __init__(self, address, port, logFile, log_level = logging.WARNING):
+            logging.basicConfig(filename=logFile, level=log_level)
             logging.debug("{:} : Instance...".format(datetime.now().strftime("%H:%M:%S")))
             self.subscribers = []
             self.client = mqtt.Client()
@@ -49,12 +49,12 @@ class MqttProvider:
 
     instance = None
 
-    def __init__(self, address, port, logFile, name = None):
+    def __init__(self, address, port, logFile, name = None, log_level = logging.WARNING):
         if name:
             logging.debug("{:} : Getting MQTT instance for {:}".format(datetime.now().strftime("%H:%M:%S"), name))
         if not MqttProvider.instance:
             logging.debug("{:} : Creating MQTT instance".format(datetime.now().strftime("%H:%M:%S")))
-            MqttProvider.instance = MqttProvider.__MqttProvider(address, port, logFile)
+            MqttProvider.instance = MqttProvider.__MqttProvider(address, port, logFile, log_level)
 
     def __getattr__(self, name):
         return getattr(self.instance, name)

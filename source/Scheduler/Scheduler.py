@@ -3,9 +3,9 @@ import time
 import logging
 
 class Scheduler(threading.Thread) :
-    def __init__(self):
+    def __init__(self, log_level = logging.WARNING):
         threading.Thread.__init__(self)
-        logging.basicConfig(filename='/var/log/thermostat.log', level=logging.DEBUG)
+        logging.basicConfig(filename='/var/log/thermostat.log', level=log_level)
         self.interval = 60
         self.nextCallTime = time.time()
         self.sensorNames = []

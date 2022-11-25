@@ -5,8 +5,8 @@ import logging
 from datetime import datetime
 
 class Zone(object):
-    def __init__(self, config, mqttConfig, on_update, logFile):
-        logging.basicConfig(filename=logFile, level=logging.DEBUG)
+    def __init__(self, config, mqttConfig, on_update, logFile, log_level = logging.WARNING):
+        logging.basicConfig(filename=logFile, level=log_level)
         self.offTemperature = 10
         self.offDelay = 10
         self.temperature = None

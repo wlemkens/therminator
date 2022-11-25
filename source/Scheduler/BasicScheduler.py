@@ -10,8 +10,8 @@ from .Scheduler import Scheduler
 import logging
 
 class Schedule():
-    def __init__(self, schedule):
-        logging.basicConfig(filename='/var/log/thermostat.log', level=logging.DEBUG)
+    def __init__(self, schedule, log_level = logging.WARNING):
+        logging.basicConfig(filename='/var/log/thermostat.log', level=log_level)
         logging.debug("Init basic scheduler")
         self.schedule = schedule
         self.setpoints = {}
@@ -76,18 +76,18 @@ class Schedule():
         return self.mode
 
 class BasicScheduler(Scheduler):
-    def __init__(self, schedule, modes, dayttypes):
-        super(BasicScheduler,self).__init__()
+    def __init__(self, schedule, modes, dayttypes, log_level = logging.WARNING):
+        super(BasicScheduler,self).__init__(log_level)
         self.schedule = None
         self.mode = None
         self.controller = {}
         self.boilerInterface = None
-        self.loadConfig(schedule, modes, dayttypes)
+        self.loadConfig(schedule, modes, dayttypes, log_level)
 
-    def loadConfig(self, schedule, modes, daytypes):
+    def loadConfig(self, schedule, modes, daytypes, log_level = logging.WARNING):
             self.schedule = Schedule({"weekschedule" : schedule,
                              "modes": modes,
-                             "daytypes": daytypes})
+                             "daytypes": daytypes}, log_level)
             daytypes = daytypes
             for typename, daytype in daytypes.items():
                 for period in daytype:

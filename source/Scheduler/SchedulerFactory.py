@@ -4,6 +4,7 @@ from Controller.ControllerFactory import ControllerFactory
 from BoilerInterface.BoilerInterfaceFactory import BoilerInterfaceFactory
 from Entity.Exterior import Exterior
 from Setup import Setup
+import logging
 
 from enum import Enum
 import json
@@ -17,7 +18,7 @@ class SchedulerFactory(object):
         with open(filename) as f:
             return Setup(json.load(f))
 
-    def createScheduler(self, config):
+    def createScheduler(self, config, log_level = logging.WARNING):
         schedulerType = config["scheduler"]["type"]
         controllerTypes = config["controllers"]
         setupFile = config["setup"]["configFile"]
@@ -25,14 +26,14 @@ class SchedulerFactory(object):
         boilerType = config["boiler_controller"]["type"]
         boilerConfig = config["boiler_controller"]["configFile"]
         mqttFile = config["mqtt"]["configFile"]
-        return self.setupScheduler(schedulerType, controllerTypes, setupFile, schedulerConfig, boilerType, boilerConfig,mqttFile)
+        return self.setupScheduler(schedulerType, controllerTypes, setupFile, schedulerConfig, boilerType, boilerConfig,mqttFile, log_level)
 
-    def setupScheduler(self, schedulerType, controllerTypes, setupFile, schedule, modes, daytypes, boilerType, boilerConfig, mqttFile):
+    def setupScheduler(self, schedulerType, controllerTypes, setupFile, schedule, modes, daytypes, boilerType, boilerConfig, mqttFile, log_level = logging.WARNING):
         controllerFactory = ControllerFactory()
         boilerFactory = BoilerInterfaceFactory()
         setup = self.loadSetup(setupFile)
         if schedulerType == SchedulerType.BASICSCHEDULER:
-            scheduler = BasicScheduler(schedule, modes, daytypes)
+            scheduler = BasicScheduler(schedule, modes, daytypes, log_level)
             for zone in setup.getZoneNames():
                 controllerMeta = controllerTypes["default"]
                 if zone in controllerTypes:
