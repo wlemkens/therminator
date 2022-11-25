@@ -12,6 +12,7 @@ import logging
 class Schedule():
     def __init__(self, schedule):
         logging.basicConfig(filename='/var/log/thermostat.log', level=logging.DEBUG)
+        logging.debug("Init basic scheduler")
         self.schedule = schedule
         self.setpoints = {}
         self.mode = None
@@ -97,9 +98,12 @@ class BasicScheduler(Scheduler):
             self.mode = None
 
     def run(self):
+        logging.debug("Run")
         while True:
-            self.nextCallTime += self.interval
+            logger.debug("Running control loop")
             rooms = self.schedule.getZoneNames()
+            logging.debug(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} : Running control loop for rooms : {rooms}")
+            self.nextCallTime += self.interval
             total = 0
             mode = self.schedule.getMode()
             if mode != self.mode:
@@ -116,7 +120,7 @@ class BasicScheduler(Scheduler):
                     logging.debug (u"{:} : Room '{:}' {:}/{:}°C output = {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), room, controller.getTemperature(), controller.getSetpoint(), output))
 
             #            print(self.schedule.schedule)
-            logging.debug (u"{:} : output = {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), total))
+            logging.info (u"{:} : output = {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), total))
             self.boilerInterface.setOutput(total)
             sleepTime = self.nextCallTime - time.time()
             if (sleepTime > 0):

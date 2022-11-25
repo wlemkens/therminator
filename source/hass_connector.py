@@ -37,7 +37,7 @@ ids = {
     304 : "kamer_nathan_temperature-radiator",
 
     "nodeID_30/67/0/setpoint/1" : "living_setpoint",
-    "nodeID_48/67/0/setpoint/1" : "badkamer_setpoint",
+    "nodeID_50/67/1/setpoint/1" : "badkamer_setpoint",
     "nodeID_32/67/0/setpoint/1" : "kamer_ariane_setpoint",
     "nodeID_19/67/0/setpoint/1" : "bureau_setpoint",
     "nodeID_31/67/0/setpoint/1" : "kamer_nathan_setpoint",
@@ -49,7 +49,7 @@ ids = {
     # 300 : "kamer_nathan_enabled",
 
     "nodeID_30/64/0/mode" : "living_enabled",
-    "nodeID_48/64/0/mode" : "badkamer_enabled",
+    "nodeID_50/64/1/mode" : "badkamer_enabled",
     "nodeID_32/64/0/mode" : "kamer_ariane_enabled",
     "nodeID_19/64/0/mode" : "bureau_enabled",
     "nodeID_31/64/0/mode" : "kamer_nathan_enabled",
@@ -69,7 +69,7 @@ ids = {
 
 schedules = {
     "10" : "standard",
-    "60" : "standard2",
+    "60" : "standard 2",
     "20" : "holiday",
     "30" : "away",
     "40" : "homework",
@@ -176,17 +176,17 @@ def on_message(client, userdata, message):
             if topic == "boiler_output":
                 value = str(message.payload, 'utf-8')
                 client.publish(boilerOut, value, retain=True)
-                logging.debug("{:} : Translating topic {:} : {:} -> Publishing on topic {:} : {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), topic, value, boilerOut, value))
+                logging.info("{:} : Translating topic {:} : {:} -> Publishing on topic {:} : {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), topic, value, boilerOut, value))
             elif id:
                 value = str(message.payload,'utf-8')
                 client.publish(zwaveOut+id+"/set", value, retain=True)
-                logging.debug("{:} : Translating topic {:} : {:} -> Publishing on topic {:} : {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), topic, value, zwaveOut+id+"/set", value))
+                logging.info("{:} : Translating topic {:} : {:} -> Publishing on topic {:} : {:}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), topic, value, zwaveOut+id+"/set", value))
 
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
         logging.basicConfig(filename='/var/log/connector.log', level=logging.DEBUG)
-        #logging.basicConfig(filename='/var/log/connector.log', level=logging.WARN)
+        #logging.basicConfig(filename='/var/log/connector.log', level=logging.INFO)
         configFilename = sys.argv[1]
 
         client = mqtt.Client()
@@ -208,4 +208,4 @@ if __name__ == "__main__":
                 time.sleep(10)
 
     else:
-        logging.debug("Usage {:} </path/to/mqtt.json>".format(sys.argv[0]))
+        logging.info("Usage {:} </path/to/mqtt.json>".format(sys.argv[0]))
