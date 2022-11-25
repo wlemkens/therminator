@@ -100,7 +100,7 @@ class BasicScheduler(Scheduler):
     def run(self):
         logging.debug("Run")
         while True:
-            logger.debug("Running control loop")
+            logging.debug("Running control loop")
             rooms = self.schedule.getZoneNames()
             logging.debug(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} : Running control loop for rooms : {rooms}")
             self.nextCallTime += self.interval
