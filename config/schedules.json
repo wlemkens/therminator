@@ -39,7 +39,7 @@
     "morning": {
       "zones": {
         "living": 20.5,
-        "badkamer": 23,
+        "badkamer": 26,
         "bureau": 18,
         "kamer_ariane": 16,
         "kamer_nathan": 15
@@ -48,7 +48,7 @@
     "pre-evening": {
       "zones": {
         "living": 20.5,
-        "badkamer": 20,
+        "badkamer": 21,
         "bureau": 18.5,
         "kamer_ariane": 16,
         "kamer_nathan": 15
@@ -57,7 +57,7 @@
     "evening": {
       "zones": {
         "living": 20.5,
-        "badkamer": 21,
+        "badkamer": 22,
         "bureau": 18,
         "kamer_ariane": 15,
         "kamer_nathan": 15
@@ -222,7 +222,7 @@
     ],
     "home": [
       {
-        "start": "04:00",
+        "start": "05:00",
         "mode": "morning"
       },
       {
@@ -252,7 +252,7 @@
     ],
     "home2": [
       {
-        "start": "04:00",
+        "start": "05:00",
         "mode": "morning"
       },
       {
@@ -331,11 +331,11 @@
       "weekend",
       "weekend"
     ],
-    "Standaard2": [
+    "Standaard 2": [
       "workday",
       "workday",
       "halfday",
-      "workday",
+      "dayhome",
       "home",
       "weekend",
       "weekend"
