@@ -12,7 +12,7 @@ import logging
 class Schedule():
     def __init__(self, schedule, log_level = logging.WARNING):
         logging.basicConfig(filename='/var/log/thermostat.log', level=log_level)
-        logging.debug("Init basic scheduler")
+        logging.debug("Init scheduler")
         self.schedule = schedule
         self.setpoints = {}
         self.mode = None
@@ -47,19 +47,23 @@ class Schedule():
         dayOfWeek = datetime.datetime.today().weekday()
         now = datetime.datetime.now()
         minutes = now.hour * 60 + now.minute
-        dayType = self.schedule["weekschedule"][dayOfWeek]
-        timeTable = self.schedule["daytypes"][dayType]
-        mode = "none"
-        for i in range(len(timeTable)):
-            if (timeTable[i]["start"] > minutes):
-                mode = timeTable[i-1]["mode"]
-                break
-        if mode == "none":
-            mode = timeTable[-1]["mode"]
-        self.mode = mode
-        temperatures = self.schedule["modes"][mode]["zones"]
-        return temperatures[room]
-
+        try:
+            dayType = self.schedule["weekschedule"][dayOfWeek]
+            timeTable = self.schedule["daytypes"][dayType]
+            mode = "none"
+            for i in range(len(timeTable)):
+                if (timeTable[i]["start"] > minutes):
+                    mode = timeTable[i-1]["mode"]
+                    break
+            if mode == "none":
+                mode = timeTable[-1]["mode"]
+            self.mode = mode
+            temperatures = self.schedule["modes"][mode]["zones"]
+            return temperatures[room]
+        except KeyError as e:
+            logging.error("{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} : Error looking up setpoint temperature ({e})")
+        return 15
+    
     def getCurrentSetpointTemperature(self, room):
         self.setpoints[room] = self._currentSetpointTemperature_(room)
         return self.setpoints[room]
@@ -78,6 +82,7 @@ class Schedule():
 class BasicScheduler(Scheduler):
     def __init__(self, schedule, modes, dayttypes, log_level = logging.WARNING):
         super(BasicScheduler,self).__init__(log_level)
+        logging.debug("Init basic scheduler")
         self.schedule = None
         self.mode = None
         self.controller = {}
