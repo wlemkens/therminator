@@ -61,9 +61,9 @@ class Schedule():
             temperatures = self.schedule["modes"][mode]["zones"]
             return temperatures[room]
         except KeyError as e:
-            logging.error("{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} : Error looking up setpoint temperature ({e})")
+            logging.error(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} : Error looking up setpoint temperature ({e})")
         return 15
-    
+
     def getCurrentSetpointTemperature(self, room):
         self.setpoints[room] = self._currentSetpointTemperature_(room)
         return self.setpoints[room]
